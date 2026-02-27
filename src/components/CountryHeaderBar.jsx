@@ -11,9 +11,10 @@ export function CountryHeaderBar(props)
   if(props.hasOwnProperty('tabs'))
   {
     // Make each tab formatted as to tabs
-    for(const tabName of props.tabs)
+    for(let i = 0; i< props.tabs.length; i++)
     {
-      tabArr.push(<span className="headerBarCountry_tab">{tabName}</span>)
+      const tabName= props.tabs[i];
+      tabArr.push(<span key={i} className="headerBarCountry_tab">{tabName}</span>)
     }
   }
   return (

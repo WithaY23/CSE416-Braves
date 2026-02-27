@@ -1,5 +1,6 @@
 import React from 'react'
 import { SplashPage } from './components/SplashPage'
+import { CountryHeaderBar } from './components/CountryHeaderBar'
 import '../styles/main.css'
 
 /**
@@ -8,24 +9,53 @@ import '../styles/main.css'
 function view()
 {
   let view = 'Splash'
+  let returnedView = []
+  let countryPage = false;
+  let statePage = false;
+  let keyIndex = 0 // Since rendering arr directly in React execution, need a key for each element
+  // Will add items FIFO, render directly in main
   switch (view) 
   {
     case 'Splash':
       {
-
+        returnedView.push(<SplashPage key={keyIndex} />)
+        keyIndex++;
+        // Should mark view in some state variable and send to splash page
+        countryPage = true;
         break;
       }
-      
-  
     default:
       break;
   }
+  if(statePage)
+  {
+    // Add state header... sigh, simulating FIFO with FILO. I think these are just shallow pointers so its fine
+    // Will only do "rearranging" 0-4 times / re-render (when adding new, common elements i.e. headers)
+    let temp = returnedView;
+    returnedView = [<div key={keyIndex}></div>];
+    keyIndex++;
+
+    returnedView.push(...temp)
+    // returnedView.push(<div></div>);
+  }
+  if(countryPage)
+  {
+    // Add country header
+    let temp = returnedView;
+    returnedView = [<CountryHeaderBar key={keyIndex} siteName='VRA Repeal Analysis' tabs={['Cross State Analysis', 'tab2']}/>];
+    keyIndex++;
+
+    returnedView.push(...temp)
+    // returnedView.push()
+  }
+  // returnedView will contain the highest(heightwise) elements first, lowest element last
+  return returnedView;
 }
 export default function App() {
   return (
     <div className="app-root">
       {/* <header className="app-header">Figma React Prototypes</header> */}
-      <SplashPage />
+      {view()}
     </div>
   )
 }
