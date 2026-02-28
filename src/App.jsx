@@ -3,7 +3,8 @@ import SplashPage from './components/SplashPage'
 import StatePage from './components/StatePage'
 import { CountryHeaderBar } from './components/CountryHeaderBar'
 import '../styles/main.css'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useParams } from 'react-router-dom'
+import { StateHeaderBar } from './components/StateHeaderBar'
 
 /**
  * Based on the current view (state variable), switch to it. Basically large switch statement
@@ -68,6 +69,7 @@ export default function App() {
       } />
       <Route path={`/state/:stateName`} element={
         <>
+          <StateHeaderBar tabs={['Voting Rights Analysis', 'Minority Analysis', 'Custom State Analysis']} />
           <StatePage switchPage={switchPage}/>
         </>
       } />
