@@ -1,0 +1,27 @@
+
+/* .minorityAnalysis_ecologicalInferenceContainer1{
+
+}
+
+
+
+.minorityAnalysis_heatMapLabel{
+
+} */
+.minorityAnalysis_bodyContainer{
+    display:flex;
+    justify-content: center;
+}
+.minorityAnalysis_boxWhiskersContainer{
+    /*Allow data to be displayed with label on top, data on bottom*/
+    grid-template-rows: 1fr 1fr; 
+    margin: 1rem;
+
+}
+.minorityAnalysis_boxWhiskersLabel{
+    grid-row: 1; 
+    margin: 1rem 0rem;
+}
+.minorityAnalysis_boxWhiskers{
+    grid-row: 2;
+}
