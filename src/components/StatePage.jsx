@@ -94,65 +94,63 @@ export default function StatePage() {
   }, []);
 
   return (
-    <>
-			<span id="statePageMain">
-				<div id="statePageMapContainer">
-					<div id="statePagemap"></div>
-				</div>
-				<div id="tableContainer">
-				<table>
-					<tbody>
-						<tr>
-							<th>State Population</th>
-							<td>{data.population}</td>
-						</tr>
-						<tr>
-							<th rowSpan="2">State Voter Distribution</th>
-							<td>D: {data.voterDistributionDem}</td>
-						</tr>
-						<tr>
-							<td>R: {data.voterDistributionRep}</td>
-						</tr>
-						<tr>
-							<th>Racial Group 1 Population</th>
-							<td>x</td>
-						</tr>
-						<tr>
-							<th>Racial Group 2 Population</th>
-							<td>x</td>
-						</tr>
-						<tr>
-							<th>Racial Group 3 Population</th>
-							<td>x</td>
-						</tr>
-						<tr>
-							<th>Racial Group 4 Population</th>
-							<td>x</td>
-						</tr>
-						<tr>
-							<th>Racial Group 5 Population</th>
-							<td>x</td>
-						</tr>
-						<tr>
-							<th>Party Control of Redistricting Process</th>
-							<td>{data.partyControl}</td>
-						</tr>
-						<tr>
-							<th>Democratic Congressional Representatives</th>
-							<td>{data.democratReps}</td>
-						</tr>
-						<tr>
-							<th>Republican Congressional Representatives</th>
-							<td>{data.republicanReps}</td>
-						</tr>
-						<tr>
-							<th>Summary of Ensembles</th>
-							<td></td>
-						</tr>
-					</tbody>
-				</table>
-				</div>
-			</span>
-    </>
+		<span id="statePageMain">
+			<div id="statePageMapContainer">
+				<div id="statePagemap"></div>
+			</div>
+			<div id="tableContainer">
+			<table>
+				<tbody>
+					<tr>
+						<th>State Population</th>
+						<td>{data.population}</td>
+					</tr>
+					<tr>
+						<th rowSpan="2">State Voter Distribution</th>
+						<td>D: {data.voterDistributionDem}</td>
+					</tr>
+					<tr>
+						<td>R: {data.voterDistributionRep}</td>
+					</tr>
+					<tr>
+						<th>Racial Group 1 Population</th>
+						<td>x</td>
+					</tr>
+					<tr>
+						<th>Racial Group 2 Population</th>
+						<td>x</td>
+					</tr>
+					<tr>
+						<th>Racial Group 3 Population</th>
+						<td>x</td>
+					</tr>
+					<tr>
+						<th>Racial Group 4 Population</th>
+						<td>x</td>
+					</tr>
+					<tr>
+						<th>Racial Group 5 Population</th>
+						<td>x</td>
+					</tr>
+					<tr>
+						<th>Party Control of Redistricting Process</th>
+						<td>{data.partyControl}</td>
+					</tr>
+					<tr>
+						<th>Democratic Congressional Representatives</th>
+						<td>{data.democratReps}</td>
+					</tr>
+					<tr>
+						<th>Republican Congressional Representatives</th>
+						<td>{data.republicanReps}</td>
+					</tr>
+					<tr>
+						<th>Summary of Ensembles</th>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</span>
   );
 }

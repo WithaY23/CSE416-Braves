@@ -19,7 +19,8 @@
   /* white-space: nowrap; */
 }
 
-.headerBarCountry_siteName:hover {
+.headerBarCountry_siteName:hover,
+.headerBarCountry_tab:hover {
   cursor: pointer;
 }
 

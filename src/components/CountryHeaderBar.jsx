@@ -22,7 +22,7 @@ export function CountryHeaderBar(props)
       const tabName= props.tabs[i];
       // Highlight the current page if chosen
       let classNameTab = props.currPage=== tabName ? "headerBarCountry_tab chosenPage" : "headerBarCountry_tab";
-      tabArr.push(<span key={i} className={classNameTab}>{tabName}</span>)
+      tabArr.push(<span key={i} className={classNameTab} onClick={()=> { switchPage(`${tabName}`); navigate(`/${tabName}`)}}>{tabName}</span>)
     }
   }
   return (

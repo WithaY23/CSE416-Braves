@@ -1,0 +1,64 @@
+#crossStateMain {
+  display: flex;
+  flex-direction: column;
+  padding: 0rem 3rem;
+}
+
+#oregonContainer {
+  border-bottom: 1px dashed var(--color-line);
+}
+
+.stateContainer {
+  display: flex;
+}
+
+.crossStateContainer {
+  text-align: center;
+}
+
+.ginglesContainer {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+
+.ginglesChart {
+  height: 22.5rem;
+}
+
+.crossStateDropdownContainer {
+  width: 15%;
+  display: grid;
+  grid-template-rows: 1fr 8fr;
+  margin: 4rem 0 0 0;
+  padding-top: 0.5rem;
+  padding-right: 10rem;
+}
+
+#racialGroupSelector {
+  margin-top: 0.3rem;
+  width: 5rem;
+}
+
+.tableContainer {
+  width: 55%;
+  padding: 0px 1rem;
+}
+
+.crossStateTableCell {
+  padding: 0.5rem;
+}
+
+.tablePageContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.tablePageArrow:hover {
+  cursor: pointer;
+}
+
+.tablePageText {
+  font-size: 0.8rem;
+  padding: 0px 2px;
+}
