@@ -5,7 +5,7 @@ import { CountryHeaderBar } from './components/CountryHeaderBar'
 import '../styles/main.css'
 import { Routes, Route, useParams } from 'react-router-dom'
 import { StateHeaderBar } from './components/StateHeaderBar'
-import MinorityAnalysis from './components/MinorityAnalysis'
+import StateMinorityAnalysis from './components/StateMinorityAnalysis'
 /**
  * Based on the current view (state variable), switch to it. Basically large switch statement
  */
@@ -56,7 +56,16 @@ import MinorityAnalysis from './components/MinorityAnalysis'
 // }
 export default function App() {
 
+  // State variable for switching between views
   const [currPage, switchPage] = useState('Country');
+  // Store relevant data that will ALMOST ALWAYS be used here, others can be pulled on demand
+  // Minority data
+  const minorityData = [
+    {stateName: 'Oregon',
+     minorityData: {minorityList: ['Asian', 'Black']}},
+    {stateName: 'South Carolina',
+    minorityData: {minorityList: ['Latino', 'Black']}}]
+  // Probably not ensemble data
 
   return (
     <>
@@ -78,7 +87,7 @@ export default function App() {
         <>
           <CountryHeaderBar currPage={currPage} switchPage={switchPage} siteName='VRA Repeal Analysis' tabs={['Cross State Analysis', 'Tab2']}/>
           <StateHeaderBar currPage={currPage} switchPage={switchPage} tabs={['Voting Rights Analysis', 'Minority Analysis', 'Custom State Analysis']} />
-          <MinorityAnalysis currPage={currPage} switchPage={switchPage} />
+          <StateMinorityAnalysis currPage={currPage} minorityData={minorityData} switchPage={switchPage} />
         </>
       }
       />
