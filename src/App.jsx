@@ -7,6 +7,7 @@ import { Routes, Route, useParams } from 'react-router-dom'
 import { StateHeaderBar } from './components/StateHeaderBar'
 import MinorityAnalysis from './components/MinorityAnalysis'
 import CrossStateAnalysis from './components/CrossStateAnalysis'
+import VRAAnalysis from './components/VRAAnalysis'
 /**
  * Based on the current view (state variable), switch to it. Basically large switch statement
  */
@@ -65,22 +66,30 @@ export default function App() {
       <Route path='/' element={ //useState: Country
         <>
           <CountryHeaderBar currPage={currPage} switchPage={switchPage} siteName='VRA Repeal Analysis' tabs={['Cross State Analysis', 'Tab2']}/>
-          <SplashPage switchPage={switchPage}/>
+          <SplashPage currPage={currPage} switchPage={switchPage}/>
         </>
       } />
       <Route path='/Cross State Analysis' element={ //useState: Country
         <>
           <CountryHeaderBar currPage={currPage} switchPage={switchPage}  siteName='VRA Repeal Analysis' tabs={['Cross State Analysis', 'Tab2']}/>
-          <CrossStateAnalysis switchPage={switchPage}/>
+          <CrossStateAnalysis currPage={currPage} switchPage={switchPage}/>
         </>
       } />
       <Route path={`/state/:stateName`} element={ //useState: State
         <>
           <CountryHeaderBar currPage={currPage} switchPage={switchPage} siteName='VRA Repeal Analysis' tabs={['Cross State Analysis', 'Tab2']}/>
           <StateHeaderBar currPage={currPage} switchPage={switchPage} tabs={['Voting Rights Analysis', 'Minority Analysis', 'Custom State Analysis']} />
-          <StatePage switchPage={switchPage}/>
+          <StatePage currPage={currPage} switchPage={switchPage}/>
         </>
       } />
+      <Route path={`/state/:stateName/Voting Rights Analysis`} element={
+        <>
+          <CountryHeaderBar currPage={currPage} switchPage={switchPage} siteName='VRA Repeal Analysis' tabs={['Cross State Analysis', 'Tab2']}/>
+          <StateHeaderBar currPage={currPage} switchPage={switchPage} tabs={['Voting Rights Analysis', 'Minority Analysis', 'Custom State Analysis']} />
+          <VRAAnalysis currPage={currPage} switchPage={switchPage} />
+        </>
+      }
+      />
       <Route path={`/state/:stateName/Minority Analysis`} element={
         <>
           <CountryHeaderBar currPage={currPage} switchPage={switchPage} siteName='VRA Repeal Analysis' tabs={['Cross State Analysis', 'Tab2']}/>
