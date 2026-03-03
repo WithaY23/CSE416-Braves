@@ -1,3 +1,4 @@
+import React from 'react';
 import '../../styles/chart-integration.css';
 import { pct } from '../utils/chartFormat.js';
 

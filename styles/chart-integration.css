@@ -1,19 +1,24 @@
 .chartFrame {
   width: 100%;
+  min-width: 0;
+  min-height: 19rem;
   height: 19rem;
   background: #ffffff;
 }
 
 .chartFrameTall {
+  min-height: 22.5rem;
   height: 22.5rem;
 }
 
 .chartFrameBox {
+  min-height: 21rem;
   height: 21rem;
 }
 
 .chartPanel {
   width: 100%;
+  min-width: 0;
 }
 
 .chartPanelTitle {
