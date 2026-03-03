@@ -6,6 +6,9 @@
   margin: 0;
   padding: 0;
 } */
+html, body{
+  overflow:hidden;
+}
 .chosenPage{
   color:#48A145;
 }

@@ -15,6 +15,9 @@
 
     /* grid-column: 2; */
 }
+.customAnalysis_dataWithCheckbox{
+    margin:0rem 1rem 0rem 0rem;
+}
 .customAnalysis_dataCheckbox{
     justify-self:center;
 }
@@ -23,8 +26,13 @@
 } */
 .customAnalysis_extraDropdown1_Label
 {
-    margin: 0rem .5rem 0rem .5rem;
+    margin: 0rem .5rem 0rem 0rem;
 }
+/* .customAnalysis_extraCheckboxSubContainer
+{
+
+} */
+ 
 .customAnalysis_dataBodyContainer{
     grid-row: 3;
     display:flex;

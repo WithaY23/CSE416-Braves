@@ -182,7 +182,7 @@ function updateBody(minority, minorityList, minorityData, currentData1, secondDa
     ] = changingData
     let languageList = ["English", "Spanish", "French"];
 
-
+    const defaultValueForDropdowns = "--"
     const dataDescriptionList = ["GUI-4","GUI-5", "GUI-6","GUI-7", "GUI-8", "GUI-12", "GUI-16", "GUI-17"]; // The list holding the description of all the charts, graphs, and tables in a ascending GUI usecase order
     const dataOptions = dataDescriptionList.map((data,index) => <option key={`Data-Descriptions-${index}`} value={data}>{data}</option>)
 
@@ -312,28 +312,30 @@ function returnExtraDropdownsWithLabels(dataIndex,dataSelection, secondData, cha
             
             return( 
             <span className="customAnalysis_extraCheckboxContainer">
+                <div className="customAnalysis_extraCheckboxSubContainer">
                 <label htmlFor="minorityOrLanguage" className="customAnalysis_extraDropdown1_Label">Minority Or Language Group?</label>
                 <select className="customAnalysis_extraDropdown1" name="minorityOrLanguage" id="minorityOrLanguage" value={secondData} onChange={(e) => changeSecondData(e.target.value)}>{secondData}
                     <option>{defaultValueForDropdowns}</option>
                     <option>Minority</option>
                     <option>Language</option>
                 </select>
+                </div>
                 {secondData === "Minority" ? 
-                    <><label htmlFor={secondData === "Minority" ? "minorityOptions" : "languageOptions"} className="customAnalysis_extraDropdown1_Label" >{secondData === "Minority" ? "Minority Options" : "Language Options"}</label>
+                    <div className="customAnalysis_extraCheckboxSubContainer"><label htmlFor={secondData === "Minority" ? "minorityOptions" : "languageOptions"} className="customAnalysis_extraDropdown1_Label" >{secondData === "Minority" ? "Minority Options" : "Language Options"}</label>
 
                     <select name="minorityOptions" id="minorityOptions" value={thirdData} onChange={(e) => changeThirdData(e.target.value)} className="customAnalysis_extraDropdown2">{thirdData}
                     {minorityOptions}
                     </select>
-                    </>
+                    </div>
                 :
                 secondData === "Language" ?
-                <>
+                <div className="customAnalysis_extraCheckboxSubContainer">
                 <label htmlFor={secondData === "Minority" ? "minorityOptions" : "languageOptions"} className="customAnalysis_extraDropdown1_Label" >{secondData === "Minority" ? "Minority Options" : "Language Options"}</label>
 
                 <select name="languageOptions" id="languageOptions" value={thirdData} onChange={(e) => changeThirdData(e.target.value)} className="customAnalysis_extraDropdown2">{thirdData}
                     {languageOptions}
                 </select>
-                </>
+                </div>
                 :
                 <> </>
                 }
@@ -351,10 +353,12 @@ function returnExtraDropdownsWithLabels(dataIndex,dataSelection, secondData, cha
             // Display "VRA vs Race Blind"
             return(
                 <span className="customAnalysis_extraCheckboxContainer">
-                    <label htmlFor="VRAOrRaceblind"  className="customAnalysis_extraDropdown1_Label" >Voting Rights Act or Race Blind?</label>
-                    <select name="VRAOrRaceblind" id="VRAOrRaceblind" value={secondData} onChange={(e) => changeSecondData(e.target.value)} className="customAnalysis_extraDropdown1">
-                    {optionList}
-                    </select>
+                    <div className="customAnalysis_extraCheckboxSubContainer">
+                        <label htmlFor="VRAOrRaceblind"  className="customAnalysis_extraDropdown1_Label" >Voting Rights Act or Race Blind?</label>
+                        <select name="VRAOrRaceblind" id="VRAOrRaceblind" value={secondData} onChange={(e) => changeSecondData(e.target.value)} className="customAnalysis_extraDropdown1">
+                        {optionList}
+                        </select>
+                    </div>
                 </span>
             )
             break;
