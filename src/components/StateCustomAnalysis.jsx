@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import React from "react";
+import '../../styles/custom-analysis.css';
 /**
  * Export representation of data in the form of 
  * <div label>
@@ -128,7 +129,27 @@ function updateData(currentData,minoritySelection, secondData, thirdData)
                 return displayData(<div className="minorityAnalysis_dataLabel">Some display of {currentData}</div>, minorityHM,"minorityAnalysis_dataContainer");
 
             }
-                
+        case "GUI-16":
+            {
+                if(secondData === defaultValueForDropdowns)
+                {
+                    return <></>;
+                }
+                const minorityHM =  <div className="minorityAnalysis_data">Assigned to {currentData} with option {secondData}</div> // The actual heatmap
+                // Formatted in label data format
+                return displayData(<div className="minorityAnalysis_dataLabel">Some display of {currentData} with option {secondData} </div>, minorityHM,"minorityAnalysis_dataContainer");
+            }
+
+        case "GUI-17":
+            {
+                 if(secondData === defaultValueForDropdowns)
+                {
+                    return <></>;
+                }
+                const minorityHM =  <div className="minorityAnalysis_data">Assigned to {currentData} with option {secondData}</div> // The actual heatmap
+                // Formatted in label data format
+                return displayData(<div className="minorityAnalysis_dataLabel">Some display of {currentData} with option {secondData} </div>, minorityHM,"minorityAnalysis_dataContainer");
+            }
     
         default:
             console.error(`StateCustomAnalysis: updateData: currentData doesn't match a GUI usecase ${currentData}`)
@@ -272,15 +293,14 @@ function returnExtraDropdownsWithLabels(dataIndex,dataSelection, secondData, cha
         case "GUI-16":
         case "GUI-17":
         {
-            const optionList = ["Voting Rights Act", "Race Blind"].map((value) => <option key={`Extra-Select2-${dataIndex}-${value}`}>{value}</option>)
+            const options = ["--", "Voting Rights Act", "Race Blind"];
+            const optionList = options.map((v) => (<option key={`Extra-Select2-${dataIndex}-${v}`} value={v}>{v}</option>));
             // Display "VRA vs Race Blind"
             return(
                 <div className="">
-                    <label htmlFor="VRAOrRaceblind"  className="customAnalysis_extraDropdown1_Label" >{secondData === "Minority" ? "Minority Options" : "Language Options"}</label>
+                    <label htmlFor="VRAOrRaceblind"  className="customAnalysis_extraDropdown1_Label" >Voting Rights Act or Race Blind?</label>
                     <select name="VRAOrRaceblind" id="VRAOrRaceblind" value={secondData} onChange={(e) => changeSecondData(e.target.value)} className="customAnalysis_extraDropdown1">
-                    <option>
-                        {optionList}
-                    </option>
+                    {optionList}
                     </select>
                 </div>
             )
@@ -331,7 +351,7 @@ export default function StateCustomAnalysis(props)
     let languageList = ["English", "Spanish", "French"];
     console.log(`Minority List ${minorityList} data ${data}`)
 
-    const dataDescriptionList = ["GUI-4","GUI-5", "GUI-6","GUI-7", "GUI-8", "GUI-12"]; // The list holding the description of all the charts, graphs, and tables in a ascending GUI usecase order
+    const dataDescriptionList = ["GUI-4","GUI-5", "GUI-6","GUI-7", "GUI-8", "GUI-12", "GUI-16", "GUI-17"]; // The list holding the description of all the charts, graphs, and tables in a ascending GUI usecase order
     const dataOptions = dataDescriptionList.map((data,index) => <option key={`Data-Descriptions-${index}`} value={data}>{data}</option>)
 
     const minorityOptions = minorityList.map((minority)=> <option key={`Minority-Options-${minority}`} value={minority}>{minority}</option>)
