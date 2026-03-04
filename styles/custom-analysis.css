@@ -1,54 +1,128 @@
-
 .customAnalysis_bodyContainer{
     display:grid;
-    grid-template-rows: 1fr 1fr 8fr;
-    margin: 5rem 0 0 0; /*Distance from headers*/
-    /* grid-template-columns: 1fr 1fr 1fr; */
-
-    /* display:flex;
-    justify-content: center; */
+    grid-template-rows: 1fr 8fr;
+    margin: 5rem 0 0 0;
 }
 .customAnalysis_minorityCheckboxContainer{
     grid-row: 1;
     justify-self: center;
-    margin: 0 0 5rem 0;
-
-    /* grid-column: 2; */
+    margin: 0 0 2.5rem 0;
 }
 .customAnalysis_dataWithCheckbox{
-    margin:0rem 1rem 0rem 0rem;
+    margin: 0rem 1rem 0rem 0rem;
+    width: 31%;
+    min-width: 0;
 }
 .customAnalysis_dataCheckbox{
-    justify-self:center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
 }
-/* .customAnalysis_extraCheckboxContainer{
-    margin:0rem 0rem 0rem .5rem;
-} */
+.customAnalysis_extraCheckboxContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+.customAnalysis_extraCheckboxSubContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
 .customAnalysis_extraDropdown1_Label
 {
-    margin: 0rem .5rem 0rem 0rem;
+    margin: 0rem;
+    text-align: center;
+    font-size: 0.88rem;
 }
-/* .customAnalysis_extraCheckboxSubContainer
-{
-
-} */
- 
 .customAnalysis_dataBodyContainer{
-    grid-row: 3;
+    grid-row: 2;
     display:flex;
     justify-content: center;
+    align-items: flex-start;
+    gap: 1rem;
 }
 .customAnalysis_dataContainer{
-    /*Allow data to be displayed with label on top, data on bottom*/
-    margin: 1rem;
+    margin: 1rem 0 0 0;
     justify-self: center;
-
+    min-height: 25rem;
 }
 
 .customAnalysis_dataLabel{
-    grid-row: 1; 
-    margin: 1rem 0rem;
+    margin: 0 0 0.85rem 0;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
 }
 .customAnalysis_data{
-    grid-row: 2;
+    min-height: 20rem;
+}
+
+.customAnalysis_placeholderCard,
+.customAnalysis_summaryCard {
+    min-height: 20rem;
+    border: 1px solid #d4d4d8;
+    background: #ffffff;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.customAnalysis_placeholderTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.85rem;
+}
+
+.customAnalysis_placeholderLine {
+    color: #4b5563;
+    line-height: 1.45;
+    margin-bottom: 0.3rem;
+}
+
+.customAnalysis_summaryTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.customAnalysis_summaryTable th,
+.customAnalysis_summaryTable td {
+    border: 1px solid #d4d4d8;
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+    font-size: 0.92rem;
+}
+
+.customAnalysis_summaryTable th {
+    width: 42%;
+    background: #f8fafc;
+}
+
+.customAnalysis_chartWrapper {
+    width: 100%;
+}
+
+.customAnalysis_chartSubtitle {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 1150px) {
+    .customAnalysis_dataBodyContainer {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .customAnalysis_dataWithCheckbox {
+        width: 90%;
+        margin-right: 0;
+    }
 }
