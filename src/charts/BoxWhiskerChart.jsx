@@ -5,7 +5,7 @@ import { pct } from '../utils/chartFormat.js';
 function BoxWhiskerSvg({ payload }) {
   const width = 760;
   const height = 620;
-  const margin = { top: 14, right: 18, bottom: 54, left: 54 };
+  const margin = { top: 14, right: 18, bottom: 54, left: 108 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const rows = payload.rankSummaries;
@@ -19,19 +19,19 @@ function BoxWhiskerSvg({ payload }) {
       {[0, 0.25, 0.5, 0.75, 1].map((tick) => (
         <g key={tick}>
           <line x1={margin.left} x2={width - margin.right} y1={y(tick)} y2={y(tick)} stroke="#cbd5e1" strokeDasharray="3 3" />
-          <text x={10} y={y(tick) + 5} fontSize="15" fontWeight="600" fill="#0f172a">{pct(tick, 0)}</text>
+          <text x={34} y={y(tick) + 5} fontSize="15" fontWeight="600" fill="#0f172a">{pct(tick, 0)}</text>
         </g>
       ))}
       <line x1={margin.left} x2={margin.left} y1={margin.top} y2={height - margin.bottom} stroke="#475569" strokeWidth="1.2" />
       <line x1={margin.left} x2={width - margin.right} y1={height - margin.bottom} y2={height - margin.bottom} stroke="#475569" strokeWidth="1.2" />
       <text
-        x={margin.left - 58}
+        x={14}
         y={margin.top + innerHeight / 2}
-        fontSize="16"
+        fontSize="15"
         fontWeight="700"
         fill="#0f172a"
         textAnchor="middle"
-        transform={`rotate(-90 ${margin.left - 58} ${margin.top + innerHeight / 2})`}
+        transform={`rotate(-90 14 ${margin.top + innerHeight / 2})`}
       >
         Share
       </text>
