@@ -3,7 +3,7 @@ import '../../styles/minority-analysis.css'
 import BoxWhiskerChart from "../charts/BoxWhiskerChart.jsx";
 import EiSupportChart from "../charts/EiSupportChart.jsx";
 import { getBoxWhiskerPayload, getEiSupportPayload } from "../data/chartPayloads.js";
-import MinorityHeatMap from './components/MinorityHeatMap'
+import MinorityHeatMap from './MinorityHeatMap';
 import { useNavigate, useParams } from "react-router-dom";
 
 export function displayData(label = <div>this is label</div>, data = <div>this is data</div>, containerClassName = "", widthOfData = null, heightOfData = null) {
@@ -30,12 +30,13 @@ function updateBody(minority, stateName) {
     const eiPayload = getEiSupportPayload(stateName);
 
     const minorityHM = (
-        <div className="minorityAnalysis_placeholder">
-            <MinorityHeatMap />
+        <div>
+            <div className="minorityAnalysis_chartTitle">{minority} Heat Map</div>
+            <MinorityHeatMap minority={minority} />
         </div>
     );
     const minorityHMWithLabel = displayData(
-        <div className="minorityAnalysis_dataLabel">GUI-4</div>,
+        <div className="minorityAnalysis_dataLabel minorityAnalysis_dataLabelSmall">GUI-4</div>,
         minorityHM,
         "minorityAnalysis_dataContainer minorityAnalysis_leftColumn"
     );
