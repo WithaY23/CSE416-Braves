@@ -1,16 +1,17 @@
 .customAnalysis_bodyContainer{
     display:grid;
     grid-template-rows: auto 1fr;
-    margin: 3rem 0 0 0;
-    padding: 0 1.5rem 2rem;
+    height: calc(100vh - 8.75rem);
+    margin: 0;
+    padding: 0.5rem 1.5rem 0.75rem;
     box-sizing: border-box;
     width: 100%;
-    overflow-x: auto;
+    overflow: hidden;
 }
 .customAnalysis_minorityCheckboxContainer{
     grid-row: 1;
     justify-self: center;
-    margin: 0 0 2rem 0;
+    margin: 0 0 0.9rem 0;
 }
 .customAnalysis_dataWithCheckbox{
     margin: 0;
@@ -46,15 +47,17 @@
     display:grid;
     grid-template-columns: repeat(3, minmax(22rem, 1fr));
     align-items: stretch;
-    gap: 1.5rem;
+    gap: 1.25rem;
     width: 100%;
-    min-width: 70rem;
+    min-width: 0;
     box-sizing: border-box;
+    min-height: 0;
+    overflow: hidden;
 }
 .customAnalysis_dataContainer{
-    margin: 1rem 0 0 0;
+    margin: 0.35rem 0 0 0;
     justify-self: center;
-    min-height: 34rem;
+    min-height: 0;
     width: 100%;
 }
 
@@ -114,7 +117,7 @@
 
 .customAnalysis_chartWrapper {
     width: 100%;
-    min-height: 34rem;
+    min-height: 0;
 }
 
 .customAnalysis_dataContainer .chartPanelTitle {
@@ -130,8 +133,8 @@
 .customAnalysis_dataContainer .chartFrame,
 .customAnalysis_dataContainer .chartFrameTall,
 .customAnalysis_dataContainer .chartFrameBox {
-    min-height: 26rem;
-    height: 26rem;
+    min-height: 22rem;
+    height: 22rem;
 }
 
 .customAnalysis_dataContainer .recharts-wrapper,
@@ -155,12 +158,15 @@
 
 @media (max-width: 1150px) {
     .customAnalysis_bodyContainer {
-        padding: 0 1rem 2rem;
+        height: auto;
+        overflow: visible;
+        padding: 0.75rem 1rem 1rem;
     }
 
     .customAnalysis_dataBodyContainer {
         grid-template-columns: 1fr;
         min-width: 0;
+        overflow: visible;
     }
 
     .customAnalysis_dataContainer,
