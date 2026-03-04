@@ -108,8 +108,8 @@ function updateData(currentData, minoritySelection, secondData, thirdData, state
   switch (currentData) {
     case 'GUI-4':
       return displayData(
-        <div className="customAnalysis_dataLabel">GUI-4</div>,
-        renderPlaceholderCard('GUI-4', [
+        <div className="customAnalysis_dataLabel">Heatmap of Minority by Precinct</div>,
+        renderPlaceholderCard('Heatmap by Minority', [
           'Demographic heat map by precinct',
           `Selected group: ${minoritySelection}`,
           'Map rendering is not yet connected in custom analysis.',
@@ -118,8 +118,8 @@ function updateData(currentData, minoritySelection, secondData, thirdData, state
       );
     case 'GUI-5':
       return displayData(
-        <div className="customAnalysis_dataLabel">GUI-5</div>,
-        renderPlaceholderCard('GUI-5', [
+        <div className="customAnalysis_dataLabel">Heatmap of Minority by Census Block</div>,
+        renderPlaceholderCard('Heatmap of Minority by Census Block', [
           'Demographic heat map by census block',
           `Selected group: ${minoritySelection}`,
           'Block-level map data is not yet wired.',
@@ -128,7 +128,7 @@ function updateData(currentData, minoritySelection, secondData, thirdData, state
       );
     case 'GUI-6':
       return displayData(
-        <div className="customAnalysis_dataLabel">GUI-6</div>,
+        <div className="customAnalysis_dataLabel">Congressional Representation by District</div>,
         renderSummaryCard(stateName),
         'customAnalysis_dataContainer'
       );
@@ -154,29 +154,29 @@ function updateData(currentData, minoritySelection, secondData, thirdData, state
       const payload = payloads.eiSupport;
       if (!payload) {
         return displayData(
-          <div className="customAnalysis_dataLabel">GUI-12</div>,
-          renderPlaceholderCard('GUI-12', ['Ecological inference payload is not available for this state.']),
+          <div className="customAnalysis_dataLabel">Ecological Inference by Race/ Ethnicity or Language</div>,
+          renderPlaceholderCard('Ecological Inference by Race/ Ethnicity or Language', ['Ecological inference payload is not available for this state.']),
           'customAnalysis_dataContainer'
         );
       }
       if (secondData === DEFAULT_DROPDOWN_VALUE) {
         return displayData(
-          <div className="customAnalysis_dataLabel">GUI-12</div>,
-          renderPlaceholderCard('GUI-12', ['Select Race / Ethnicity or Language to continue.']),
+          <div className="customAnalysis_dataLabel">Ecological Inference by Race/ Ethnicity or Language</div>,
+          renderPlaceholderCard('Ecological Inference by Race/ Ethnicity or Language', ['Select Race / Ethnicity or Language to continue.']),
           'customAnalysis_dataContainer'
         );
       }
       if (secondData === 'Language') {
         if (thirdData === DEFAULT_DROPDOWN_VALUE) {
           return displayData(
-            <div className="customAnalysis_dataLabel">GUI-12</div>,
-            renderPlaceholderCard('GUI-12', ['Select a language to continue.']),
+            <div className="customAnalysis_dataLabel">Ecological Inference by Language</div>,
+            renderPlaceholderCard('Ecological Inference by Language', ['Select a language to continue.']),
             'customAnalysis_dataContainer'
           );
         }
         return displayData(
-          <div className="customAnalysis_dataLabel">GUI-12</div>,
-          renderPlaceholderCard('GUI-12', [
+          <div className="customAnalysis_dataLabel">Ecological Inference by Language</div>,
+          renderPlaceholderCard('Ecological Inference by Language', [
             'Language-based ecological inference support is not yet wired.',
             `Selected language: ${thirdData}`,
           ]),
@@ -185,15 +185,15 @@ function updateData(currentData, minoritySelection, secondData, thirdData, state
       }
       if (minoritySelection === DEFAULT_DROPDOWN_VALUE) {
         return displayData(
-          <div className="customAnalysis_dataLabel">GUI-12</div>,
-          renderPlaceholderCard('GUI-12', ['Select a race / ethnicity group to continue.']),
+          <div className="customAnalysis_dataLabel">Ecological Inference by Race/ Ethnicity or Language</div>,
+          renderPlaceholderCard('Ecological Inference by Race/ Ethnicity or Language', ['Select a race / ethnicity group to continue.']),
           'customAnalysis_dataContainer'
         );
       }
       if (minoritySelection !== payload.selectedGroup) {
         return displayData(
-          <div className="customAnalysis_dataLabel">GUI-12</div>,
-          renderPlaceholderCard('GUI-12', [
+          <div className="customAnalysis_dataLabel">Ecological Inference by Race/ Ethnicity</div>,
+          renderPlaceholderCard('Ecological Inference by Race/ Ethnicity', [
             `No mock GUI-12 payload is available for ${minoritySelection}.`,
             `Available race / ethnicity group: ${payload.selectedGroup}`,
           ]),
@@ -201,7 +201,7 @@ function updateData(currentData, minoritySelection, secondData, thirdData, state
         );
       }
       return displayData(
-        <div className="customAnalysis_dataLabel">GUI-12</div>,
+        <div className="customAnalysis_dataLabel">Ecological Inference by Race/ Ethnicity</div>,
         <div className="customAnalysis_chartWrapper">
           <div className="customAnalysis_chartTitle">Support for {payload.selectedCandidate}</div>
           <div className="customAnalysis_chartSubtitle">Estimated support distribution by group</div>
@@ -214,21 +214,21 @@ function updateData(currentData, minoritySelection, secondData, thirdData, state
       const payload = payloads.ensembleSplits;
       if (!payload) {
         return displayData(
-          <div className="customAnalysis_dataLabel">GUI-16</div>,
+          <div className="customAnalysis_dataLabel">Simulated District Voting Distribution</div>,
           renderPlaceholderCard('GUI-16', ['Ensemble split payload is not available for this state.']),
           'customAnalysis_dataContainer'
         );
       }
       if (secondData === DEFAULT_DROPDOWN_VALUE) {
         return displayData(
-          <div className="customAnalysis_dataLabel">GUI-16</div>,
+          <div className="customAnalysis_dataLabel">Simulated District Voting Distribution</div>,
           renderPlaceholderCard('GUI-16', ['Select Voting Rights Act or Race Blind to continue.']),
           'customAnalysis_dataContainer'
         );
       }
       const isVra = secondData === 'Voting Rights Act';
       return displayData(
-        <div className="customAnalysis_dataLabel">GUI-16</div>,
+        <div className="customAnalysis_dataLabel">Simulated District Voting Distribution</div>,
         <div className="customAnalysis_chartWrapper">
           <div className="customAnalysis_chartTitle">{isVra ? 'VRA-Constrained Ensemble' : 'Race-Blind Ensemble'}</div>
           <SingleEnsembleSplitsChart

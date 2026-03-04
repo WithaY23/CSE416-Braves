@@ -9,25 +9,31 @@ export default function VRAAnalysis() {
   const payload = getEnsembleSplitsPayload(stateName);
 
   return (
-    <span id="VRAAnalysisMain">
-      <div className="VRAAnalysisContainers">
-        <SingleEnsembleSplitsChart
-          eyebrow="GUI-16"
-          title="VRA-Constrained Ensemble"
-          buckets={payload.series.vraConstrained}
-          totalDistricts={payload.totalDistricts}
-          ensembleSize={payload.ensembleSize}
-        />
+    <span>
+      <div className="VRAAnalysisLabel">
+        Simulated District Voting Distribution
       </div>
-      <div className="VRAAnalysisContainers">
-        <SingleEnsembleSplitsChart
-          eyebrow="GUI-16"
-          title="Race-Blind Ensemble"
-          buckets={payload.series.raceBlind}
-          totalDistricts={payload.totalDistricts}
-          ensembleSize={payload.ensembleSize}
-        />
+      <div id="VRAAnalysisMain" className="VRAAnalysisCharts">
+        <div className="VRAAnalysisContainers">
+          <SingleEnsembleSplitsChart
+            eyebrow="GUI-16"
+            title="VRA-Constrained Ensemble"
+            buckets={payload.series.vraConstrained}
+            totalDistricts={payload.totalDistricts}
+            ensembleSize={payload.ensembleSize}
+          />
+        </div>
+        <div className="VRAAnalysisContainers">
+          <SingleEnsembleSplitsChart
+            eyebrow="GUI-16"
+            title="Race-Blind Ensemble"
+            buckets={payload.series.raceBlind}
+            totalDistricts={payload.totalDistricts}
+            ensembleSize={payload.ensembleSize}
+          />
+        </div>
       </div>
+
     </span>
   );
 }
