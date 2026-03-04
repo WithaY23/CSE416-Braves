@@ -8,6 +8,13 @@
   box-sizing: border-box;
   overflow: hidden;
 }
+.VRAAnalysisLabel {
+ margin: 0.5rem 0 0 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+ padding-bottom: 0.5rem;
+ justify-self: center;
+}
 
 .VRAAnalysisContainers {
   display: flex;
