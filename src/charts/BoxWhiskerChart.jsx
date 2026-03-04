@@ -3,18 +3,18 @@ import '../../styles/chart-integration.css';
 import { pct } from '../utils/chartFormat.js';
 
 function BoxWhiskerSvg({ payload }) {
-  const width = 920;
+  const width = 760;
   const height = 620;
-  const margin = { top: 20, right: 24, bottom: 56, left: 58 };
+  const margin = { top: 14, right: 18, bottom: 54, left: 54 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const rows = payload.rankSummaries;
   const xStep = innerWidth / rows.length;
-  const boxWidth = Math.min(54, xStep * 0.66);
+  const boxWidth = Math.min(58, xStep * 0.62);
   const y = (value) => margin.top + (1 - value) * innerHeight;
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height="100%" role="img" aria-label="Box and whisker chart">
+    <svg viewBox={`0 0 ${width} ${height}`} width="100%" height="100%" preserveAspectRatio="xMidYMin meet" style={{ display: "block" }} role="img" aria-label="Box and whisker chart">
       <rect width={width} height={height} fill="white" />
       {[0, 0.25, 0.5, 0.75, 1].map((tick) => (
         <g key={tick}>
