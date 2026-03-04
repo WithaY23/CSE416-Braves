@@ -14,7 +14,7 @@ const duplicateAllowedUseCases = new Set(['GUI-12', 'GUI-16', 'GUI-17']);
 const stateSummaryMap = { Oregon, SouthCarolina };
 
 const dataDescriptionList = [
-  { id: 'GUI-4', label: 'GUI-4', needsMinority: true, extraDropdowns: 0, implemented: false },
+  // { id: 'GUI-4', label: 'GUI-4', needsMinority: true, extraDropdowns: 0, implemented: false },
   { id: 'GUI-5', label: 'GUI-5', needsMinority: true, extraDropdowns: 0, implemented: false },
   { id: 'GUI-6', label: 'GUI-6', needsMinority: false, extraDropdowns: 0, implemented: false },
   { id: 'GUI-7', label: 'GUI-7', needsMinority: false, extraDropdowns: 0, implemented: false },
