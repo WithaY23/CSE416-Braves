@@ -37,7 +37,7 @@ export default function App() {
       <Route path='/Cross State Analysis' element={
         <>
           <CountryHeaderBar currPage={currPage} switchPage={switchPage}  siteName='VRA Repeal Analysis' tabs={['Cross State Analysis']}/>
-          <CrossStateAnalysis currPage={currPage} switchPage={switchPage}/>
+          <CrossStateAnalysis currPage={currPage} switchPage={switchPage} minorityData={minorityData}/>
         </>
       } />
       <Route path={`/state/:stateName`} element={

@@ -6,9 +6,10 @@ import { num, pct } from '../utils/chartFormat.js';
 
 const PAGE_SIZE = 8;
 
-function StateSection({ title, stateKey }) {
+function StateSection({ title, stateKey, stateData }) {
   const payload = getGinglesPayload(stateKey);
   const options = useMemo(() => [payload.selectedGroup], [payload.selectedGroup]);
+  // const options = stateData.minorityData.minorityList;
   const [currentGroup, changeGroup] = useState(options[0]);
   const [page, setPage] = useState(1);
   const totalPages = Math.max(1, Math.ceil(payload.points.length / PAGE_SIZE));
@@ -69,11 +70,30 @@ function StateSection({ title, stateKey }) {
   );
 }
 
-export default function CrossStateAnalysis() {
+export default function CrossStateAnalysis(props) {
+  const minorityData = props.minorityData;
+  let SCData = null;
+  let ORData = null;
+    for(let d of minorityData)
+    {
+        if(d.stateName === "South Carolina")
+        {
+            SCData=d;
+        }
+        else if(d.stateName === "Oregon")
+        {
+            ORData=d;
+        }
+    }
+    if(SCData === null || ORData === null)
+    {
+        console.error("StateCustomAnalysis: Could not find minority data linking to the current state");
+    }
+
   return (
     <span id="crossStateMain">
-      <StateSection title="Oregon" stateKey="OR" />
-      <StateSection title="South Carolina" stateKey="SC" />
+      <StateSection title="Oregon" stateKey="OR" stateData= {ORData}/>
+      <StateSection title="South Carolina" stateKey="SC" stateData={SCData}/>
     </span>
   );
 }

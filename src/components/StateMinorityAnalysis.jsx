@@ -63,12 +63,37 @@ function updateBody(minority, stateName)
 export default function MinorityAnalysis(props)
 {
     const { stateName } = useParams();
-    const boxPayload = getBoxWhiskerPayload(stateName);
-    const eiPayload = getEiSupportPayload(stateName);
-    const minorityList = useMemo(() => {
-        const set = new Set([boxPayload.selectedGroup, eiPayload.selectedGroup].filter(Boolean));
-        return [...set];
-    }, [boxPayload.selectedGroup, eiPayload.selectedGroup]);
+    // const boxPayload = getBoxWhiskerPayload(stateName);
+    // const eiPayload = getEiSupportPayload(stateName);
+    // const minorityList = useMemo(() => {
+    //     const set = new Set([boxPayload.selectedGroup, eiPayload.selectedGroup].filter(Boolean));
+    //     return [...set];
+    // }, [boxPayload.selectedGroup, eiPayload.selectedGroup]);
+    const minorityData = props.minorityData;
+    let data = null;
+    for(let d of minorityData)
+    {
+        if(d.stateName === stateName)
+        {
+            data=d;
+            break;
+        }
+    }
+    if(data === null)
+    {
+        console.error("StateCustomAnalysis: Could not find minority data linking to the current state");
+    }
+
+    
+    // Take the minority data and organize it for display
+    //Realistically we pass down minority data and derive the groups, probably in some form 
+    // of {{minority: minorityName, dataField1: Number, dataArr: Float[]}[]}
+    // let minorityData = props.minorityData; 
+
+    // let minorities = minorityData.forEach((entry) => entry.minority); 
+    
+    // Get minority and language lists
+    const minorityList = data.minorityData.minorityList;
     const [currentMinority, changeMinority] = useState(minorityList[0] ?? "");
 
     const minorityOptions = minorityList.map((minority) => <option key={minority} value={minority}>{minority}</option>)
