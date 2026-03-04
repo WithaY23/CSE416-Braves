@@ -1,31 +1,25 @@
 #VRAAnalysisMain {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   width: 100%;
   min-height: 0;
-  padding: 1rem 1rem 2rem;
-  gap: 1rem;
+  padding: 1.25rem 1.25rem 2rem;
+  gap: 1.25rem;
   box-sizing: border-box;
-}
-
-.VRAAnalysisGraphs {
 }
 
 .VRAAnalysisContainers {
   display: flex;
   flex-direction: column;
-  width: 50%;
-  justify-content: flex-start;
-  align-items: center;
   min-width: 0;
+  background: #f7f7f7;
+  border: 1px solid #d4d4d8;
+  padding: 1rem 1rem 0.85rem;
+  box-sizing: border-box;
 }
 
 @media (max-width: 1000px) {
   #VRAAnalysisMain {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .VRAAnalysisContainers {
-    width: 100%;
+    grid-template-columns: 1fr;
   }
 }

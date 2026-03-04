@@ -41,8 +41,8 @@ function updateBody(minority, stateName)
         "minorityAnalysis_dataContainer minorityAnalysis_leftColumn"
     );
     const distributionBWWithLabel = displayData(
-        <div className="minorityAnalysis_dataLabel">GUI-17</div>,
-        <BoxWhiskerChart payload={boxPayload} />,
+        <div className="minorityAnalysis_dataLabel minorityAnalysis_dataLabelSmall">GUI-17</div>,
+        <BoxWhiskerChart payload={boxPayload} eyebrow="GUI-17" title={boxPayload.metricLabel} />,
         "minorityAnalysis_dataContainer minorityAnalysis_middleColumn"
     );
     const candidateEIWithLabel1 = displayData(

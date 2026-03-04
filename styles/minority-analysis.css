@@ -79,3 +79,10 @@
         width: 90%;
     }
 }
+
+.minorityAnalysis_dataLabelSmall{
+    margin: 0.35rem 0 0.6rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    color:#4b5563;
+}

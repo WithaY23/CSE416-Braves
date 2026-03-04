@@ -113,3 +113,31 @@
 .chartTooltipSeries {
   font-weight: 600;
 }
+
+.chartFrameEnsemble {
+  min-height: 28rem;
+  height: 28rem;
+}
+
+.chartPanelEnsemble,
+.chartPanelBoxWhisker,
+.chartPanelEi {
+  width: 100%;
+}
+
+.chartFrameBox {
+  min-height: 28rem;
+  height: 28rem;
+}
+
+@media (max-width: 1000px) {
+  .chartFrameEnsemble {
+    min-height: 24rem;
+    height: 24rem;
+  }
+
+  .chartFrameBox {
+    min-height: 24rem;
+    height: 24rem;
+  }
+}

@@ -27,22 +27,24 @@ function SplitTooltip({ active, payload, label }) {
   );
 }
 
-export default function SingleEnsembleSplitsChart({ title, buckets, totalDistricts, ensembleSize }) {
+export default function SingleEnsembleSplitsChart({ eyebrow, title, subtitle, buckets, totalDistricts, ensembleSize }) {
   return (
-    <div className="chartPanel">
+    <div className="chartPanel chartPanelEnsemble">
+      {eyebrow ? <div className="chartPanelEyebrow">{eyebrow}</div> : null}
       <h3 className="chartPanelTitle">{title}</h3>
+      {subtitle ? <div className="chartPanelSubtitle">{subtitle}</div> : null}
       <div className="chartPanelMeta">
         <span>{totalDistricts} districts</span>
         <span>{num(ensembleSize)} plans</span>
       </div>
-      <div className="chartFrame">
+      <div className="chartFrame chartFrameEnsemble">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={buckets} margin={{ top: 10, right: 8, left: 0, bottom: 18 }}>
-            <CartesianGrid stroke="#d4d4d8" strokeDasharray="2 2" />
-            <XAxis dataKey="splitLabel" tick={{ fontSize: 11 }} />
-            <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+          <BarChart data={buckets} margin={{ top: 16, right: 12, left: 4, bottom: 20 }}>
+            <CartesianGrid stroke="#d4d4d8" strokeDasharray="3 3" />
+            <XAxis dataKey="splitLabel" tick={{ fontSize: 12 }} />
+            <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
             <Tooltip content={<SplitTooltip />} />
-            <Bar dataKey="frequency" fill="#1f2f59" radius={[3, 3, 0, 0]} />
+            <Bar dataKey="frequency" fill="#1f2f59" radius={[4, 4, 0, 0]} barSize={72} />
           </BarChart>
         </ResponsiveContainer>
       </div>
