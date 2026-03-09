@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import '../../styles/state-page.css'
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Oregon from "../data/oregon.js";
@@ -13,13 +13,52 @@ const dataMap = { Oregon, SouthCarolina }
 export default function StatePage() {
 	const { stateName } = useParams()
 	const data = dataMap[stateName?.replaceAll(' ', '')]
-	const districtData = data === Oregon ? OregonDistrictData : SCDistrictData
+	const fallbackDistrictData = useMemo(
+		() => (data === Oregon ? OregonDistrictData : SCDistrictData),
+		[data]
+	);
+	const [districtData, setDistrictData] = useState(null);
 
 	if (!data) {
 		return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Error: State not found</div>;
 	}
 
 	useEffect(() => {
+		let isActive = true;
+		const stateCode = stateName === "Oregon" ? "OR" : stateName === "South Carolina" ? "SC" : null;
+
+		if (!stateCode) {
+			setDistrictData(fallbackDistrictData);
+			return undefined;
+		}
+
+		(async () => {
+			try {
+				const response = await fetch(`/api/states/${stateCode}/districts/enacted/geojson`);
+				if (!response.ok) {
+					throw new Error(`Request failed with status ${response.status}`);
+				}
+				const payload = await response.json();
+				if (isActive) {
+					setDistrictData(payload);
+				}
+			} catch (error) {
+				if (isActive) {
+					setDistrictData(fallbackDistrictData);
+				}
+			}
+		})();
+
+		return () => {
+			isActive = false;
+		};
+	}, [stateName, fallbackDistrictData]);
+
+	useEffect(() => {
+		if (!districtData) {
+			return undefined;
+		}
+
 		const map = L.map("statePagemap", {
 			center: stateName === 'Oregon' ? [44.1, -120.6] : [33.6, -80.9],
 			zoomControl: false,
@@ -125,7 +164,7 @@ export default function StatePage() {
 		return () => {
 			map.remove();
 		};
-	}, []);
+	}, [districtData, stateName, data]);
 
 	return (
 		<span id="statePageMain">
