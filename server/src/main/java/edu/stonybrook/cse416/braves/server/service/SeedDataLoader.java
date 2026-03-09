@@ -256,13 +256,13 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedBoxWhiskers(Path root) throws IOException {
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "latino", "vra_constrained", "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "latino", "vra_constrained", "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/OR_latino_cvap_vra.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "latino", "race_blind", "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "latino", "race_blind", "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/OR_latino_cvap_race_blind.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "black", "vra_constrained", "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "black", "vra_constrained", "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_black_cvap_vra.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "black", "race_blind", "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "black", "race_blind", "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_black_cvap_race_blind.json"))));
     }
 
