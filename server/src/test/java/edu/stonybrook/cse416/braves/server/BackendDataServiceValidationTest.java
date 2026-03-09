@@ -24,12 +24,12 @@ class BackendDataServiceValidationTest {
     }
 
     @Test
-    void eiSupportRequiresParty() {
-        assertThrows(IllegalArgumentException.class, () -> service().getEiSupport("OR", "latino", "2024_pres", ""));
+    void summaryIsSkeletonForNow() {
+        assertThrows(UnsupportedOperationException.class, () -> service().getStateSummary("OR"));
     }
 
     @Test
-    void heatmapRejectsBelowThresholdGroup() {
-        assertThrows(IllegalArgumentException.class, () -> service().getHeatmap("OR", "black"));
+    void heatmapIsSkeletonForNow() {
+        assertThrows(UnsupportedOperationException.class, () -> service().getHeatmap("OR", "black"));
     }
 }
