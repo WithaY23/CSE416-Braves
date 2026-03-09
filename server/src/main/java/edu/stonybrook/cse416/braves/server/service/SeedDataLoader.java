@@ -1,0 +1,323 @@
+package edu.stonybrook.cse416.braves.server.service;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.stonybrook.cse416.braves.server.model.*;
+import edu.stonybrook.cse416.braves.server.repository.*;
+import edu.stonybrook.cse416.braves.server.util.ProjectPathResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.util.*;
+
+@Component
+public class SeedDataLoader implements ApplicationRunner {
+    private static final Logger LOG = LoggerFactory.getLogger(SeedDataLoader.class);
+
+    private final ObjectMapper objectMapper;
+    private final StateRepository stateRepository;
+    private final DistrictMapRepository districtMapRepository;
+    private final StateSummaryRepository stateSummaryRepository;
+    private final DistrictTableRepository districtTableRepository;
+    private final HeatmapBinRepository heatmapBinRepository;
+    private final GinglesResultRepository ginglesResultRepository;
+    private final EiSupportResultRepository eiSupportResultRepository;
+    private final EnsembleSplitRepository ensembleSplitRepository;
+    private final BoxWhiskerResultRepository boxWhiskerResultRepository;
+    private final RunManifestRepository runManifestRepository;
+    private final IngestManifestRepository ingestManifestRepository;
+
+    @Value("${app.seed.enabled:true}")
+    private boolean seedEnabled;
+
+    @Value("${app.seed.root-path:}")
+    private String configuredRootPath;
+
+    public SeedDataLoader(
+            ObjectMapper objectMapper,
+            StateRepository stateRepository,
+            DistrictMapRepository districtMapRepository,
+            StateSummaryRepository stateSummaryRepository,
+            DistrictTableRepository districtTableRepository,
+            HeatmapBinRepository heatmapBinRepository,
+            GinglesResultRepository ginglesResultRepository,
+            EiSupportResultRepository eiSupportResultRepository,
+            EnsembleSplitRepository ensembleSplitRepository,
+            BoxWhiskerResultRepository boxWhiskerResultRepository,
+            RunManifestRepository runManifestRepository,
+            IngestManifestRepository ingestManifestRepository
+    ) {
+        this.objectMapper = objectMapper;
+        this.stateRepository = stateRepository;
+        this.districtMapRepository = districtMapRepository;
+        this.stateSummaryRepository = stateSummaryRepository;
+        this.districtTableRepository = districtTableRepository;
+        this.heatmapBinRepository = heatmapBinRepository;
+        this.ginglesResultRepository = ginglesResultRepository;
+        this.eiSupportResultRepository = eiSupportResultRepository;
+        this.ensembleSplitRepository = ensembleSplitRepository;
+        this.boxWhiskerResultRepository = boxWhiskerResultRepository;
+        this.runManifestRepository = runManifestRepository;
+        this.ingestManifestRepository = ingestManifestRepository;
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        if (!seedEnabled) {
+            LOG.info("Seed loader disabled");
+            return;
+        }
+
+        if (stateRepository.count() > 0) {
+            LOG.info("Seed data already exists, skipping");
+            return;
+        }
+
+        Path root = ProjectPathResolver.resolveRoot(configuredRootPath);
+        validatePrecinctCounts(root);
+        seedStates();
+        seedDistrictMaps(root);
+        seedStateSummaries();
+        seedDistrictTables();
+        seedHeatmapBins();
+        seedGingles(root);
+        seedEiSupport(root);
+        seedEnsembleSplits(root);
+        seedBoxWhiskers(root);
+        seedManifests();
+        LOG.info("Mongo seed completed successfully");
+    }
+
+    private void validatePrecinctCounts(Path root) throws IOException {
+        Path orPath = root.resolve("src/data/OR-precincts-with-results.json");
+        Path scPath = root.resolve("src/data/SC-precincts-with-results.json");
+
+        int orCount = precinctCount(orPath, "OR");
+        int scCount = precinctCount(scPath, "SC");
+
+        if (orCount < 1000 || scCount < 1000) {
+            throw new IllegalStateException("Precinct realism validation failed: OR=" + orCount + ", SC=" + scCount);
+        }
+        LOG.info("Precinct realism check passed: OR={}, SC={}", orCount, scCount);
+    }
+
+    @SuppressWarnings("unchecked")
+    private int precinctCount(Path topoPath, String objectKey) throws IOException {
+        Map<String, Object> topo = readJsonMap(topoPath);
+        Map<String, Object> objects = (Map<String, Object>) topo.get("objects");
+        Map<String, Object> stateObj = (Map<String, Object>) objects.get(objectKey);
+        List<Object> geometries = (List<Object>) stateObj.get("geometries");
+        return geometries.size();
+    }
+
+    private void seedStates() {
+        stateRepository.save(buildDoc(new StateDocument(), "OR", null, null, null, null, "TOTAL", Map.of(
+                "stateId", "OR",
+                "stateName", "Oregon",
+                "totalDistricts", 6
+        )));
+
+        stateRepository.save(buildDoc(new StateDocument(), "SC", null, null, null, null, "TOTAL", Map.of(
+                "stateId", "SC",
+                "stateName", "South Carolina",
+                "totalDistricts", 7
+        )));
+    }
+
+    private void seedDistrictMaps(Path root) throws IOException {
+        districtMapRepository.save(buildDoc(
+                new DistrictMapDocument(),
+                "OR", null, null, null, null,
+                null,
+                readJsonMap(root.resolve("src/data/oregon_congressional_districts.geojson"))
+        ));
+        districtMapRepository.save(buildDoc(
+                new DistrictMapDocument(),
+                "SC", null, null, null, null,
+                null,
+                readJsonMap(root.resolve("src/data/south_carolina_congressional_districts.geojson"))
+        ));
+    }
+
+    private void seedStateSummaries() {
+        Map<String, Object> orPayload = new LinkedHashMap<>();
+        orPayload.put("schemaVersion", "v1");
+        orPayload.put("state", "OR");
+        orPayload.put("totalDistricts", 6);
+        orPayload.put("population", "4,272,371");
+        orPayload.put("voterDistributionDem", "1,228,410 (55.6%)");
+        orPayload.put("voterDistributionRep", "910,702 (41.3%)");
+        orPayload.put("partyControl", "Democrat");
+        orPayload.put("democratReps", "Suzanne Bonamici, Maxine Dexter, Val Hoyle, Janelle Bynum, Andrea Salinas");
+        orPayload.put("republicanReps", "Cliff Bentz");
+        orPayload.put("feasibleGroups", List.of("Latino", "Asian", "White"));
+        orPayload.put("ensembleSummary", Map.of("available", true, "sizes", List.of("test", "final"), "finalPlanCount", 5000));
+
+        Map<String, Object> scPayload = new LinkedHashMap<>();
+        scPayload.put("schemaVersion", "v1");
+        scPayload.put("state", "SC");
+        scPayload.put("totalDistricts", 7);
+        scPayload.put("population", "5,478,831");
+        scPayload.put("voterDistributionDem", "1,417,196 (41.03%)");
+        scPayload.put("voterDistributionRep", "1,696,935 (49.13%)");
+        scPayload.put("partyControl", "Republican");
+        scPayload.put("democratReps", "James Clyburn");
+        scPayload.put("republicanReps", "Nancy Mace, Joe Wilson, Sheri Biggs, William Timmons, Ralph Norman, Russell Fry");
+        scPayload.put("feasibleGroups", List.of("Black", "Latino", "White"));
+        scPayload.put("ensembleSummary", Map.of("available", true, "sizes", List.of("test", "final"), "finalPlanCount", 5000));
+
+        stateSummaryRepository.save(buildDoc(new StateSummaryDocument(), "OR", null, null, null, null, "TOTAL", orPayload));
+        stateSummaryRepository.save(buildDoc(new StateSummaryDocument(), "SC", null, null, null, null, "TOTAL", scPayload));
+    }
+
+    private void seedDistrictTables() {
+        districtTableRepository.save(buildDoc(new DistrictTableDocument(), "OR", "2024_pres", null, null, null, "TOTAL", Map.of(
+                "schemaVersion", "v1",
+                "state", "OR",
+                "election", "2024_pres",
+                "districts", List.of(
+                        districtRow(1, "Suzanne Bonamici", "Democrat", "White", 24.1),
+                        districtRow(2, "Cliff Bentz", "Republican", "White", -33.7),
+                        districtRow(3, "Maxine Dexter", "Democrat", "White", 46.2),
+                        districtRow(4, "Val Hoyle", "Democrat", "White", 8.9),
+                        districtRow(5, "Janelle Bynum", "Democrat", "Black", 3.2),
+                        districtRow(6, "Andrea Salinas", "Democrat", "Latino", 5.4)
+                )
+        )));
+
+        districtTableRepository.save(buildDoc(new DistrictTableDocument(), "SC", "2024_pres", null, null, null, "TOTAL", Map.of(
+                "schemaVersion", "v1",
+                "state", "SC",
+                "election", "2024_pres",
+                "districts", List.of(
+                        districtRow(1, "Nancy Mace", "Republican", "White", -13.8),
+                        districtRow(2, "Joe Wilson", "Republican", "White", -22.4),
+                        districtRow(3, "Sheri Biggs", "Republican", "White", -31.5),
+                        districtRow(4, "William Timmons", "Republican", "White", -28.6),
+                        districtRow(5, "Ralph Norman", "Republican", "White", -26.1),
+                        districtRow(6, "James Clyburn", "Democrat", "Black", 15.3),
+                        districtRow(7, "Russell Fry", "Republican", "White", -24.9)
+                )
+        )));
+    }
+
+    private void seedHeatmapBins() {
+        heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "OR", null, "latino", null, null, "TOTAL", heatmapPayload("OR", "Latino")));
+        heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "OR", null, "asian", null, null, "TOTAL", heatmapPayload("OR", "Asian")));
+        heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "SC", null, "black", null, null, "TOTAL", heatmapPayload("SC", "Black")));
+        heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "SC", null, "latino", null, null, "TOTAL", heatmapPayload("SC", "Latino")));
+    }
+
+    private Map<String, Object> heatmapPayload(String state, String group) {
+        return Map.of(
+                "schemaVersion", "v1",
+                "state", state,
+                "group", group,
+                "binUnit", "percent",
+                "bins", List.of(
+                        Map.of("min", 0, "max", 10, "color", "#f7fbff"),
+                        Map.of("min", 10, "max", 20, "color", "#deebf7"),
+                        Map.of("min", 20, "max", 30, "color", "#c6dbef"),
+                        Map.of("min", 30, "max", 40, "color", "#9ecae1"),
+                        Map.of("min", 40, "max", 50, "color", "#6baed6"),
+                        Map.of("min", 50, "max", 100, "color", "#3182bd")
+                ),
+                "precomputed", true
+        );
+    }
+
+    private void seedGingles(Path root) throws IOException {
+        ginglesResultRepository.save(buildDoc(new GinglesResultDocument(), "OR", "2024_pres", "latino", null, null, "TOTAL",
+                readJsonMap(root.resolve("mock-data/v1/gingles-scatter/OR_2024_latino.json"))));
+        ginglesResultRepository.save(buildDoc(new GinglesResultDocument(), "SC", "2024_pres", "black", null, null, "TOTAL",
+                readJsonMap(root.resolve("mock-data/v1/gingles-scatter/SC_2024_black.json"))));
+    }
+
+    private void seedEiSupport(Path root) throws IOException {
+        eiSupportResultRepository.save(buildDoc(new EiSupportResultDocument(), "OR", "2024_pres", "latino", null, null, "CVAP",
+                readJsonMap(root.resolve("mock-data/v1/ei-support/OR_2024_president.json"))));
+        eiSupportResultRepository.save(buildDoc(new EiSupportResultDocument(), "SC", "2024_pres", "black", null, null, "CVAP",
+                readJsonMap(root.resolve("mock-data/v1/ei-support/SC_2024_president.json"))));
+    }
+
+    private void seedEnsembleSplits(Path root) throws IOException {
+        ensembleSplitRepository.save(buildDoc(new EnsembleSplitDocument(), "OR", "2024_pres", null, null, "final", "TOTAL",
+                readJsonMap(root.resolve("mock-data/v1/ensemble-splits/OR_compare.json"))));
+        ensembleSplitRepository.save(buildDoc(new EnsembleSplitDocument(), "SC", "2024_pres", null, null, "final", "TOTAL",
+                readJsonMap(root.resolve("mock-data/v1/ensemble-splits/SC_compare.json"))));
+    }
+
+    private void seedBoxWhiskers(Path root) throws IOException {
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "latino", "vra_constrained", "minority_share", "CVAP",
+                readJsonMap(root.resolve("mock-data/v1/box-whisker/OR_latino_cvap_vra.json"))));
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "latino", "race_blind", "minority_share", "CVAP",
+                readJsonMap(root.resolve("mock-data/v1/box-whisker/OR_latino_cvap_race_blind.json"))));
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "black", "vra_constrained", "minority_share", "CVAP",
+                readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_black_cvap_vra.json"))));
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "black", "race_blind", "minority_share", "CVAP",
+                readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_black_cvap_race_blind.json"))));
+    }
+
+    private void seedManifests() {
+        runManifestRepository.save(buildDoc(new RunManifestDocument(), null, "2024_pres", null, null, null, null, Map.of(
+                "schemaVersion", "v1",
+                "notes", "Seeded from local repository mock-data",
+                "timestamp", Instant.now().toString()
+        )));
+
+        ingestManifestRepository.save(buildDoc(new IngestManifestDocument(), null, "2024_pres", null, null, null, null, Map.of(
+                "schemaVersion", "v1",
+                "source", "local-mock-data",
+                "timestamp", Instant.now().toString()
+        )));
+    }
+
+    private Map<String, Object> districtRow(int districtNumber, String representative, String party, String racialEthnicGroup, double voteMargin2024) {
+        return Map.of(
+                "districtNumber", districtNumber,
+                "representative", representative,
+                "party", party,
+                "racialEthnicGroup", racialEthnicGroup,
+                "voteMargin2024", voteMargin2024
+        );
+    }
+
+    private <T extends BasePayloadDocument> T buildDoc(
+            T doc,
+            String stateId,
+            String electionId,
+            String groupKey,
+            String ensembleType,
+            String metricKey,
+            String populationMeasure,
+            Map<String, Object> payload
+    ) {
+        doc.setStateId(stateId);
+        doc.setElectionId(electionId);
+        doc.setGroupKey(groupKey);
+        doc.setEnsembleType(ensembleType);
+        doc.setMetricKey(metricKey);
+        doc.setPopulationMeasure(populationMeasure);
+        doc.setSchemaVersion("v1");
+        doc.setSourceManifestId("seed-v1");
+        doc.setCreatedAt(Instant.now());
+        doc.setPayload(payload);
+        return doc;
+    }
+
+    private Map<String, Object> readJsonMap(Path path) throws IOException {
+        if (!Files.exists(path)) {
+            throw new IllegalStateException("Required seed file not found: " + path);
+        }
+        return objectMapper.readValue(path.toFile(), new TypeReference<>() {
+        });
+    }
+}
