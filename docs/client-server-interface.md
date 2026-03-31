@@ -153,19 +153,67 @@ Status labels used throughout this packet:
 - Actual response body fields:
   - GeoJSON `FeatureCollection`
   - top-level fields include `type`, `features`, and district geometry/properties entries
-- Example JSON snippet:
+- Full example/test JSON response:
 
 ```json
 {
   "type": "FeatureCollection",
+  "name": "oregon_congressional_districts",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
   "features": [
     {
       "type": "Feature",
       "properties": {
-        "district_number": 1
+        "STATEFP": "41",
+        "CD118FP": "01",
+        "GEOID": "4101",
+        "GEOIDFQ": "5001800US4101",
+        "NAMELSAD": "Congressional District 1",
+        "LSAD": "C2",
+        "CDSESSN": "118",
+        "MTFCC": "G5200",
+        "FUNCSTAT": "N",
+        "ALAND": 8681584017,
+        "AWATER": 1358321209,
+        "INTPTLAT": "+45.7636060",
+        "INTPTLON": "-123.4560758",
+        "district_number": 1,
+        "state": "Oregon"
       },
       "geometry": {
-        "type": "MultiPolygon"
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-124.159368, 46.261137],
+            [-124.159154, 46.261142],
+            [-124.144294, 46.26149],
+            [-124.129397, 46.261838],
+            [-124.125783, 46.261904],
+            [-124.098941, 46.26239],
+            [-124.097853, 46.26241],
+            [-124.089742, 46.262557],
+            [-124.080606, 46.262723],
+            [-124.074139, 46.26284],
+            [-124.066152, 46.262963],
+            [-124.059942, 46.263205],
+            [-124.035951, 46.264183],
+            [-124.03492, 46.264835],
+            [-124.034929, 46.265045],
+            [-124.034972, 46.265951],
+            [-124.03568, 46.271474],
+            [-124.034354, 46.273256],
+            [-124.033645, 46.274395],
+            [-124.033551, 46.275911],
+            [-124.033701, 46.276867],
+            [-124.03376, 46.277325],
+            [-124.159368, 46.261137]
+          ]
+        ]
       }
     }
   ]
@@ -201,7 +249,7 @@ Status labels used throughout this packet:
   - `republicanReps`
   - `feasibleGroups`
   - `ensembleSummary`
-- Example JSON snippet:
+- Full example/test JSON response:
 
 ```json
 {
@@ -244,7 +292,7 @@ Status labels used throughout this packet:
   - `binUnit`
   - `bins[]` with `min`, `max`, and `color`
   - `precomputed`
-- Example JSON snippet:
+- Full example/test JSON response:
 
 ```json
 {
@@ -255,7 +303,10 @@ Status labels used throughout this packet:
   "bins": [
     { "min": 0, "max": 10, "color": "#f7fbff" },
     { "min": 10, "max": 20, "color": "#deebf7" },
-    { "min": 20, "max": 30, "color": "#c6dbef" }
+    { "min": 20, "max": 30, "color": "#c6dbef" },
+    { "min": 30, "max": 40, "color": "#9ecae1" },
+    { "min": 40, "max": 50, "color": "#6baed6" },
+    { "min": 50, "max": 100, "color": "#3182bd" }
   ],
   "precomputed": true
 }
@@ -281,7 +332,7 @@ Status labels used throughout this packet:
   - `state`
   - `election`
   - `districts[]` with `districtNumber`, `representative`, `party`, `racialEthnicGroup`, `voteMargin2024`
-- Example JSON snippet:
+- Full example/test JSON response:
 
 ```json
 {
@@ -295,6 +346,41 @@ Status labels used throughout this packet:
       "party": "Democrat",
       "racialEthnicGroup": "White",
       "voteMargin2024": 24.1
+    },
+    {
+      "districtNumber": 2,
+      "representative": "Cliff Bentz",
+      "party": "Republican",
+      "racialEthnicGroup": "White",
+      "voteMargin2024": -33.7
+    },
+    {
+      "districtNumber": 3,
+      "representative": "Maxine Dexter",
+      "party": "Democrat",
+      "racialEthnicGroup": "White",
+      "voteMargin2024": 46.2
+    },
+    {
+      "districtNumber": 4,
+      "representative": "Val Hoyle",
+      "party": "Democrat",
+      "racialEthnicGroup": "White",
+      "voteMargin2024": 8.9
+    },
+    {
+      "districtNumber": 5,
+      "representative": "Janelle Bynum",
+      "party": "Democrat",
+      "racialEthnicGroup": "Black",
+      "voteMargin2024": 3.2
+    },
+    {
+      "districtNumber": 6,
+      "representative": "Andrea Salinas",
+      "party": "Democrat",
+      "racialEthnicGroup": "Latino",
+      "voteMargin2024": 5.4
     }
   ]
 }
@@ -325,7 +411,7 @@ Status labels used throughout this packet:
   - `units.share`
   - `points[]` with `precinctId`, `minorityShare`, `demVoteShare`, `repVoteShare`, `totalPopulation`, `minorityPopulation`
   - `regressionCurves[]` with `key`, `label`, `party`, `curveType`, `points[]`
-- Example JSON snippet:
+- Full example/test JSON response:
 
 ```json
 {
@@ -346,6 +432,94 @@ Status labels used throughout this packet:
       "repVoteShare": 0.5,
       "totalPopulation": 1820,
       "minorityPopulation": 218
+    },
+    {
+      "precinctId": "OR-P002",
+      "minorityShare": 0.18,
+      "demVoteShare": 0.51,
+      "repVoteShare": 0.45,
+      "totalPopulation": 1640,
+      "minorityPopulation": 295
+    },
+    {
+      "precinctId": "OR-P003",
+      "minorityShare": 0.23,
+      "demVoteShare": 0.55,
+      "repVoteShare": 0.41,
+      "totalPopulation": 2100,
+      "minorityPopulation": 483
+    },
+    {
+      "precinctId": "OR-P004",
+      "minorityShare": 0.31,
+      "demVoteShare": 0.57,
+      "repVoteShare": 0.39,
+      "totalPopulation": 1985,
+      "minorityPopulation": 615
+    },
+    {
+      "precinctId": "OR-P005",
+      "minorityShare": 0.38,
+      "demVoteShare": 0.59,
+      "repVoteShare": 0.37,
+      "totalPopulation": 1750,
+      "minorityPopulation": 665
+    },
+    {
+      "precinctId": "OR-P006",
+      "minorityShare": 0.42,
+      "demVoteShare": 0.62,
+      "repVoteShare": 0.34,
+      "totalPopulation": 1690,
+      "minorityPopulation": 710
+    },
+    {
+      "precinctId": "OR-P007",
+      "minorityShare": 0.47,
+      "demVoteShare": 0.64,
+      "repVoteShare": 0.31,
+      "totalPopulation": 1870,
+      "minorityPopulation": 879
+    },
+    {
+      "precinctId": "OR-P008",
+      "minorityShare": 0.53,
+      "demVoteShare": 0.67,
+      "repVoteShare": 0.28,
+      "totalPopulation": 2010,
+      "minorityPopulation": 1065
+    },
+    {
+      "precinctId": "OR-P009",
+      "minorityShare": 0.57,
+      "demVoteShare": 0.69,
+      "repVoteShare": 0.25,
+      "totalPopulation": 1920,
+      "minorityPopulation": 1094
+    },
+    {
+      "precinctId": "OR-P010",
+      "minorityShare": 0.63,
+      "demVoteShare": 0.72,
+      "repVoteShare": 0.22,
+      "totalPopulation": 2060,
+      "minorityPopulation": 1298
+    },
+    {
+      "precinctId": "OR-P011",
+      "minorityShare": 0.69,
+      "demVoteShare": 0.75,
+      "repVoteShare": 0.19,
+      "totalPopulation": 1880,
+      "minorityPopulation": 1297
+    },
+    {
+      "precinctId": "OR-P012",
+      "minorityShare": 0.76,
+      "demVoteShare": 0.79,
+      "repVoteShare": 0.15,
+      "totalPopulation": 1725,
+      "minorityPopulation": 1311
     }
   ],
   "regressionCurves": [
@@ -355,7 +529,30 @@ Status labels used throughout this packet:
       "party": "DEM",
       "curveType": "best_fit",
       "points": [
-        { "x": 0.1, "y": 0.47 }
+        { "x": 0.1, "y": 0.47 },
+        { "x": 0.2, "y": 0.51 },
+        { "x": 0.3, "y": 0.56 },
+        { "x": 0.4, "y": 0.6 },
+        { "x": 0.5, "y": 0.65 },
+        { "x": 0.6, "y": 0.7 },
+        { "x": 0.7, "y": 0.75 },
+        { "x": 0.8, "y": 0.8 }
+      ]
+    },
+    {
+      "key": "rep_nlr",
+      "label": "Republican best-fit regression",
+      "party": "REP",
+      "curveType": "best_fit",
+      "points": [
+        { "x": 0.1, "y": 0.5 },
+        { "x": 0.2, "y": 0.45 },
+        { "x": 0.3, "y": 0.4 },
+        { "x": 0.4, "y": 0.36 },
+        { "x": 0.5, "y": 0.31 },
+        { "x": 0.6, "y": 0.25 },
+        { "x": 0.7, "y": 0.19 },
+        { "x": 0.8, "y": 0.13 }
       ]
     }
   ]
@@ -391,7 +588,7 @@ Status labels used throughout this packet:
   - `units.share`
   - `series[]` entries with `key`, `label`, `confidenceScore`, and density curve `points[]`
   - `selectedGroup`
-- Example JSON snippet:
+- Full example/test JSON response:
 
 ```json
 {
@@ -410,7 +607,28 @@ Status labels used throughout this packet:
       "label": "Latino",
       "confidenceScore": 0.82,
       "points": [
-        { "xSupportShare": 0.2, "density": 0.1 }
+        { "xSupportShare": 0.2, "density": 0.1 },
+        { "xSupportShare": 0.3, "density": 0.4 },
+        { "xSupportShare": 0.4, "density": 1.1 },
+        { "xSupportShare": 0.5, "density": 2.2 },
+        { "xSupportShare": 0.6, "density": 3.3 },
+        { "xSupportShare": 0.7, "density": 3.7 },
+        { "xSupportShare": 0.8, "density": 2.9 },
+        { "xSupportShare": 0.9, "density": 1.2 }
+      ]
+    },
+    {
+      "key": "non_latino",
+      "label": "Non-Latino",
+      "confidenceScore": 0.71,
+      "points": [
+        { "xSupportShare": 0.1, "density": 0.2 },
+        { "xSupportShare": 0.2, "density": 1.3 },
+        { "xSupportShare": 0.3, "density": 3.6 },
+        { "xSupportShare": 0.4, "density": 2.8 },
+        { "xSupportShare": 0.5, "density": 1.0 },
+        { "xSupportShare": 0.6, "density": 0.3 },
+        { "xSupportShare": 0.7, "density": 0.05 }
       ]
     }
   ],
@@ -447,7 +665,7 @@ Status labels used throughout this packet:
   - `series.raceBlind[]`
   - `series.vraConstrained[]`
   - each bucket contains `splitLabel`, `repWins`, `demWins`, `frequency`, `shareOfEnsemble`
-- Example JSON snippet:
+- Full example/test JSON response:
 
 ```json
 {
@@ -462,10 +680,16 @@ Status labels used throughout this packet:
   },
   "series": {
     "raceBlind": [
-      { "splitLabel": "1R/5D", "repWins": 1, "demWins": 5, "frequency": 28, "shareOfEnsemble": 0.112 }
+      { "splitLabel": "1R/5D", "repWins": 1, "demWins": 5, "frequency": 28, "shareOfEnsemble": 0.112 },
+      { "splitLabel": "2R/4D", "repWins": 2, "demWins": 4, "frequency": 102, "shareOfEnsemble": 0.408 },
+      { "splitLabel": "3R/3D", "repWins": 3, "demWins": 3, "frequency": 92, "shareOfEnsemble": 0.368 },
+      { "splitLabel": "4R/2D", "repWins": 4, "demWins": 2, "frequency": 28, "shareOfEnsemble": 0.112 }
     ],
     "vraConstrained": [
-      { "splitLabel": "1R/5D", "repWins": 1, "demWins": 5, "frequency": 20, "shareOfEnsemble": 0.08 }
+      { "splitLabel": "1R/5D", "repWins": 1, "demWins": 5, "frequency": 20, "shareOfEnsemble": 0.08 },
+      { "splitLabel": "2R/4D", "repWins": 2, "demWins": 4, "frequency": 116, "shareOfEnsemble": 0.464 },
+      { "splitLabel": "3R/3D", "repWins": 3, "demWins": 3, "frequency": 95, "shareOfEnsemble": 0.38 },
+      { "splitLabel": "4R/2D", "repWins": 4, "demWins": 2, "frequency": 19, "shareOfEnsemble": 0.076 }
     ]
   }
 }
@@ -503,7 +727,7 @@ Status labels used throughout this packet:
   - `metricLabel`
   - `units.share`
   - `rankSummaries[]` with quartile values per ranked district
-- Example JSON snippet:
+- Full example/test JSON response:
 
 ```json
 {
@@ -528,6 +752,56 @@ Status labels used throughout this packet:
       "max": 0.22,
       "enactedValue": 0.12,
       "proposedValue": 0.14
+    },
+    {
+      "districtRank": 2,
+      "min": 0.12,
+      "q1": 0.16,
+      "median": 0.2,
+      "q3": 0.24,
+      "max": 0.3,
+      "enactedValue": 0.22,
+      "proposedValue": 0.24
+    },
+    {
+      "districtRank": 3,
+      "min": 0.18,
+      "q1": 0.23,
+      "median": 0.28,
+      "q3": 0.33,
+      "max": 0.39,
+      "enactedValue": 0.29,
+      "proposedValue": 0.31
+    },
+    {
+      "districtRank": 4,
+      "min": 0.24,
+      "q1": 0.3,
+      "median": 0.36,
+      "q3": 0.41,
+      "max": 0.47,
+      "enactedValue": 0.35,
+      "proposedValue": 0.39
+    },
+    {
+      "districtRank": 5,
+      "min": 0.31,
+      "q1": 0.38,
+      "median": 0.44,
+      "q3": 0.5,
+      "max": 0.57,
+      "enactedValue": 0.48,
+      "proposedValue": 0.45
+    },
+    {
+      "districtRank": 6,
+      "min": 0.42,
+      "q1": 0.49,
+      "median": 0.56,
+      "q3": 0.63,
+      "max": 0.72,
+      "enactedValue": 0.59,
+      "proposedValue": 0.61
     }
   ]
 }
