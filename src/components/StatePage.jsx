@@ -1,14 +1,29 @@
-import React, { useEffect, useMemo, useState } from "react";
-import '../../styles/state-page.css'
+import React, { useEffect, useState } from "react";
+import "../../styles/state-page.css";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Oregon from "../data/oregon.js";
 import SouthCarolina from "../data/sc.js";
-import OregonDistrictData from "../data/oregonCongressionalDistricts.js"
-import SCDistrictData from "../data/scCongressionalDistricts.js"
 
-const dataMap = { Oregon, SouthCarolina }
+const dataMap = { Oregon, SouthCarolina };
+
+function mergeSummaryData(localData, summaryData) {
+  if (!summaryData) {
+    return localData;
+  }
+
+  return {
+    ...localData,
+    population: summaryData.population ?? localData.population,
+    voterDistributionDem: summaryData.voterDistributionDem ?? localData.voterDistributionDem,
+    voterDistributionRep: summaryData.voterDistributionRep ?? localData.voterDistributionRep,
+    partyControl: summaryData.partyControl ?? localData.partyControl,
+    democratReps: summaryData.democratReps ?? localData.democratReps,
+    republicanReps: summaryData.republicanReps ?? localData.republicanReps,
+  };
+}
 
 function StateData(props) {
 
@@ -148,55 +163,70 @@ function EnsembleData() {
 }
 
 export default function StatePage() {
-	const { stateName } = useParams()
-	const data = dataMap[stateName?.replaceAll(' ', '')]
-	const fallbackDistrictData = useMemo(
-		() => (data === Oregon ? OregonDistrictData : SCDistrictData),
-		[data]
-	);
-	const [districtData, setDistrictData] = useState(null);
+  const { stateName } = useParams();
+  const localData = dataMap[stateName?.replaceAll(" ", "")];
+  const [districtData, setDistrictData] = useState(null);
+  const [districtLoadFailed, setDistrictLoadFailed] = useState(false);
+  const [summaryData, setSummaryData] = useState(null);
 	const [tab, setTab] = useState("State");
 	const [clickedDistrict, setDistrict] = useState(1);
 
-	if (!data) {
-		return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Error: State not found</div>;
-	}
+  if (!localData) {
+    return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Error: State not found</div>;
+  }
 
-	useEffect(() => {
-		let isActive = true;
-		const stateCode = stateName === "Oregon" ? "OR" : stateName === "South Carolina" ? "SC" : null;
+  useEffect(() => {
+    let isActive = true;
+    const stateCode = stateName === "Oregon" ? "OR" : stateName === "South Carolina" ? "SC" : null;
 
-		if (!stateCode) {
-			setDistrictData(fallbackDistrictData);
-			return undefined;
-		}
+    if (!stateCode) {
+      setDistrictData(null);
+      setDistrictLoadFailed(true);
+      setSummaryData(null);
+      return undefined;
+    }
 
-		(async () => {
-			try {
-				const response = await fetch(`/api/states/${stateCode}/districts/enacted/geojson`);
-				if (!response.ok) {
-					throw new Error(`Request failed with status ${response.status}`);
-				}
-				const payload = await response.json();
-				if (isActive) {
-					setDistrictData(payload);
-				}
-			} catch (error) {
-				if (isActive) {
-					setDistrictData(fallbackDistrictData);
-				}
-			}
-		})();
+    setDistrictData(null);
+    setDistrictLoadFailed(false);
+    setSummaryData(null);
 
-		return () => {
-			isActive = false;
-		};
-	}, [stateName, fallbackDistrictData]);
+    (async () => {
+      try {
+        const response = await axios.get(`/api/states/${stateCode}/districts/enacted/geojson`);
+        if (isActive) {
+          setDistrictData(response.data);
+          setDistrictLoadFailed(false);
+        }
+      } catch {
+        if (isActive) {
+          setDistrictData(null);
+          setDistrictLoadFailed(true);
+        }
+      }
+    })();
 
-	useEffect(() => {
-		if (!districtData) {
-			return undefined;
-		}
+    (async () => {
+      try {
+        const response = await axios.get(`/api/states/${stateCode}/summary`);
+        if (isActive) {
+          setSummaryData(response.data);
+        }
+      } catch {
+        if (isActive) {
+          setSummaryData(null);
+        }
+      }
+    })();
+
+    return () => {
+      isActive = false;
+    };
+  }, [stateName]);
+
+  useEffect(() => {
+    if (!districtData) {
+      return undefined;
+    }
 
 		const map = L.map("statePagemap", {
 			center: stateName === 'Oregon' ? [44.1, -120.6] : [33.6, -80.9],
@@ -208,9 +238,9 @@ export default function StatePage() {
 			maxBounds: stateName === 'Oregon' ? [[47, -125], [41, -116.4]] : [[35.6, -84], [31.5, -77.5]],
 		});
 
-		L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-		}).addTo(map);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
 
 		function getColor(result) {
 			return result === "DEMOCRATIC" ? '#0011ff' :
@@ -229,8 +259,8 @@ export default function StatePage() {
 			};
 		}
 
-		function highlightFeature(e) {
-			var layer = e.target;
+    function highlightFeature(event) {
+      const layer = event.target;
 
 			layer.setStyle({
 				weight: 3,
@@ -239,9 +269,9 @@ export default function StatePage() {
 				fillOpacity: 0.5
 			});
 
-			layer.bringToFront();
-			info.update(layer.feature.properties.NAMELSAD);
-		}
+      layer.bringToFront();
+      info.update(layer.feature.properties.NAMELSAD);
+    }
 
 		function resetHighlight(e) {
 			geojson.resetStyle(e.target);
@@ -268,15 +298,14 @@ export default function StatePage() {
 			});
 		}
 
-		const geojson = L.geoJson(districtData, { style, onEachFeature }).addTo(map);
+    const geojson = L.geoJson(districtData, { style, onEachFeature }).addTo(map);
+    const info = L.control();
 
-		const info = L.control();
-
-		info.onAdd = function () {
-			this._div = L.DomUtil.create("div", "info");
-			this.update();
-			return this._div;
-		};
+    info.onAdd = function onAdd() {
+      this._div = L.DomUtil.create("div", "info");
+      this.update();
+      return this._div;
+    };
 
 		info.update = function (props) {
 			this._div.innerHTML =
@@ -286,9 +315,9 @@ export default function StatePage() {
 					: "Click on a district");
 		};
 
-		info.addTo(map);
+    info.addTo(map);
 
-		let legend = L.control({ position: 'bottomright' });
+    const legend = L.control({ position: "bottomright" });
 
 		legend.onAdd = function (map) {
 
@@ -297,16 +326,17 @@ export default function StatePage() {
 			div.innerHTML += '<i style="background:' + getColor('DEMOCRATIC') + '"></i> ' + 'Democratic' + '<br>';
 			div.innerHTML += '<i style="background:' + getColor('REPUBLICAN') + '"></i> ' + 'Republican' + '<br>';
 
-			return div;
-		};
+      return div;
+    };
 
-		legend.addTo(map);
+    legend.addTo(map);
 
-		// Cleanup
-		return () => {
-			map.remove();
-		};
-	}, [districtData, stateName, data]);
+    return () => {
+      map.remove();
+    };
+  }, [districtData, stateName]);
+
+  const data = mergeSummaryData(localData, summaryData);
 
 	function handleTabClick(e, tab) {
 		document.querySelectorAll('.statePageDataTab').forEach((tab) => {
