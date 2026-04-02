@@ -138,26 +138,34 @@ function DistrictData(props) {
 	return (
 		<>
 			<div id="statePageDataContainer">
-				<span className="statePageDataBubble">
-					<p className="statePageDataBubbleLabel">Population:</p>
-					<p className="statePageData statePageDataNum">{districts[districtNum - 1].population}</p>
-				</span>
-				<span className="statePageDataBubble">
-					<p className="statePageDataBubbleLabel">Representative:</p>
-					<p className="statePageData">{districts[districtNum - 1].representative}</p>
-				</span>
-				<span className="statePageDataBubble">
-					<p className="statePageDataBubbleLabel">Representative's Party:</p>
-					<p className="statePageData">{districts[districtNum - 1].party}</p>
-				</span>
-				<span className="statePageDataBubble">
-					<p className="statePageDataBubbleLabel">Representative's Racial Group:</p>
-					<p className="statePageData">{districts[districtNum - 1].racialEthnicGroup}</p>
-				</span>
-				<span className="statePageDataBubble">
-					<p className="statePageDataBubbleLabel">2024 Presidential Election Vote Margin:</p>
-					<p className="statePageData statePageDataNum"><VoteMarginBadge margin={districts[districtNum - 1].voteMargin2024} /></p>
-				</span>
+				<div className="districts-table-container">
+					<table className="districts-table">
+						<thead>
+							<tr>
+								<th className="districts-table-header">District</th>
+								<th className="districts-table-header">Representative</th>
+								<th className="districts-table-header">Party</th>
+								<th className="districts-table-header">Race / Ethnicity</th>
+								<th className="districts-table-header">Vote Margin
+									<span className="election-tag">2024 Presidential</span>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{districts.map((district) => (
+								<tr key={district.districtNumber} className="districts-table-row">
+									<td className="districts-table-data">{district.districtNumber}</td>
+									<td className="districts-table-data">{district.representative}</td>
+									<td className="districts-table-data">{district.party}</td>
+									<td className="districts-table-data">{district.racialEthnicGroup}</td>
+									<td className="districts-table-data">
+										<VoteMarginBadge margin={district.voteMargin2024} />
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</>
 	)
@@ -355,7 +363,7 @@ export default function StatePage() {
   const [districtLoadFailed, setDistrictLoadFailed] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
 	const [tab, setTab] = useState("State");
-	const [clickedDistrict, setDistrict] = useState(1);
+	const [clickedDistrict, setDistrict] = useState(0);
 
   if (!localData) {
     return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Error: State not found</div>;
@@ -535,13 +543,13 @@ export default function StatePage() {
 				<Map setDistrict={setDistrict} setTab={setTab}/>
 			</div>
 			<div id="statePageDataMainContainer">
-				<div className="statePageDataLabel">{tab + (tab === 'District' ? ' ' + clickedDistrict + ' ' : ' ')}Data</div>
+				<div className="statePageDataLabel">{tab} Data</div>
 				<span className="statePageLabelsContainer">
 					<div className="statePageDataTab statePageLeftDataTab statePageActiveTab" onClick={(e) => handleTabClick(e, 'State')}>State</div>
 					<div id="statePageDistrictTab" className="statePageDataTab" onClick={(e) => handleTabClick(e, 'District')}>District</div>
 					<div className="statePageDataTab" onClick={(e) => handleTabClick(e, 'Ensembles')}>Ensembles</div>
 				</span>
-				{tab === 'State' ? <StateData stateData={data} /> : tab === 'District' ? <DistrictData districtNum={clickedDistrict} /> : <EnsembleData />}
+				{tab === 'State' ? <StateData stateData={data} /> : tab === 'District' ? <DistrictData /> : <EnsembleData />}
 				{/* <table className="statePageTable">
 					<tbody>
 						<tr>

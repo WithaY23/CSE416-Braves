@@ -85,7 +85,7 @@
   min-width: 30%;
   max-width: fit-content;
   background-color: #fafeff;
-  padding: clamp(0.75rem, 1vh, 1rem) 2rem;
+  padding: clamp(0.6rem, 1.5vh, 1rem) 2rem;
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
@@ -121,6 +121,41 @@
   color: rgb(0, 90, 126);
   margin: 0.5rem;
   padding-left: 1rem;
+}
+
+/* ── Unavailable state ── */
+.congTable_unavailable {
+  padding: 1.25rem;
+  color: #6b7280;
+  font-style: italic;
+  font-size: clamp(0.8rem, 0.9vw, 1rem);
+}
+
+.districts-table-header,
+.districts-table-data {
+  padding: clamp(0.35rem, 0.65vw, 0.75rem);
+  text-align: center;
+  line-height: 1.1;
+  border: 1px solid;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+}
+
+.districts-table-header {
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+}
+
+.districts-table-data {
+  font-size: clamp(0.7rem, 1vw, 0.8rem);
+}
+
+.election-tag {
+  display: block;
+  font-size: clamp(0.65rem, 0.7vw, 0.78rem);
+  font-weight: 400;
+  color: #6b7280;
+  margin-top: 2px;
 }
 
 /* .statePageTable {
