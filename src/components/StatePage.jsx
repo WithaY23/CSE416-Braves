@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../../styles/state-page.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -6,6 +6,20 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Oregon from "../data/oregon.js";
 import SouthCarolina from "../data/sc.js";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import * as topojson from "topojson-client"
+import ORDistrictData from "../data/oregon_congressional_districts.json"
+import SCDistrictData from "../data/south_carolina_congressional_districts.json"
+
+// Properties in the JSONs:
+// - RESULT: 2024 Presidential Election Result
+// - CD118FP: District number (as string)
+// - district_number: District number (as integer)
+// - state: State name
+// - NAMELSAD: District name
+// - GEO_ID: Census identifier
+// - ALAND: Land area
+// - AWATER: Water area
 
 const dataMap = { Oregon, SouthCarolina };
 
@@ -162,6 +176,176 @@ function EnsembleData() {
 	)
 }
 
+function getColor(result) {
+	return result === "DEMOCRATIC" ? '#0011ff' :
+		result === "REPUBLICAN" ? '#ff0000' :
+			'#666666';
+}
+
+function TopoJSON(props) {
+  const layerRef = useRef(null)
+  const { data, infoRef } = props
+
+  function style(feature) {
+		return {
+			fillColor: getColor(feature.properties.RESULT),
+			weight: 2,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 0.4
+		};
+	}
+
+  function highlightFeature(e) {
+    const layer = e.target;
+
+    layer.setStyle({
+      weight: 3,
+      color: '#666',
+      dashArray: '',
+      fillOpacity: 0.5,
+    });
+
+    layer.bringToFront();
+    infoRef.current.update(layer.feature.properties.NAMELSAD);
+  }
+
+  function resetHighlight(e) {
+    layerRef.current.resetStyle(e.target);
+    infoRef.current.update();
+  }
+
+	function handleMapClick(e) {
+		setDistrict(e.target.feature.properties.district_number);
+
+		document.querySelectorAll('.statePageDataTab').forEach((tab) => {
+			tab.classList.remove('statePageActiveTab');
+		});
+
+		document.getElementById('statePageDistrictTab').classList.add('statePageActiveTab');
+
+		setTab('District');
+	}
+
+  function onEachFeature(feature, layer) {
+    layer.on({
+      mouseover: highlightFeature,
+      mouseout: resetHighlight,
+      click: handleMapClick,
+    });
+  }
+
+  function addData(layer, jsonData) {
+    if (jsonData.type === "Topology") {
+      for (let key in jsonData.objects) {
+        let geojson = topojson.feature(jsonData, jsonData.objects[key])
+        layer.addData(geojson)
+      }
+    } else {
+      layer.addData(jsonData)
+    }
+  }
+
+  useEffect(() => {
+    const layer = layerRef.current
+    layer.clearLayers()
+    addData(layer, data)
+  }, [data]);
+
+  return <GeoJSON ref={layerRef} style={style} onEachFeature={onEachFeature} />
+}
+
+function Info({infoRef}) {
+  const map = useMap();
+	const {stateName} = useParams();
+
+  useEffect(() => {
+    const info = L.control({ position: "topright" });
+
+    info.onAdd = function () {
+      this._div = L.DomUtil.create("div", "info");
+      this.update();
+      return this._div;
+    };
+
+    info.update = function (props) {
+      this._div.innerHTML =
+        `<h4>${stateName}</h4>` +
+        (props
+          ? "<b>" + props + "</b><br />"
+          : "Click on a district");
+    };
+
+    info.addTo(map);
+
+    infoRef.current = info;
+
+    return () => {
+      info.remove();
+    };
+  }, [map, infoRef]);
+}
+
+function Legend() {
+  const map = useMap();
+
+  useEffect(() => {
+    const legend = L.control({ position: "bottomright" });
+
+    legend.onAdd = function () {
+      const div = L.DomUtil.create("div", "info legend");
+
+			div.innerHTML += '<i style="background:' + getColor('DEMOCRATIC') + '"></i> ' + 'Democratic' + '<br>';
+			div.innerHTML += '<i style="background:' + getColor('REPUBLICAN') + '"></i> ' + 'Republican' + '<br>';
+
+      return div;
+    };
+
+    legend.addTo(map);
+
+    return () => {
+      legend.remove();
+    };
+  }, [map]);
+
+  return null;
+}
+
+function Map() {
+  const infoRef = useRef(null);
+	const {stateName} = useParams();
+
+	const dataMap = { Oregon: ORDistrictData, SouthCarolina: SCDistrictData };
+	const data = dataMap[stateName?.replaceAll(' ', '')]
+
+  if (!data) {
+    return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Error: District data not found</div>
+  }
+
+  return (
+    <MapContainer center={stateName === 'Oregon' ? [44.1, -120.6] : [33.6, -80.9]}
+      zoomControl={false}
+      zoom={stateName === 'Oregon' ? 6.5 : 7.3}
+      zoomSnap={0.1}
+			minZoom={6.5}
+			maxZoom={10}
+      style={{ width: "min(100%, 52rem)", height: "75vh" }}
+      maxBounds={stateName === 'Oregon' ? [[47, -125], [41, -116.4]] : [[35.6, -84], [31.5, -77.5]]}>
+      <TileLayer
+        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
+      />
+      <TopoJSON
+        data={data}
+        infoRef={infoRef}
+      />
+      <Info infoRef={infoRef}/>
+      <Legend />
+    </MapContainer >
+  )
+}
+
 export default function StatePage() {
   const { stateName } = useParams();
   const localData = dataMap[stateName?.replaceAll(" ", "")];
@@ -223,118 +407,112 @@ export default function StatePage() {
     };
   }, [stateName]);
 
-  useEffect(() => {
-    if (!districtData) {
-      return undefined;
-    }
+  // useEffect(() => {
+  //   if (!districtData) {
+  //     return undefined;
+  //   }
 
-		const map = L.map("statePagemap", {
-			center: stateName === 'Oregon' ? [44.1, -120.6] : [33.6, -80.9],
-			zoomControl: false,
-			zoom: stateName === 'Oregon' ? 6.5 : 7.3,
-			zoomSnap: 0.1,
-			minZoom: 6.5,
-			maxZoom: 10,
-			maxBounds: stateName === 'Oregon' ? [[47, -125], [41, -116.4]] : [[35.6, -84], [31.5, -77.5]],
-		});
+	// 	const map = L.map("statePagemap", {
+	// 		center: stateName === 'Oregon' ? [44.1, -120.6] : [33.6, -80.9],
+	// 		zoomControl: false,
+	// 		zoom: stateName === 'Oregon' ? 6.5 : 7.3,
+	// 		zoomSnap: 0.1,
+	// 		minZoom: 6.5,
+	// 		maxZoom: 10,
+	// 		maxBounds: stateName === 'Oregon' ? [[47, -125], [41, -116.4]] : [[35.6, -84], [31.5, -77.5]],
+	// 	});
 
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(map);
+  //   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  //   }).addTo(map);
 
-		function getColor(result) {
-			return result === "DEMOCRATIC" ? '#0011ff' :
-				result === "REPUBLICAN" ? '#ff0000' :
-					'#666666';
-		}
+	// 	function style(feature) {
+	// 		return {
+	// 			fillColor: getColor(feature.properties.RESULT),
+	// 			weight: 2,
+	// 			opacity: 1,
+	// 			color: 'white',
+	// 			dashArray: '3',
+	// 			fillOpacity: 0.4
+	// 		};
+	// 	}
 
-		function style(feature) {
-			return {
-				fillColor: getColor(feature.properties.RESULT),
-				weight: 2,
-				opacity: 1,
-				color: 'white',
-				dashArray: '3',
-				fillOpacity: 0.4
-			};
-		}
+  //   function highlightFeature(event) {
+  //     const layer = event.target;
 
-    function highlightFeature(event) {
-      const layer = event.target;
+	// 		layer.setStyle({
+	// 			weight: 3,
+	// 			color: '#666',
+	// 			dashArray: '',
+	// 			fillOpacity: 0.5
+	// 		});
 
-			layer.setStyle({
-				weight: 3,
-				color: '#666',
-				dashArray: '',
-				fillOpacity: 0.5
-			});
+  //     layer.bringToFront();
+  //     info.update(layer.feature.properties.NAMELSAD);
+  //   }
 
-      layer.bringToFront();
-      info.update(layer.feature.properties.NAMELSAD);
-    }
+	// 	function resetHighlight(e) {
+	// 		layerRef.current.resetStyle(e.target);
+	// 		infoRef.current.update();
+	// 	}
 
-		function resetHighlight(e) {
-			geojson.resetStyle(e.target);
-			info.update();
-		}
+	// 	function handleMapClick(e) {
+	// 		setDistrict(e.target.feature.properties.district_number);
 
-		function handleMapClick(e) {
-			setDistrict(e.target.feature.properties.district_number);
+	// 		document.querySelectorAll('.statePageDataTab').forEach((tab) => {
+	// 			tab.classList.remove('statePageActiveTab');
+	// 		});
 
-			document.querySelectorAll('.statePageDataTab').forEach((tab) => {
-				tab.classList.remove('statePageActiveTab');
-			});
+	// 		document.getElementById('statePageDistrictTab').classList.add('statePageActiveTab');
 
-			document.getElementById('statePageDistrictTab').classList.add('statePageActiveTab');
+	// 		setTab('District');
+	// 	}
 
-			setTab('District');
-		}
+	// 	function onEachFeature(feature, layer) {
+	// 		layer.on({
+	// 			mouseover: highlightFeature,
+	// 			mouseout: resetHighlight,
+	// 			click: handleMapClick,
+	// 		});
+	// 	}
 
-		function onEachFeature(feature, layer) {
-			layer.on({
-				mouseover: highlightFeature,
-				mouseout: resetHighlight,
-				click: handleMapClick,
-			});
-		}
+  //   const geojson = L.geoJson(districtData, { style, onEachFeature }).addTo(map);
+  //   const info = L.control();
 
-    const geojson = L.geoJson(districtData, { style, onEachFeature }).addTo(map);
-    const info = L.control();
+  //   info.onAdd = function onAdd() {
+  //     this._div = L.DomUtil.create("div", "info");
+  //     this.update();
+  //     return this._div;
+  //   };
 
-    info.onAdd = function onAdd() {
-      this._div = L.DomUtil.create("div", "info");
-      this.update();
-      return this._div;
-    };
+	// 	info.update = function (props) {
+	// 		this._div.innerHTML =
+	// 			`<h4>${stateName}</h4>` +
+	// 			(props
+	// 				? "<b>" + props + "</b><br />"
+	// 				: "Click on a district");
+	// 	};
 
-		info.update = function (props) {
-			this._div.innerHTML =
-				`<h4>${stateName}</h4>` +
-				(props
-					? "<b>" + props + "</b><br />"
-					: "Click on a district");
-		};
+  //   info.addTo(map);
 
-    info.addTo(map);
+  //   const legend = L.control({ position: "bottomright" });
 
-    const legend = L.control({ position: "bottomright" });
+	// 	legend.onAdd = function (map) {
 
-		legend.onAdd = function (map) {
+	// 		let div = L.DomUtil.create('div', 'info legend');
 
-			let div = L.DomUtil.create('div', 'info legend');
+	// 		div.innerHTML += '<i style="background:' + getColor('DEMOCRATIC') + '"></i> ' + 'Democratic' + '<br>';
+	// 		div.innerHTML += '<i style="background:' + getColor('REPUBLICAN') + '"></i> ' + 'Republican' + '<br>';
 
-			div.innerHTML += '<i style="background:' + getColor('DEMOCRATIC') + '"></i> ' + 'Democratic' + '<br>';
-			div.innerHTML += '<i style="background:' + getColor('REPUBLICAN') + '"></i> ' + 'Republican' + '<br>';
+  //     return div;
+  //   };
 
-      return div;
-    };
+  //   legend.addTo(map);
 
-    legend.addTo(map);
-
-    return () => {
-      map.remove();
-    };
-  }, [districtData, stateName]);
+  //   return () => {
+  //     map.remove();
+  //   };
+  // }, [districtData, stateName]);
 
   const data = mergeSummaryData(localData, summaryData);
 
@@ -352,7 +530,7 @@ export default function StatePage() {
 		<span id="statePageMain">
 			<div id="statePageMapContainer">
 				<div className="statePageMapLabel">District View of the State</div>
-				<div id="statePagemap"></div>
+				<Map />
 			</div>
 			<div id="statePageDataMainContainer">
 				<div className="statePageDataLabel">{tab + (tab === 'District' ? ' ' + clickedDistrict + ' ' : ' ')}Data</div>
