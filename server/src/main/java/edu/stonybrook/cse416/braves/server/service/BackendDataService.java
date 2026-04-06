@@ -2,7 +2,6 @@ package edu.stonybrook.cse416.braves.server.service;
 
 import edu.stonybrook.cse416.braves.server.dto.StateOptionResponse;
 import edu.stonybrook.cse416.braves.server.model.BasePayloadDocument;
-import edu.stonybrook.cse416.braves.server.model.DistrictMapDocument;
 import edu.stonybrook.cse416.braves.server.repository.*;
 import edu.stonybrook.cse416.braves.server.util.GroupThresholds;
 import edu.stonybrook.cse416.braves.server.util.StateCodeUtil;
@@ -22,7 +21,6 @@ public class BackendDataService {
     private static final Set<String> PARTY_KEYS = Set.of("DEM", "REP");
 
     private final StateRepository stateRepository;
-    private final DistrictMapRepository districtMapRepository;
     private final StateSummaryRepository stateSummaryRepository;
     private final DistrictTableRepository districtTableRepository;
     private final HeatmapBinRepository heatmapBinRepository;
@@ -40,7 +38,6 @@ public class BackendDataService {
 
     public BackendDataService(
             StateRepository stateRepository,
-            DistrictMapRepository districtMapRepository,
             StateSummaryRepository stateSummaryRepository,
             DistrictTableRepository districtTableRepository,
             HeatmapBinRepository heatmapBinRepository,
@@ -57,7 +54,6 @@ public class BackendDataService {
             MinorityEffectivenessHistogramRepository minorityEffectivenessHistogramRepository
     ) {
         this.stateRepository = stateRepository;
-        this.districtMapRepository = districtMapRepository;
         this.stateSummaryRepository = stateSummaryRepository;
         this.districtTableRepository = districtTableRepository;
         this.heatmapBinRepository = heatmapBinRepository;
@@ -82,13 +78,6 @@ public class BackendDataService {
                         Integer.parseInt(String.valueOf(doc.getPayload().get("totalDistricts")))
                 ))
                 .toList();
-    }
-
-    public Map<String, Object> getDistrictMap(String stateIdInput) {
-        String stateId = normalizeState(stateIdInput);
-        DistrictMapDocument doc = districtMapRepository.findByStateId(stateId)
-                .orElseThrow(() -> new NoSuchElementException("District map not found for stateId=" + stateId));
-        return withStoredMetadata(doc);
     }
 
     public Map<String, Object> getStateSummary(String stateIdInput) {

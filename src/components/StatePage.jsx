@@ -6,6 +6,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Oregon from "../data/oregon.js";
 import SouthCarolina from "../data/sc.js";
+import { topologyToFeatureCollection } from "../utils/topology.js";
 
 const dataMap = { Oregon, SouthCarolina };
 
@@ -53,9 +54,9 @@ export default function StatePage() {
 
     (async () => {
       try {
-        const response = await axios.get(`/api/states/${stateCode}/districts/enacted/geojson`);
+        const response = await axios.get(`/api/states/${stateCode}/districts/enacted/topology`);
         if (isActive) {
-          setDistrictData(response.data);
+          setDistrictData(topologyToFeatureCollection(response.data, "districts"));
           setDistrictLoadFailed(false);
         }
       } catch {

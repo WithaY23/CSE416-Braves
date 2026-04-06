@@ -1,17 +1,44 @@
-import React, {useEffect} from 'react'
+import React, { useEffect, useState } from "react";
 import '../../styles/splash-page.css'
+import axios from "axios";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import statesData from "../data/us-states.js";
 import { useNavigate } from 'react-router-dom';
+import { topologyToFeatureCollection } from "../utils/topology.js";
 // ─────────────────────────────────────────────
 // SplashPage
 // ─────────────────────────────────────────────
 function Map({switchPage})
 {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [statesData, setStatesData] = useState(null);
 
   useEffect(() => {
+    let isActive = true;
+
+    (async () => {
+      try {
+        const response = await axios.get("/api/maps/us-states/topology");
+        if (isActive) {
+          setStatesData(topologyToFeatureCollection(response.data, "states"));
+        }
+      } catch {
+        if (isActive) {
+          setStatesData(null);
+        }
+      }
+    })();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!statesData) {
+      return undefined;
+    }
+
     const map = L.map("countrymap", {
       center: [38.3, -96],
       zoomControl: false,
@@ -126,7 +153,17 @@ function Map({switchPage})
     return () => {
       map.remove();
     };
-  }, []);
+  }, [navigate, statesData, switchPage]);
+
+  if (!statesData) {
+    return (
+      <>
+        <div id="mapContainer">
+          <div id="countrymap"></div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
