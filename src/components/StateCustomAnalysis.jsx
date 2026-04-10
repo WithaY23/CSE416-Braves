@@ -11,7 +11,6 @@ const LANGUAGE_OPTIONS = ["English", "Spanish", "French"];
 const duplicateAllowedUseCases = new Set(["GUI-12", "GUI-16", "GUI-17"]);
 
 const dataDescriptionList = [
-  { id: "GUI-5", label: "GUI-5", needsMinority: true, extraDropdowns: 0, implemented: false },
   { id: "GUI-8", label: "GUI-8", needsMinority: false, extraDropdowns: 0, implemented: false },
   { id: "GUI-12", label: "GUI-12", needsMinority: true, extraDropdowns: 2, implemented: true },
   { id: "GUI-16", label: "GUI-16", needsMinority: false, extraDropdowns: 1, implemented: true },
@@ -77,16 +76,6 @@ function updateData(currentData, minoritySelection, secondData, thirdData, paylo
           "Demographic heat map by precinct",
           `Selected group: ${minoritySelection}`,
           "Map rendering is not yet connected in custom analysis.",
-        ]),
-        "customAnalysis_dataContainer"
-      );
-    case "GUI-5":
-      return displayData(
-        <div className="customAnalysis_dataLabel">Heatmap of Minority by Census Block</div>,
-        renderPlaceholderCard("Heatmap of Minority by Census Block", [
-          "Demographic heat map by census block",
-          `Selected group: ${minoritySelection}`,
-          "Block-level map data is not yet wired.",
         ]),
         "customAnalysis_dataContainer"
       );
