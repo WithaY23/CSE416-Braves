@@ -26,6 +26,7 @@ public class SeedDataLoader implements ApplicationRunner {
     private static final Logger LOG = LoggerFactory.getLogger(SeedDataLoader.class);
 
     private final ObjectMapper objectMapper;
+    private final GeometryAssetService geometryAssetService;
     private final StateRepository stateRepository;
     private final StateSummaryRepository stateSummaryRepository;
     private final EnsembleSummaryRepository ensembleSummaryRepository;
@@ -53,6 +54,7 @@ public class SeedDataLoader implements ApplicationRunner {
 
     public SeedDataLoader(
             ObjectMapper objectMapper,
+            GeometryAssetService geometryAssetService,
             StateRepository stateRepository,
             StateSummaryRepository stateSummaryRepository,
             EnsembleSummaryRepository ensembleSummaryRepository,
@@ -73,6 +75,7 @@ public class SeedDataLoader implements ApplicationRunner {
             IngestManifestRepository ingestManifestRepository
     ) {
         this.objectMapper = objectMapper;
+        this.geometryAssetService = geometryAssetService;
         this.stateRepository = stateRepository;
         this.stateSummaryRepository = stateSummaryRepository;
         this.ensembleSummaryRepository = ensembleSummaryRepository;
@@ -372,7 +375,7 @@ public class SeedDataLoader implements ApplicationRunner {
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_black_cvap_race_blind.json"))));
     }
 
-    private void seedInterestingPlans(Path root) throws IOException {
+    private void seedInterestingPlans(Path root) {
         interestingPlanRepository.deleteAll();
         interestingPlanRepository.save(buildInterestingPlanDoc(
                 "OR",
@@ -380,7 +383,7 @@ public class SeedDataLoader implements ApplicationRunner {
                 "Oregon Opportunity Corridor",
                 "race_blind",
                 "High Latino opportunity with competitive statewide split",
-                readJsonMap(root.resolve("src/data/oregon_congressional_districts.json"))
+                geometryAssetService.getDistrictTopology("OR")
         ));
         interestingPlanRepository.save(buildInterestingPlanDoc(
                 "SC",
@@ -388,7 +391,7 @@ public class SeedDataLoader implements ApplicationRunner {
                 "South Carolina Coastal Rebalance",
                 "vra_constrained",
                 "Expands Black-effective district probability while keeping core coastal continuity",
-                readJsonMap(root.resolve("src/data/south_carolina_congressional_districts.json"))
+                geometryAssetService.getDistrictTopology("SC")
         ));
     }
 
