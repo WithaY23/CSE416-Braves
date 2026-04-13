@@ -3,6 +3,14 @@
 ## Purpose
 This document is the professor-facing contract reference for the Braves project. It lists every GUI use case currently implemented by the team and shows whether it is backed by a server response or is intentionally client-only.
 
+## Use Case Scope
+The team is implementing the following subset of the professor's master use case list:
+- **GUI:** 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 15, 16, 17, 19, 20, 21, 22, 24 (19 total)
+- **Preprocessing:** 1, 2, 3, 4, 5, 6, 7, 8, 9, 11 (10 total)
+- **SeaWulf:** 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13 (12 total)
+
+**Not implementing:** GUI-5 (census block heatmap), GUI-11 (Gingles table row highlight), GUI-14 (EI choropleth maps), GUI-18 (vote share vs seat share curve), GUI-23 (duplicate of GUI-20), Prepro-10 (vote share vs seat share data), SeaWulf-12 (multi-node MPI).
+
 Status labels used here:
 - `Live`: route exists and the backend can return a seeded payload now
 - `Compatibility`: route remains available for fallback while the frontend uses the TopoJSON-first contract

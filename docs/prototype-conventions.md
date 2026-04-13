@@ -1,7 +1,7 @@
 # Prototype Conventions (GUI Review Chart Demo)
 
-- Scope: Recharts-only chart prototype for GUI review (`GUI-9`, `GUI-12`, `GUI-16`, `GUI-17` required; `GUI-13`, `GUI-15`, `GUI-18` preferred).
-- Out of scope: `GUI-14` choropleth/maps.
+- Scope: Recharts-only chart prototype for GUI review (`GUI-9`, `GUI-12`, `GUI-16`, `GUI-17` required; `GUI-13`, `GUI-15` preferred).
+- Out of scope: `GUI-5` (census block heatmap), `GUI-11` (Gingles row highlight), `GUI-14` (EI choropleth maps), `GUI-18` (vote share vs seat share).
 - Percent/share values are stored as decimals in JSON (`0.0` to `1.0`).
 - UI formats decimals as percentages for axes/tooltips.
 - Count/frequency fields are integers.

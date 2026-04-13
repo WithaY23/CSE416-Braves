@@ -1,5 +1,7 @@
 # Chart Specs (Required + Preferred, Recharts Scope)
 
+Covers chart use cases the team is implementing: GUI-9, GUI-12, GUI-13, GUI-15, GUI-16, GUI-17. GUI-18 (vote share vs seat share) is not in scope.
+
 ## GUI-16 Ensemble Splits (required)
 - Purpose: Compare race-blind vs VRA-constrained ensemble split frequencies.
 - X-axis: Seat split label (`#R/#D`).
@@ -42,8 +44,3 @@
 - Y-axis: Density.
 - Optional annotation: threshold probability.
 
-## GUI-18 Vote Share vs Seat Share (preferred)
-- Purpose: Show seat share response as vote share changes.
-- X-axis: Vote share.
-- Y-axis: Seat share.
-- Optional reference line: `y = x`.

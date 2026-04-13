@@ -32,10 +32,6 @@
 - Densities are non-negative
 - X values are monotonic within each series
 
-## GUI-18 Vote Share vs Seat Share
-- `voteShare` and `seatShare` are in `[0,1]`
-- X values are monotonic increasing
-
 ## GUI-19 Interesting Plan
 - `planId` and `planName` present
 - `topology.type = Topology`
