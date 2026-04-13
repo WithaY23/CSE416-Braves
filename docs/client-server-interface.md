@@ -51,7 +51,7 @@ Geometry note:
 {
   "type": "Topology",
   "objects": {
-    "layer": {
+    "districts": {
       "type": "GeometryCollection",
       "geometries": []
     }
@@ -60,7 +60,7 @@ Geometry note:
 }
 ```
 District geometries include `properties.RESULT` for party color styling.
-Actual payload source: file-backed Topology JSON in `src/data/*_congressional_districts.json`.
+Actual payload source: file-backed Topology JSON in `server/src/main/resources/geometry/*_congressional_districts.json`.
 Compatibility route: `GET /api/states/{stateId}/districts/enacted/geojson` still serves GeoJSON during the cutover.
 
 ### GUI-3

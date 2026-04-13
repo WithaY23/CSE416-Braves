@@ -1,7 +1,7 @@
 {
     "type": "Topology",
     "objects": {
-        "layer": {
+        "districts": {
             "type": "GeometryCollection",
             "geometries": [
                 {
