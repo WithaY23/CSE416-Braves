@@ -23,7 +23,7 @@ class StateControllerTest {
         mockMvc.perform(get("/api/states/OR/districts/enacted/topology"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.type").value("Topology"))
-                .andExpect(jsonPath("$.objects.layer.geometries[0].properties.RESULT").value("DEMOCRATIC"));
+                .andExpect(jsonPath("$.objects.districts.geometries[0].properties.RESULT").value("DEMOCRATIC"));
     }
 
     @Test

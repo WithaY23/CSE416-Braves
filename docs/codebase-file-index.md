@@ -80,7 +80,6 @@
 |------|---------|
 | `BasePayloadDocument.java` | Base class with common metadata: `schemaVersion`, `chartType`, `state`, `election`, `units` |
 | `BoxWhiskerResultDocument.java` | Box-whisker statistics (min, q1, median, q3, max) for ensemble distributions — GUI-17 |
-| `DistrictMapDocument.java` | Enacted district geometry as TopoJSON topology — GUI-2 |
 | `DistrictTableDocument.java` | Congressional representation table data (representative, party, vote margin) — GUI-6 |
 | `EiKdeDocument.java` | EI kernel density estimation comparisons across racial groups — GUI-15 |
 | `EiPrecinctBarCiDocument.java` | Precinct-level EI bar charts with confidence intervals — GUI-13 |
@@ -103,7 +102,7 @@
 
 Each repository provides Spring Data MongoDB CRUD + custom queries for its document type. One repository per model:
 
-`BoxWhiskerResultRepository`, `DistrictMapRepository`, `DistrictTableRepository`, `EiKdeRepository`, `EiPrecinctBarCiRepository`, `EiSupportResultRepository`, `EnsembleSplitRepository`, `EnsembleSummaryRepository`, `GinglesResultRepository`, `GinglesTableRepository`, `HeatmapBinRepository`, `IngestManifestRepository`, `InterestingPlanRepository`, `MinorityEffectivenessBoxWhiskerRepository`, `MinorityEffectivenessHistogramRepository`, `RunManifestRepository`, `StateRepository`, `StateSummaryRepository`, `VraImpactThresholdTableRepository`
+`BoxWhiskerResultRepository`, `DistrictTableRepository`, `EiKdeRepository`, `EiPrecinctBarCiRepository`, `EiSupportResultRepository`, `EnsembleSplitRepository`, `EnsembleSummaryRepository`, `GinglesResultRepository`, `GinglesTableRepository`, `HeatmapBinRepository`, `IngestManifestRepository`, `InterestingPlanRepository`, `MinorityEffectivenessBoxWhiskerRepository`, `MinorityEffectivenessHistogramRepository`, `RunManifestRepository`, `StateRepository`, `StateSummaryRepository`, `VraImpactThresholdTableRepository`
 
 ### `service/` — Business Logic Layer
 
