@@ -18,6 +18,7 @@ Status labels used here:
 
 Geometry note:
 - Static geometry is now TopoJSON-first and file-backed by the backend.
+- `GUI-2` enacted district maps and `GUI-4` precinct maps are served from static classpath TopoJSON assets through `GeometryAssetService`.
 - The frontend fetches TopoJSON, converts it with `topojson-client`, then renders the resulting features in Leaflet.
 - `GUI-19` remains Mongo-backed, but its stored geometry is also TopoJSON-first via the `topology` field.
 

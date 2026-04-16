@@ -18,8 +18,8 @@ class GeometryAssetServiceTest {
     void loadsDistrictTopologyFromJsonAssetWithResultField() {
         Map<String, Object> topology = geometryAssetService.getDistrictTopology("OR");
         Map<String, Object> objects = castMap(topology.get("objects"));
-        Map<String, Object> layer = castMap(objects.get("layer"));
-        List<Map<String, Object>> geometries = castList(layer.get("geometries"));
+        Map<String, Object> districts = castMap(objects.get("districts"));
+        List<Map<String, Object>> geometries = castList(districts.get("geometries"));
         Map<String, Object> properties = castMap(geometries.get(0).get("properties"));
 
         assertEquals("Topology", topology.get("type"));

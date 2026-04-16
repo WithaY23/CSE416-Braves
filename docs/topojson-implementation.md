@@ -35,6 +35,8 @@ That route still returns one collection-backed payload containing:
 
 This preserves the existing one-lookup use-case model for plan-specific responses.
 
+There is no Mongo-backed document or repository for the enacted district map in `GUI-2`; enacted district geometry is served only from static classpath TopoJSON files.
+
 ## Backend Flow
 
 Static geometry routes use `GeometryAssetService`, which:

@@ -8,6 +8,7 @@ This document explains how each implemented GUI use case maps to MongoDB, file-b
   - precinct topology
   - US states overview topology
 - Analytical payloads and plan-specific payloads remain Mongo-backed.
+- `GUI-2` enacted district maps are not stored as Mongo entities; they are loaded directly from checked-in TopoJSON assets.
 - `GUI-19` interesting plans stay in Mongo so the backend still answers that use case with one lookup returning both plan metadata and geometry.
 
 ## Collection Summary
