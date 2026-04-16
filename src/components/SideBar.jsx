@@ -36,9 +36,9 @@ export function SideBar(props)
           <div className={currSimData === "Box Whisker" ? "sim-option activeTab" : "sim-option"} onClick={() => { switchSimData('Box Whisker'); switchPage('Simulation Data'); navigate(`/state/${stateName}/Simulation Data`)}}>Box & Whisker</div>
           <div className={currSimData === "Minority Effectiveness Box Whisker" ? "sim-option activeTab" : "sim-option"} onClick={() => { switchSimData('Minority Effectiveness Box Whisker'); switchPage('Simulation Data'); navigate(`/state/${stateName}/Simulation Data`)}}>Minority Effectiveness Box & Whisker</div>
           <div className={currSimData === "Minority Effectiveness Histogram" ? "sim-option activeTab" : "sim-option"} onClick={() => { switchSimData('Minority Effectiveness Histogram'); switchPage('Simulation Data'); navigate(`/state/${stateName}/Simulation Data`)}}>Minority Effectiveness Histogram</div>
-          <div className={currPage === "Voting Rights Analysis" ? "sidebar-tab activeTab" : "sidebar-tab"} onClick={() => { switchPage('Voting Rights Analysis'); navigate(`/state/${stateName}/Voting Rights Analysis`)}}>(Old) Voting Rights Analysis</div>
-          <div className={currPage === "Minority" ? "sidebar-tab activeTab" : "sidebar-tab"} onClick={() => { switchPage('Minority'); navigate(`/state/${stateName}/Minority Analysis`)}}>(Old) Minority Analysis</div>
-          <div className={currPage === "Custom" ? "sidebar-tab activeTab" : "sidebar-tab"} onClick={() => { switchPage('Custom'); navigate(`/state/${stateName}/Custom State Analysis`)}}>(Old) Custom Analysis</div>
+          {/* <div className={currPage === "Voting Rights Analysis" ? "sidebar-tab activeTab" : "sidebar-tab"} onClick={() => { switchPage('Voting Rights Analysis'); navigate(`/state/${stateName}/Voting Rights Analysis`)}}>(Old) Voting Rights Analysis</div> */}
+          {/* <div className={currPage === "Minority" ? "sidebar-tab activeTab" : "sidebar-tab"} onClick={() => { switchPage('Minority'); navigate(`/state/${stateName}/Minority Analysis`)}}>(Old) Minority Analysis</div> */}
+          {/* <div className={currPage === "Custom" ? "sidebar-tab activeTab" : "sidebar-tab"} onClick={() => { switchPage('Custom'); navigate(`/state/${stateName}/Custom State Analysis`)}}>(Old) Custom Analysis</div> */}
           <div className={currPage === "Simulation" ? "sidebar-tab activeTab" : "sidebar-tab"} onClick={() => { switchPage('Simulation'); navigate(`/state/${stateName}/Simulation Minority Data`)}}>(Old) Simulation Data</div>
         </span>
       </nav>

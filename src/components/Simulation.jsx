@@ -5,6 +5,7 @@ import axios from "axios";
 import { topologyToFeatureCollection } from "../utils/topology.js";
 import DistrictMap from "./DistrictMap";
 import MinorityHeatMap from "./MinorityHeatMap";
+import BoxWhiskerChart from "../charts/BoxWhiskerChart.jsx"
 import {
   ResponsiveContainer,
   BarChart,
@@ -46,12 +47,13 @@ function EnsembleSplits({ payload, loading, failed }) {
 }
 
 // GUI-17: Box & Whisker
-function BoxWhisker({ payload, loading, failed, minority }) {
+function BoxWhisker({ payload, loading, failed, minority, subtitle }) {
   if (loading) return <div className="sim_placeholder">Loading box & whisker chart...</div>;
   if (failed || !payload) return <div className="sim_placeholder">No box & whisker data available for {minority}.</div>;
   return (
     <div className="sim-chartStack">
-      <div className="sim-chartTitle">Ensemble Splits</div>
+      <div className="sim-chartSubtitle">{subtitle}</div>
+      <BoxWhiskerChart payload={payload} showHeader={false} />
     </div>
   );
 }
@@ -117,7 +119,7 @@ function MinorityEffectivenessHistogram({ payload, loading, failed, minority }) 
   );
 }
 
-export default function Simluation(props) {
+export default function Simulation(props) {
   const { stateName } = useParams();
   const stateCode = toStateCode(stateName);
   const { currMap, currMinority, switchMinority, currSimData, switchSimData } = props;
@@ -153,7 +155,7 @@ export default function Simluation(props) {
   const [splitsLoadFailed, setSplitsLoadFailed] = useState(false);
 
   // GUI-17: Box & Whisker
-  const [boxWhiskerPayload, setBoxWhiskerPayload] = useState(null);
+  const [boxWhiskerPayloads, setBoxWhiskerPayloads] = useState(null);
   const [boxWhiskerLoading, setBoxWhiskerLoading] = useState(false);
   const [boxWhiskerLoadFailed, setBoxWhiskerLoadFailed] = useState(false);
 
@@ -186,6 +188,52 @@ export default function Simluation(props) {
     return () => { isActive = false; };
   }, [stateCode]);
 
+  // GUI-17: Box & Whisker
+  useEffect(() => {
+    let isActive = true;
+    setBoxWhiskerLoading(true);
+    setBoxWhiskerPayloads(null);
+    setBoxWhiskerLoadFailed(false);
+    const stateCode = stateName === "Oregon" ? "OR" : stateName === "South Carolina" ? "SC" : null;
+    const group = currMinority?.trim().toLowerCase().replace(/\s+/g, "_");
+
+    if (!stateCode || !group) {
+      setBoxWhiskerPayloads(null);
+      return undefined;
+    }
+
+    (async () => {
+      try {
+        const [vraConstrained, raceBlind] = await Promise.all([
+          axios.get(`/api/states/${stateCode}/ensembles/box-whisker`, {
+            params: { group, ensembleType: "vra_constrained", metric: "minority_share" },
+          }),
+          axios.get(`/api/states/${stateCode}/ensembles/box-whisker`, {
+            params: { group, ensembleType: "race_blind", metric: "minority_share" },
+          }),
+        ]);
+
+        if (isActive) {
+          setBoxWhiskerPayloads({
+            vraConstrained: vraConstrained.data,
+            raceBlind: raceBlind.data,
+          });
+        }
+      } catch {
+        if (isActive) {
+          setBoxWhiskerPayloads(null);
+          setBoxWhiskerLoadFailed(true);
+        }
+      } finally{
+        setBoxWhiskerLoading(false);
+      }
+    })();
+
+    return () => {
+      isActive = false;
+    };
+  }, [currMinority, stateName]);
+
   // cleanup
   useEffect(() => {
     return () => switchSimData('');
@@ -204,7 +252,20 @@ export default function Simluation(props) {
               {minorityOptions}
             </select>
           </div>
-          <BoxWhisker payload={boxWhiskerPayload} loading={boxWhiskerLoading} failed={boxWhiskerLoadFailed} minority={currMinority} />
+          <BoxWhisker
+            payload={boxWhiskerPayloads?.raceBlind ?? null}
+            loading={boxWhiskerLoading}
+            failed={boxWhiskerLoadFailed}
+            minority={currMinority}
+            subtitle={`Race-Blind Ensemble`}
+          />
+          <BoxWhisker
+            payload={boxWhiskerPayloads?.vraConstrained ?? null}
+            loading={boxWhiskerLoading}
+            failed={boxWhiskerLoadFailed}
+            minority={currMinority}
+            subtitle={`VRA-Constrained Ensemble`}
+          />
         </>
       );
     }
