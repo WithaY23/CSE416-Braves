@@ -1052,7 +1052,6 @@ Written per-plan to shared file storage by each core during the ReCom run. Aggre
 ```
 
 `ensembleType` values: `race_blind`, `vra_constrained`, `robust_vra_constrained`, `vra_constrained_0.5`, `vra_constrained_0.6`, `vra_constrained_0.7`. `sDistScore` is present only for `robust_vra_constrained` plans (requires `{state}_ei_precinct_samples.json` from Prepro-13/14); omit for other ensemble types.
-```
 
 ### 4.4 Prepro Input Files for SeaWulf (file storage, not MongoDB)
 
