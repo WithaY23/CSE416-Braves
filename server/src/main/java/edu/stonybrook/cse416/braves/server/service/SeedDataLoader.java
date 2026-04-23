@@ -13,6 +13,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -21,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 @Component
 public class SeedDataLoader implements ApplicationRunner {
@@ -128,11 +131,9 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void validatePrecinctCounts(Path root) throws IOException {
-        Path orPath = root.resolve("src/data/OR-precincts-with-results.json");
-        Path scPath = root.resolve("src/data/SC-precincts-with-results.json");
-
-        int orCount = precinctCount(orPath, "OR");
-        int scCount = precinctCount(scPath, "SC");
+        Path archivePath = root.resolve("preprocessing/Archive.zip");
+        int orCount = readGeoJsonFeaturesFromZip(archivePath, "or_precinct.geojson").size();
+        int scCount = readGeoJsonFeaturesFromZip(archivePath, "sc_precinct.geojson").size();
 
         if (orCount < 1000 || scCount < 1000) {
             throw new IllegalStateException("Precinct realism validation failed: OR=" + orCount + ", SC=" + scCount);
@@ -141,30 +142,26 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void validatePopulationRealism(Path root) throws IOException {
+        Path archivePath = root.resolve("preprocessing/Archive.zip");
         int orPopulation = 4_272_371;
         int scPopulation = 5_478_831;
 
-        validateStatePopulation("OR", orPopulation, root.resolve("src/data/OR-precincts-with-results.json"), 3_500_000, 5_000_000);
-        validateStatePopulation("SC", scPopulation, root.resolve("src/data/SC-precincts-with-results.json"), 4_500_000, 6_500_000);
+        validateStatePopulation("OR", orPopulation, readGeoJsonFeaturesFromZip(archivePath, "or_precinct.geojson"), 3_500_000, 5_000_000);
+        validateStatePopulation("SC", scPopulation, readGeoJsonFeaturesFromZip(archivePath, "sc_precinct.geojson"), 4_500_000, 6_500_000);
     }
 
     @SuppressWarnings("unchecked")
     private void validateStatePopulation(
             String stateId,
             int population,
-            Path precinctPath,
+            List<Map<String, Object>> features,
             int minExpectedPopulation,
             int maxExpectedPopulation
-    ) throws IOException {
-        Map<String, Object> topo = readJsonMap(precinctPath);
-        Map<String, Object> objects = (Map<String, Object>) topo.get("objects");
-        Map<String, Object> stateObj = (Map<String, Object>) objects.get(stateId);
-        List<Map<String, Object>> geometries = (List<Map<String, Object>>) stateObj.get("geometries");
-
+    ) {
         long totalVotes = 0L;
-        for (Map<String, Object> geometry : geometries) {
-            Map<String, Object> properties = (Map<String, Object>) geometry.get("properties");
-            Object votesTotal = properties.get("votes_total");
+        for (Map<String, Object> feature : features) {
+            Map<String, Object> properties = (Map<String, Object>) feature.get("properties");
+            Object votesTotal = properties.get("total_votes");
             if (votesTotal instanceof Number number) {
                 totalVotes += number.longValue();
             }
@@ -191,12 +188,17 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     @SuppressWarnings("unchecked")
-    private int precinctCount(Path topoPath, String objectKey) throws IOException {
-        Map<String, Object> topo = readJsonMap(topoPath);
-        Map<String, Object> objects = (Map<String, Object>) topo.get("objects");
-        Map<String, Object> stateObj = (Map<String, Object>) objects.get(objectKey);
-        List<Object> geometries = (List<Object>) stateObj.get("geometries");
-        return geometries.size();
+    private List<Map<String, Object>> readGeoJsonFeaturesFromZip(Path archivePath, String entryName) throws IOException {
+        try (ZipFile zipFile = new ZipFile(archivePath.toFile())) {
+            ZipEntry entry = zipFile.getEntry(entryName);
+            if (entry == null) {
+                throw new IllegalStateException("Entry not found in archive: " + entryName);
+            }
+            try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                Map<String, Object> featureCollection = objectMapper.readValue(inputStream, new TypeReference<>() {});
+                return (List<Map<String, Object>>) featureCollection.get("features");
+            }
+        }
     }
 
     private void seedStates() {
@@ -304,9 +306,10 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private Map<String, Object> heatmapPayload(Path root, String state, String group) throws IOException {
-        Path precinctPath = root.resolve("server/src/main/resources/geometry/" + state + "-precincts-with-results.topology.json");
-        Map<String, Object> topo = readJsonMap(precinctPath);
-        Map<String, Double> shareByGeoid = buildHeatmapShares(topo, state, group);
+        Path archivePath = root.resolve("preprocessing/Archive.zip");
+        String entryName = "OR".equals(state) ? "or_precinct.geojson" : "sc_precinct.geojson";
+        List<Map<String, Object>> features = readGeoJsonFeaturesFromZip(archivePath, entryName);
+        Map<String, Double> shareByGeoid = buildHeatmapShares(features, group);
 
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("schemaVersion", "v1");
@@ -320,23 +323,17 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Double> buildHeatmapShares(Map<String, Object> topo, String state, String group) {
-        Map<String, Object> objects = (Map<String, Object>) topo.get("objects");
-        Map<String, Object> stateObj = (Map<String, Object>) objects.get(state);
-        List<Map<String, Object>> geometries = (List<Map<String, Object>>) stateObj.get("geometries");
-
+    private Map<String, Double> buildHeatmapShares(List<Map<String, Object>> features, String group) {
         String demographicKey = groupToDemographicKey(group);
         Map<String, Double> shareByGeoid = new LinkedHashMap<>();
-        for (Map<String, Object> geometry : geometries) {
-            Map<String, Object> properties = (Map<String, Object>) geometry.get("properties");
+        for (Map<String, Object> feature : features) {
+            Map<String, Object> properties = (Map<String, Object>) feature.get("properties");
             String geoid = String.valueOf(properties.get("GEOID"));
-            double share;
+            double share = 0.0;
             if (demographicKey != null && properties.containsKey(demographicKey) && properties.containsKey("total")) {
                 Number count = (Number) properties.get(demographicKey);
                 Number total = (Number) properties.get("total");
                 share = total.intValue() > 0 ? count.doubleValue() / total.doubleValue() : 0.0;
-            } else {
-                share = syntheticHeatmapShare(state, group, geoid);
             }
             shareByGeoid.put(geoid, share);
         }
