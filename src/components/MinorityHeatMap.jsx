@@ -1,57 +1,80 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import "../../styles/minority-map.css";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import L from "leaflet";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
-import { topologyToFeatureCollection } from "../utils/topology.js";
+import { toStateCode } from "../lib/stateMetadata.js";
+import { useHeatmapQuery, usePrecinctTopologyQuery } from "../queries/stateQueries.js";
+import { defaultGetColor, getFeaturePercentage, getHeatmapColor, normalizeMinorityGroup } from "../utils/minorityHeatMap.js";
 
-function defaultGetColor(percentage) {
-  return percentage > 70 ? "#004529" :
-    percentage > 60 ? "#006837" :
-      percentage > 50 ? "#238443" :
-        percentage > 40 ? "#41ab5d" :
-          percentage > 30 ? "#78c679" :
-            percentage > 20 ? "#addd8e" :
-              percentage > 10 ? "#d9f0a3" :
-                percentage > 5 ? "#f7fcb9" :
-                  "#ffffe5";
+function createLegendControl(bins) {
+  const legend = L.control({ position: "bottomright" });
+
+  legend.onAdd = function onAdd() {
+    const div = L.DomUtil.create("div", "info legend");
+    const fallbackGrades = [0, 10, 20, 30, 40, 50, 60, 70, 80];
+
+    div.innerHTML += "<h4>% Population</h4>";
+
+    if (Array.isArray(bins) && bins.length > 0) {
+      bins.forEach((bin) => {
+        const label = bin.max >= 100 ? `${bin.min}+` : `${bin.min}-${bin.max}`;
+        div.innerHTML += `
+          <div style="display:flex; align-items:center; margin-bottom:4px;">
+            <i style="background:${bin.color}; display:inline-block;"></i>
+            ${label}
+          </div>`;
+      });
+      return div;
+    }
+
+    for (let index = 0; index < fallbackGrades.length; index += 1) {
+      div.innerHTML += `
+        <div style="display:flex; align-items:center; margin-bottom:4px;">
+          <i style="background:${defaultGetColor(fallbackGrades[index] + 0.01)}; display:inline-block;"></i>
+          ${fallbackGrades[index]}${fallbackGrades[index + 1] ? `&ndash;${fallbackGrades[index + 1]}` : "+"}
+        </div>`;
+    }
+
+    return div;
+  };
+
+  return legend;
 }
 
-function getColor(percentage, bins) {
-  if (Array.isArray(bins) && bins.length > 0) {
-    const match = bins.find((bin) => percentage >= bin.min && percentage < bin.max) ?? bins[bins.length - 1];
-    return defaultGetColor(percentage);
+function shareLookup(payload) {
+  const rows = payload?.precinctGroupShares;
+  if (Array.isArray(rows)) {
+    return Object.fromEntries(
+      rows
+        .filter((row) => row?.geoid != null && Number.isFinite(row?.share))
+        .map((row) => [String(row.geoid), Number(row.share)]),
+    );
   }
-  return defaultGetColor(percentage);
+  return payload?.precinctGroupShareByGeoid ?? {};
 }
 
-function fallbackFeaturePercent(feature) {
-  const geoid = String(feature?.properties?.GEOID ?? feature?.id ?? "");
-  let hash = 0;
-  for (let index = 0; index < geoid.length; index += 1) {
-    hash = (hash * 31 + geoid.charCodeAt(index)) % 101;
-  }
-  return hash;
-}
+export default function MinorityHeatMap({ currMinority, switchMinority }) {
+  const { stateName } = useParams();
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const mapLayerRef = useRef(null);
+  const legendRef = useRef(null);
 
-function TopoJSON(props) {
-  const layerRef = useRef(null);
-  const { currMinority, data, bins, infoRef } = props;
+  const stateCode = toStateCode(stateName);
+  const group = normalizeMinorityGroup(currMinority);
 
-  function toPercent(feature) {
-    const groupMappings = {"Black": feature?.properties?.black, "Asian": feature?.properties?.asian, "Latino": feature?.properties?.hispanic};
-    const population = groupMappings[currMinority];
-    const res = population / feature?.properties?.total * 100;
-    if (res)
-      return population / feature?.properties?.total * 100;
-    else
-      return 0;
-  }
+  const topologyQuery = usePrecinctTopologyQuery(stateCode);
+  const heatmapQuery = useHeatmapQuery(stateCode, group);
 
-  function style(feature) {
+  const bins = heatmapQuery.data?.bins ?? [];
+  const precinctGroupShareByGeoid = useMemo(() => shareLookup(heatmapQuery.data), [heatmapQuery.data]);
+
+  const oregonGroups = ["Latino", "Asian"];
+  const scGroups = ["Black", "Latino"];
+
+  function styleFeature(feature) {
     return {
-      fillColor: getColor(toPercent(feature), bins),
+      fillColor: getHeatmapColor(getFeaturePercentage(feature, precinctGroupShareByGeoid), bins),
       weight: 2,
       opacity: 1,
       color: "white",
@@ -60,204 +83,128 @@ function TopoJSON(props) {
     };
   }
 
-  function highlightFeature(event) {
-    const layer = event.target;
+  function createMapInstance(target) {
+    delete target._leaflet_id;
+    target.innerHTML = "";
 
-    layer.setStyle({
-      weight: 2,
-      color: "#666",
-      dashArray: "",
-      fillOpacity: 0.7,
-    });
+    const map = L.map(target, {
+      zoomControl: false,
+      doubleClickZoom: false,
+      keyboard: false,
+      zoomSnap: 0.1,
+      minZoom: stateName === "Oregon" ? 6.1 : 6.9,
+      maxBounds: stateName === "Oregon" ? [[47, -125], [41, -114.4]] : [[35.6, -83.3], [31.5, -77.5]],
+    }).setView(stateName === "Oregon" ? [44.1, -119.6] : [33.33, -80.5], stateName === "Oregon" ? 6.3 : 7.1);
 
-    layer.bringToFront();
+    L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
+      attribution: '&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
 
-    if (infoRef.current) {
-      infoRef.current.update(toPercent(layer.feature).toFixed(2));
-    }
+    return map;
   }
 
-  function resetHighlight(event) {
-    if (!layerRef.current) {
-      return;
-    }
-
-    layerRef.current.resetStyle(event.target);
-
-    if (infoRef.current) {
-      infoRef.current.update();
-    }
-  }
-
-  function onEachFeature(feature, layer) {
-    layer.on({
-      mouseover: highlightFeature,
-      mouseout: resetHighlight,
-    });
-  }
+  const minorityOptions = stateName === "Oregon"
+    ? oregonGroups.map((minority) => (
+      <option key={minority} value={minority}>
+        {minority}
+      </option>
+    ))
+    : scGroups.map((minority) => (
+      <option key={minority} value={minority}>
+        {minority}
+      </option>
+    ));
 
   useEffect(() => {
-    const layer = layerRef.current;
-    layer.clearLayers();
-    layer.addData(topologyToFeatureCollection(data));
-  }, [data]);
+    const target = mapContainerRef.current;
 
-  return <GeoJSON data={topologyToFeatureCollection(data)} ref={layerRef} style={style} onEachFeature={onEachFeature} />;
-}
-
-function Info({ infoRef }) {
-  const map = useMap();
-
-  useEffect(() => {
-    const info = L.control({ position: "topright" });
-
-    info.onAdd = function onAdd() {
-      this._div = L.DomUtil.create("div", "info");
-      this.update();
-      return this._div;
-    };
-
-    info.update = function update(props) {
-      this._div.innerHTML =
-        `<h4>Population Percentage</h4>` +
-        (props ? `<b>${props}%</b><br />` : "Hover over a precinct");
-    };
-
-    info.addTo(map);
-    infoRef.current = info;
-
-    return () => {
-      info.remove();
-      infoRef.current = null;
-    };
-  }, [map, infoRef]);
-
-  return null;
-}
-
-function Legend({ bins }) {
-  const map = useMap();
-
-  useEffect(() => {
-    const legend = L.control({ position: "bottomright" });
-
-    legend.onAdd = function onAdd() {
-      const div = L.DomUtil.create("div", "info legend");
-      const fallbackGrades = [0, 10, 20, 30, 40, 50, 60, 70, 80];
-
-      div.innerHTML += "<h4>% Population</h4>";
-
-      if (Array.isArray(bins) && bins.length > 0) {
-        bins.forEach((bin) => {
-          const label = bin.max >= 100 ? `${bin.min}+` : `${bin.min}-${bin.max}`;
-          div.innerHTML += `
-            <div style="display:flex; align-items:center; margin-bottom:4px;">
-              <i style="background:${bin.color}; display:inline-block;"></i>
-              ${label}
-            </div>`;
-        });
-        return div;
-      }
-
-      for (let index = 0; index < fallbackGrades.length; index += 1) {
-        div.innerHTML += `
-          <div style="display:flex; align-items:center; margin-bottom:4px;">
-            <i style="background:${defaultGetColor(fallbackGrades[index] + 0.01)}; display:inline-block;"></i>
-            ${fallbackGrades[index]}${fallbackGrades[index + 1] ? `&ndash;${fallbackGrades[index + 1]}` : "+"}
-          </div>`;
-      }
-
-      return div;
-    };
-
-    legend.addTo(map);
-
-    return () => {
-      legend.remove();
-    };
-  }, [bins, map]);
-
-  return null;
-}
-
-export default function MinorityHeatMap({ currMinority, switchMinority }) {
-  const { stateName } = useParams();
-  const [bins, setBins] = useState([]);
-  const [topologyData, setTopologyData] = useState(null);
-  const [geometryLoadFailed, setGeometryLoadFailed] = useState(false);
-  const infoRef = useRef(null);
-
-  const OregonGroups = ["Latino", "Asian"];
-  const SCGroups = ["Black", "Latino"];
-  const minorityOptions = stateName === "Oregon" ?
-    OregonGroups.map((minority) =>
-    <option
-      key={minority}
-      value={minority}
-    >
-      {minority}
-    </option>)
-  : SCGroups.map((minority) =>
-    <option
-      key={minority}
-      value={minority}
-    >
-      {minority}
-    </option>);
-
-  useEffect(() => {
-    let isActive = true;
-    const stateCode = stateName === "Oregon" ? "OR" : stateName === "South Carolina" ? "SC" : null;
-    const group = currMinority?.trim().toLowerCase().replace(/\s+/g, "_");
-
-    if (!stateCode || !group) {
-      setBins([]);
-      setTopologyData(null);
-      setGeometryLoadFailed(true);
+    if (!target || !topologyQuery.data?.features?.length) {
       return undefined;
     }
 
-    setGeometryLoadFailed(false);
-
-    (async () => {
-      try {
-        const response = await axios.get(`/api/states/${stateCode}/heatmap/precincts`, { params: { group } });
-        if (isActive) {
-          setBins(response.data?.bins ?? []);
-        }
-      } catch {
-        if (isActive) {
-          setBins([]);
-        }
-      }
-    })();
-
-    (async () => {
-      try {
-        const response = await axios.get(`/api/states/${stateCode}/precincts/topology`);
-        if (isActive) {
-          setTopologyData(response.data);
-          setGeometryLoadFailed(false);
-        }
-      } catch {
-        if (isActive) {
-          setTopologyData(null);
-          setGeometryLoadFailed(true);
-        }
-      }
-    })();
+    const map = createMapInstance(target);
+    mapRef.current = map;
 
     return () => {
-      isActive = false;
+      mapLayerRef.current = null;
+      legendRef.current = null;
+      map.remove();
+      if (mapRef.current === map) {
+        mapRef.current = null;
+      }
+      delete target._leaflet_id;
+      target.innerHTML = "";
     };
-  }, [currMinority, stateName]);
+  }, [stateName, topologyQuery.data]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !topologyQuery.data?.features?.length || Object.keys(precinctGroupShareByGeoid).length === 0) {
+      return undefined;
+    }
+
+    if (mapLayerRef.current) {
+      map.removeLayer(mapLayerRef.current);
+      mapLayerRef.current = null;
+    }
+
+    if (legendRef.current) {
+      map.removeControl(legendRef.current);
+      legendRef.current = null;
+    }
+
+    const legend = createLegendControl(bins);
+    legend.addTo(map);
+    legendRef.current = legend;
+
+    const layer = L.geoJSON(topologyQuery.data, {
+      style: styleFeature,
+      onEachFeature(_feature, featureLayer) {
+        featureLayer.on({
+          mouseover(event) {
+            event.target.setStyle({
+              weight: 2,
+              color: "#666",
+              dashArray: "",
+              fillOpacity: 0.7,
+            });
+            event.target.bringToFront();
+          },
+          mouseout(event) {
+            layer.resetStyle(event.target);
+          },
+        });
+      },
+    }).addTo(map);
+    mapLayerRef.current = layer;
+
+    const bounds = layer.getBounds();
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, {
+        animate: false,
+        padding: [12, 12],
+      });
+    }
+
+    return () => {
+      if (mapLayerRef.current === layer) {
+        map.removeLayer(layer);
+        mapLayerRef.current = null;
+      }
+
+      if (legendRef.current === legend) {
+        map.removeControl(legend);
+        legendRef.current = null;
+      }
+    };
+  }, [bins, precinctGroupShareByGeoid, topologyQuery.data]);
 
   if (!stateName) {
     return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Error: State not found</div>;
   }
 
-  if (!topologyData) {
-    if (geometryLoadFailed) {
+  if (!topologyQuery.data) {
+    if (topologyQuery.isError) {
       return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Unable to load precinct topology</div>;
     }
     return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Loading precinct topology...</div>;
@@ -267,28 +214,12 @@ export default function MinorityHeatMap({ currMinority, switchMinority }) {
     <>
       <div className="minority-selector-container">
         <label htmlFor="minoritySelector" style={{ fontWeight: "bolder" }}>Select a racial group: </label>
-        <select name="minoritySelector" value={currMinority} onChange={(e) => {switchMinority(e.target.value)}}>
+        <select name="minoritySelector" value={currMinority} onChange={(event) => { switchMinority(event.target.value); }}>
           {minorityOptions}
         </select>
       </div>
       <div id="minoritymap">
-        <MapContainer center={stateName === "Oregon" ? [44.1, -119.6] : [33.33, -80.5]}
-          zoom={stateName === "Oregon" ? 6.3 : 7.1}
-          zoomSnap={0.1}
-          minZoom={stateName === "Oregon" ? 6.1 : 6.9}
-          zoomControl={false}
-          doubleClickZoom={false}
-          keyboard={false}
-          maxBounds={stateName === "Oregon" ? [[47, -125], [41, -114.4]] : [[35.6, -83.3], [31.5, -77.5]]}
-          className="minorityLeafletMap">
-          <TileLayer
-            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
-          />
-          <TopoJSON currMinority={currMinority} data={topologyData} bins={bins} infoRef={infoRef} />
-          <Info infoRef={infoRef} />
-          <Legend bins={bins} />
-        </MapContainer>
+        <div ref={mapContainerRef} className="minorityLeafletMap" />
       </div>
     </>
   );
