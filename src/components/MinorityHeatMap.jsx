@@ -2,25 +2,26 @@ import React, { useEffect, useRef, useState } from "react";
 import "../../styles/minority-map.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import L from "leaflet";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import { topologyToFeatureCollection } from "../utils/topology.js";
 
 function defaultGetColor(percentage) {
-  return percentage > 80 ? "#004529" :
-    percentage > 70 ? "#006837" :
-      percentage > 60 ? "#238443" :
-        percentage > 50 ? "#41ab5d" :
-          percentage > 40 ? "#78c679" :
-            percentage > 30 ? "#addd8e" :
-              percentage > 20 ? "#d9f0a3" :
-                percentage > 10 ? "#f7fcb9" :
+  return percentage > 70 ? "#004529" :
+    percentage > 60 ? "#006837" :
+      percentage > 50 ? "#238443" :
+        percentage > 40 ? "#41ab5d" :
+          percentage > 30 ? "#78c679" :
+            percentage > 20 ? "#addd8e" :
+              percentage > 10 ? "#d9f0a3" :
+                percentage > 5 ? "#f7fcb9" :
                   "#ffffe5";
 }
 
 function getColor(percentage, bins) {
   if (Array.isArray(bins) && bins.length > 0) {
     const match = bins.find((bin) => percentage >= bin.min && percentage < bin.max) ?? bins[bins.length - 1];
-    return match?.color ?? defaultGetColor(percentage);
+    return defaultGetColor(percentage);
   }
   return defaultGetColor(percentage);
 }
@@ -36,11 +37,21 @@ function fallbackFeaturePercent(feature) {
 
 function TopoJSON(props) {
   const layerRef = useRef(null);
-  const { data, bins } = props;
+  const { currMinority, data, bins, infoRef } = props;
+
+  function toPercent(feature) {
+    const groupMappings = {"Black": feature?.properties?.black, "Asian": feature?.properties?.asian, "Latino": feature?.properties?.hispanic};
+    const population = groupMappings[currMinority];
+    const res = population / feature?.properties?.total * 100;
+    if (res)
+      return population / feature?.properties?.total * 100;
+    else
+      return 0;
+  }
 
   function style(feature) {
     return {
-      fillColor: getColor(fallbackFeaturePercent(feature), bins),
+      fillColor: getColor(toPercent(feature), bins),
       weight: 2,
       opacity: 1,
       color: "white",
@@ -60,10 +71,22 @@ function TopoJSON(props) {
     });
 
     layer.bringToFront();
+
+    if (infoRef.current) {
+      infoRef.current.update(toPercent(layer.feature).toFixed(2));
+    }
   }
 
   function resetHighlight(event) {
+    if (!layerRef.current) {
+      return;
+    }
+
     layerRef.current.resetStyle(event.target);
+
+    if (infoRef.current) {
+      infoRef.current.update();
+    }
   }
 
   function onEachFeature(feature, layer) {
@@ -79,7 +102,37 @@ function TopoJSON(props) {
     layer.addData(topologyToFeatureCollection(data));
   }, [data]);
 
-  return <GeoJSON ref={layerRef} style={style} onEachFeature={onEachFeature} />;
+  return <GeoJSON data={topologyToFeatureCollection(data)} ref={layerRef} style={style} onEachFeature={onEachFeature} />;
+}
+
+function Info({ infoRef }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const info = L.control({ position: "topright" });
+
+    info.onAdd = function onAdd() {
+      this._div = L.DomUtil.create("div", "info");
+      this.update();
+      return this._div;
+    };
+
+    info.update = function update(props) {
+      this._div.innerHTML =
+        `<h4>Population Percentage</h4>` +
+        (props ? `<b>${props}%</b><br />` : "Hover over a precinct");
+    };
+
+    info.addTo(map);
+    infoRef.current = info;
+
+    return () => {
+      info.remove();
+      infoRef.current = null;
+    };
+  }, [map, infoRef]);
+
+  return null;
 }
 
 function Legend({ bins }) {
@@ -132,6 +185,7 @@ export default function MinorityHeatMap({ currMinority, switchMinority }) {
   const [bins, setBins] = useState([]);
   const [topologyData, setTopologyData] = useState(null);
   const [geometryLoadFailed, setGeometryLoadFailed] = useState(false);
+  const infoRef = useRef(null);
 
   const OregonGroups = ["Latino", "Asian"];
   const SCGroups = ["Black", "Latino"];
@@ -155,7 +209,6 @@ export default function MinorityHeatMap({ currMinority, switchMinority }) {
     let isActive = true;
     const stateCode = stateName === "Oregon" ? "OR" : stateName === "South Carolina" ? "SC" : null;
     const group = currMinority?.trim().toLowerCase().replace(/\s+/g, "_");
-    console.log(currMinority)
 
     if (!stateCode || !group) {
       setBins([]);
@@ -232,7 +285,8 @@ export default function MinorityHeatMap({ currMinority, switchMinority }) {
             attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
           />
-          <TopoJSON data={topologyData} bins={bins} />
+          <TopoJSON currMinority={currMinority} data={topologyData} bins={bins} infoRef={infoRef} />
+          <Info infoRef={infoRef} />
           <Legend bins={bins} />
         </MapContainer>
       </div>
