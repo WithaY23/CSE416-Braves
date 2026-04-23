@@ -55,7 +55,9 @@ class StateControllerTest {
                 .andExpect(header().exists(HttpHeaders.ETAG))
                 .andExpect(jsonPath("$.type").value("Topology"))
                 .andExpect(jsonPath("$.objects.OR.geometries[0].properties.GEOID").exists())
-                .andExpect(jsonPath("$.objects.OR.geometries[0].properties.votes_total").doesNotExist());
+                .andExpect(jsonPath("$.objects.OR.geometries[0].properties.total").doesNotExist())
+                .andExpect(jsonPath("$.objects.OR.geometries[0].properties.democratic_votes").doesNotExist())
+                .andExpect(jsonPath("$.objects.OR.geometries[0].properties.republican_votes").doesNotExist());
     }
 
     @Test

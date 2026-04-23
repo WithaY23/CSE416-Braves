@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -110,7 +111,7 @@ public class SeedDataLoader implements ApplicationRunner {
         if (stateSummaryRepository.count() == 0) seedStateSummaries();
         if (ensembleSummaryRepository.count() == 0) seedEnsembleSummaries();
         if (districtTableRepository.count() == 0) seedDistrictTables();
-        seedHeatmapBins();
+        seedHeatmapBins(root);
         seedGingles(root);
         seedGinglesTables(root);
         if (eiSupportResultRepository.count() == 0) seedEiSupport(root);
@@ -290,30 +291,137 @@ public class SeedDataLoader implements ApplicationRunner {
         )));
     }
 
-    private void seedHeatmapBins() {
+    private void seedHeatmapBins(Path root) {
         heatmapBinRepository.deleteAll();
-        heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "OR", null, "latino", null, null, "TOTAL", heatmapPayload("OR", "Latino")));
-        heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "OR", null, "asian", null, null, "TOTAL", heatmapPayload("OR", "Asian")));
-        heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "SC", null, "black", null, null, "TOTAL", heatmapPayload("SC", "Black")));
-        heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "SC", null, "latino", null, null, "TOTAL", heatmapPayload("SC", "Latino")));
+        try {
+            heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "OR", null, "latino", null, null, "TOTAL", heatmapPayload(root, "OR", "Latino")));
+            heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "OR", null, "asian", null, null, "TOTAL", heatmapPayload(root, "OR", "Asian")));
+            heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "SC", null, "black", null, null, "TOTAL", heatmapPayload(root, "SC", "Black")));
+            heatmapBinRepository.save(buildDoc(new HeatmapBinDocument(), "SC", null, "latino", null, null, "TOTAL", heatmapPayload(root, "SC", "Latino")));
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to seed heatmap precinct shares", exception);
+        }
     }
 
-    private Map<String, Object> heatmapPayload(String state, String group) {
-        return Map.of(
-                "schemaVersion", "v1",
-                "state", state,
-                "group", group,
-                "binUnit", "percent",
-                "bins", List.of(
-                        Map.of("min", 0, "max", 10, "color", "#f7fcb9"),
-                        Map.of("min", 10, "max", 20, "color", "#d9f0a3"),
-                        Map.of("min", 20, "max", 30, "color", "#addd8e"),
-                        Map.of("min", 30, "max", 40, "color", "#78c679"),
-                        Map.of("min", 40, "max", 50, "color", "#41ab5d"),
-                        Map.of("min", 50, "max", 100, "color", "#006837")
-                ),
-                "precomputed", true
+    private Map<String, Object> heatmapPayload(Path root, String state, String group) throws IOException {
+        Path precinctPath = root.resolve("server/src/main/resources/geometry/" + state + "-precincts-with-results.topology.json");
+        Map<String, Object> topo = readJsonMap(precinctPath);
+        Map<String, Double> shareByGeoid = buildHeatmapShares(topo, state, group);
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("schemaVersion", "v1");
+        payload.put("state", state);
+        payload.put("group", group);
+        payload.put("binUnit", "percent");
+        payload.put("bins", heatmapBinsForShares(shareByGeoid.values()));
+        payload.put("precomputed", true);
+        payload.put("precinctGroupShares", shareRows(shareByGeoid));
+        return payload;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Double> buildHeatmapShares(Map<String, Object> topo, String state, String group) {
+        Map<String, Object> objects = (Map<String, Object>) topo.get("objects");
+        Map<String, Object> stateObj = (Map<String, Object>) objects.get(state);
+        List<Map<String, Object>> geometries = (List<Map<String, Object>>) stateObj.get("geometries");
+
+        String demographicKey = groupToDemographicKey(group);
+        Map<String, Double> shareByGeoid = new LinkedHashMap<>();
+        for (Map<String, Object> geometry : geometries) {
+            Map<String, Object> properties = (Map<String, Object>) geometry.get("properties");
+            String geoid = String.valueOf(properties.get("GEOID"));
+            double share;
+            if (demographicKey != null && properties.containsKey(demographicKey) && properties.containsKey("total")) {
+                Number count = (Number) properties.get(demographicKey);
+                Number total = (Number) properties.get("total");
+                share = total.intValue() > 0 ? count.doubleValue() / total.doubleValue() : 0.0;
+            } else {
+                share = syntheticHeatmapShare(state, group, geoid);
+            }
+            shareByGeoid.put(geoid, share);
+        }
+        return shareByGeoid;
+    }
+
+    private String groupToDemographicKey(String group) {
+        return switch (group) {
+            case "Latino" -> "hispanic";
+            case "Asian" -> "asian";
+            case "Black" -> "black";
+            case "White" -> "white";
+            default -> null;
+        };
+    }
+
+    private List<Map<String, Object>> heatmapBinsForShares(Iterable<Double> shares) {
+        List<Map<String, Object>> allBins = List.of(
+                Map.of("min", 0, "max", 10, "color", "#f7fcb9"),
+                Map.of("min", 10, "max", 20, "color", "#d9f0a3"),
+                Map.of("min", 20, "max", 30, "color", "#addd8e"),
+                Map.of("min", 30, "max", 40, "color", "#78c679"),
+                Map.of("min", 40, "max", 50, "color", "#41ab5d"),
+                Map.of("min", 50, "max", 100, "color", "#006837")
         );
+
+        List<Map<String, Object>> activeBins = new ArrayList<>();
+        for (Map<String, Object> bin : allBins) {
+            int min = (Integer) bin.get("min");
+            int max = (Integer) bin.get("max");
+            boolean active = false;
+            for (double share : shares) {
+                int percentage = (int) Math.round(share * 100);
+                if ((percentage >= min && percentage < max) || (max == 100 && percentage >= min)) {
+                    active = true;
+                    break;
+                }
+            }
+            if (active) {
+                activeBins.add(bin);
+            }
+        }
+        return activeBins;
+    }
+
+    private List<Map<String, Object>> shareRows(Map<String, Double> shareByGeoid) {
+        List<Map<String, Object>> rows = new ArrayList<>(shareByGeoid.size());
+        for (Map.Entry<String, Double> entry : shareByGeoid.entrySet()) {
+            rows.add(Map.of("geoid", entry.getKey(), "share", entry.getValue()));
+        }
+        return rows;
+    }
+
+    private double syntheticHeatmapShare(String state, String group, String geoid) {
+        String countyToken = geoid.contains("-") ? geoid.substring(0, geoid.indexOf('-')) : geoid;
+        double countySignal = normalizedHash(state + ":" + group + ":county:" + countyToken);
+        double precinctSignal = normalizedHash(state + ":" + group + ":precinct:" + geoid);
+
+        double baseline;
+        double countySpread;
+        double precinctSpread;
+        if ("OR".equals(state) && "Latino".equals(group)) {
+            baseline = 0.18;
+            countySpread = 0.22;
+            precinctSpread = 0.08;
+        } else if ("OR".equals(state) && "Asian".equals(group)) {
+            baseline = 0.08;
+            countySpread = 0.12;
+            precinctSpread = 0.05;
+        } else if ("SC".equals(state) && "Black".equals(group)) {
+            baseline = 0.32;
+            countySpread = 0.26;
+            precinctSpread = 0.10;
+        } else {
+            baseline = 0.09;
+            countySpread = 0.12;
+            precinctSpread = 0.05;
+        }
+
+        double share = baseline + (countySignal - 0.5) * countySpread + (precinctSignal - 0.5) * precinctSpread;
+        return Math.max(0.01, Math.min(0.65, share));
+    }
+
+    private double normalizedHash(String value) {
+        return (Integer.toUnsignedLong(value.hashCode()) % 10_000L) / 9_999.0;
     }
 
     private void seedGingles(Path root) throws IOException {

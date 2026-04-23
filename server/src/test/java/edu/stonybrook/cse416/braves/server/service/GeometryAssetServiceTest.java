@@ -40,6 +40,8 @@ class GeometryAssetServiceTest {
 
         assertEquals("Topology", topology.get("type"));
         assertEquals(Set.of("GEOID"), properties.keySet());
+        assertFalse(properties.containsKey("total"));
+        assertFalse(properties.containsKey("democratic_votes"));
     }
 
     @Test
