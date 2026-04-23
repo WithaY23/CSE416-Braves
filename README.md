@@ -6,4 +6,3 @@ CSE 416 Braves Team Final Project
 For reproducible backend and app startup instructions, use:
 
 - [server/README.md](/Users/sahilparikh/Documents/CSE 416 Braves/server/README.md)
-- [docs/caching-architecture.md](/Users/sahilparikh/Documents/CSE 416 Braves/docs/caching-architecture.md)

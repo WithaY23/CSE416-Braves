@@ -9,12 +9,8 @@ __pycache__/
 .venv/
 *.log
 coverage/
-playwright-report/
-test-results/
-output/playwright/
 
 .claude/
-.cursor/
 AGENTS.md
 CLAUDE.md
 nimbalyst-local/
