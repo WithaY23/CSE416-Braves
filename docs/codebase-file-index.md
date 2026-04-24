@@ -24,8 +24,9 @@
 | `schema-field-guide.md` | MongoDB collection and field reference for all 21+ collections |
 | `mongo-schema-and-use-case-mapping.md` | Maps MongoDB collections to the GUI use cases they support |
 | `topojson-implementation.md` | Architecture rationale for serving geometry as static classpath TopoJSON instead of MongoDB |
+| `caching-architecture.md` | Two-tier caching design: TanStack Query (frontend) + Caffeine + HTTP ETag (backend); includes server-restart invalidation flow |
 | `chart-specs-required-and-preferred-recharts.md` | Recharts implementation specs for GUI-9, 12, 13, 15, 16, 17, 18 |
-| `chart-handoff-contracts.md` | Payload schemas and handoff contracts between prototype and full integration |
+| `chart-handoff-contracts.md` | Payload schemas and handoff contracts for integrating chart payloads into the current frontend |
 | `api-test-data-catalog.md` | Catalog of test data payloads with semantic descriptions and validation procedures |
 | `codebase-file-index.md` | This file — one-line descriptions of every source file for quick navigation |
 
@@ -53,6 +54,7 @@
 | File | Purpose |
 |------|---------|
 | `HealthController.java` | `/health` and `/health/db` endpoints for service and MongoDB connectivity checks |
+| `MetaController.java` | `GET /api/meta` — returns server `bootTime` (ISO-8601) for frontend TanStack Query cache invalidation on restart |
 | `StateController.java` | All ~25 REST routes implementing GUI-1 through GUI-24 (state listing, topology, heatmaps, Gingles, EI, ensembles, VRA, minority effectiveness) |
 
 ### `config/`
@@ -125,8 +127,8 @@ Each repository provides Spring Data MongoDB CRUD + custom queries for its docum
 
 | File | Purpose |
 |------|---------|
-| `OR-precincts-with-results.topology.json` | Oregon precinct boundaries as TopoJSON (served by `GeometryAssetService`) |
-| `SC-precincts-with-results.topology.json` | South Carolina precinct boundaries as TopoJSON |
+| `precincts_or.json` | Oregon precinct boundaries with demographic fields for the precinct heatmap |
+| `precincts_sc.json` | South Carolina precinct boundaries with demographic fields for the precinct heatmap |
 | `us-states.json` | US state boundaries for splash page map |
 
 ### Tests
@@ -144,8 +146,8 @@ Each repository provides Spring Data MongoDB CRUD + custom queries for its docum
 
 | File | Purpose |
 |------|---------|
-| `main.jsx` | React entry point; mounts root inside `BrowserRouter` |
-| `App.jsx` | Route definitions: `/` splash, `/state/:stateName` state view, analysis sub-routes; lazy-loads analysis components |
+| `main.jsx` | React entry point; mounts root inside `QueryClientProvider` + `BrowserRouter` |
+| `App.jsx` | Route definitions + `CacheBuster` component that detects server restarts and clears TanStack Query cache |
 
 ### `components/`
 
@@ -172,6 +174,14 @@ Each repository provides Spring Data MongoDB CRUD + custom queries for its docum
 | `VRAAnalysis.jsx` | VRA impact analysis view container — GUI-20 |
 | `Compare.jsx` | Side-by-side district plan comparison — GUI-8 |
 
+### `lib/` & `queries/`
+
+| File | Purpose |
+|------|---------|
+| `lib/queryClient.js` | TanStack QueryClient with defaults: 5-min staleTime, 30-min gcTime, no window-focus refetch |
+| `lib/queryKeys.js` | Centralized query key factory — all `useQuery` calls reference these keys for consistent invalidation |
+| `queries/stateQueries.js` | One `useQuery` hook per API endpoint (20 hooks); topology hooks use `staleTime: Infinity` |
+
 ### `data/` & `utils/`
 
 | File | Purpose |
@@ -182,39 +192,17 @@ Each repository provides Spring Data MongoDB CRUD + custom queries for its docum
 | `data/sc.js` | South Carolina reference data |
 | `data/scCongressionalDistricts.js` | South Carolina district definitions and metadata |
 | `data/us-states.json` | US state boundaries TopoJSON (splash page) |
-| `data/OR-precincts-with-results.json` | Oregon precinct TopoJSON for heatmap rendering |
-| `data/SC-precincts-with-results.json` | South Carolina precinct TopoJSON for heatmap rendering |
+| `data/precincts_or.json` | Oregon precinct TopoJSON source used for backend precinct heatmap geometry |
+| `data/precincts_sc.json` | South Carolina precinct TopoJSON source used for backend precinct heatmap geometry |
 | `utils/chartFormat.js` | Chart formatting: `pct()` percentage formatter, share-to-percentage conversion, axis label helpers |
 | `utils/topology.js` | TopoJSON → GeoJSON FeatureCollection conversion for Leaflet rendering |
+| `utils/stateUtils.js` | Shared helpers: `toStateCode`, `toGroupKey`, `defaultGroup`, `groupOptionsForState` — used across all analysis components |
 
 ### Tests
 
 | File | Purpose |
 |------|---------|
 | `src/test/setupTests.js` | Vitest environment setup with testing-library/jsdom |
-
----
-
-## Chart Demo (`chart-demo/`)
-
-Standalone Vite app for validating chart payloads before backend integration.
-
-| File | Purpose |
-|------|---------|
-| `README.md` | Demo docs: purpose, mock data schema, state structure, chart semantics for GUI-9/12/16/17/13/15/18 |
-| `src/App.jsx` | Demo shell: chart selector, state switcher (OR/SC), payload loader, chart router |
-| `src/components/Controls.jsx` | Dropdown UI for chart/state selection |
-| `src/data/payloads.js` | Central mock data catalog keyed by use case (GUI-9, 12, 13, 15, 16, 17, 18) and state |
-| `src/charts/GinglesScatterChart.jsx` | Scatter plot demo with regression curves — GUI-9 |
-| `src/charts/EiSupportChart.jsx` | Filled area chart demo — GUI-12 |
-| `src/charts/EnsembleSplitsChart.jsx` | Bar chart demo for seat split comparison — GUI-16 |
-| `src/charts/BoxWhiskerChart.jsx` | Custom SVG box-whisker demo — GUI-17 |
-| `src/charts/EiPrecinctBarCIChart.jsx` | Bar + error whisker demo — GUI-13 |
-| `src/charts/EiKdeChart.jsx` | Filled area overlay demo for KDE density comparison — GUI-15 |
-| `src/charts/VoteShareSeatShareChart.jsx` | Line curve demo for vote share vs. seat share — GUI-18 (not implemented) |
-| `src/utils/format.js` | Percentage and count formatting shared across chart components |
-
----
 
 ## Mock Data (`mock-data/v1/`)
 
