@@ -48,7 +48,7 @@ export default function App() {
   // State variable for switching simulation data
   const [currSimData, switchSimData] = useState('');
   // Store relevant data that will ALMOST ALWAYS be used here, others can be pulled on demand
-  // Minority data
+  // Minority data (only being used by old components)
   const minorityData = [
     {
       stateName: 'Oregon',
@@ -78,7 +78,7 @@ export default function App() {
             <SideBar currPage={currPage} switchPage={switchPage} currMap={currMap} switchMap={switchMap} precinctMapSelectable={true} currPolarization={currPolarization} switchPolarization={switchPolarization} currSimData={currSimData} switchSimData={switchSimData} />
             <span className="main-container">
               <Suspense fallback={lazyFallback}>
-                <Gingles currPage={currPage} switchPage={switchPage} minorityData={minorityData} />
+                <Gingles currMap={currMap} currMinority={currMinority} switchMinority={switchMinority} switchPolarization={switchPolarization} />
               </Suspense>
             </span>
           </>

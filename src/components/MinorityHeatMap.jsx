@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import L from "leaflet";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import { topologyToFeatureCollection } from "../utils/topology.js";
-import { toStateCode, toGroupKey } from "../utils/stateUtils.js";
+import { toStateCode, toGroupKey, defaultGroup, groupOptionsForState } from "../utils/stateUtils.js";
 import { useHeatmap, usePrecinctTopology } from "../queries/stateQueries.js";
 import MinoritySelector from "./MinoritySelector.jsx";
 
@@ -79,6 +79,12 @@ function LegendControl({ bins }) {
 export default function MinorityHeatMap({ currMinority, switchMinority }) {
   const { stateName } = useParams();
   const stateCode = toStateCode(stateName);
+
+  useEffect(() => {
+    if (!groupOptionsForState(stateName).includes(currMinority))
+      switchMinority(defaultGroup(stateCode));
+  }, []);
+
   const group = toGroupKey(currMinority);
   const infoRef = useRef(null);
 

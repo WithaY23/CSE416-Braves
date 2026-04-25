@@ -64,7 +64,7 @@ function EiKdePanel({ payload, loading, failed, minority }) {
         <ResponsiveContainer>
           <ComposedChart data={data} margin={{ top: 12, right: 18, left: 12, bottom: 40 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#d4d4d8" />
-            <XAxis dataKey="x" type="number" domain={payload.domain ?? ["auto", "auto"]} tickFormatter={v => v.toFixed(2)} tick={{ fontSize: 12 }} label={{ value: "Support gap (minority − non-minority)", position: "insideBottom", offset: -20, fontSize: 11 }} />
+            <XAxis dataKey="x" type="number" domain={payload.domain ?? ["auto", "auto"]} tickFormatter={v => v.toFixed(2)} tick={{ fontSize: 12 }} label={{ value: `Support gap (${minority} − non-${minority})`, position: "insideBottom", offset: -20, fontSize: 11 }} />
             <YAxis tick={{ fontSize: 12 }} label={{ value: "Density", angle: -90, position: "insideLeft", offset: -2, style: { fontSize: 12 } }} />
             <Tooltip formatter={(v) => [v.toFixed(4), "Density"]} labelFormatter={v => `Gap: ${Number(v).toFixed(3)}`} />
             <RechartsBar dataKey="density" name="Density" fill="#2a9d8f44" stroke="none" isAnimationActive={false} />
@@ -87,6 +87,11 @@ export default function EI({ currMap, currMinority, switchMinority, currPolariza
   const eiBar = useEiPrecinctBarCi(stateCode, groupKey);
   const eiKde = useEiKde(stateCode, groupKey);
 
+  useEffect(() => {
+    if (!groupOptionsForState(stateName).includes(currMinority))
+      switchMinority(defaultGroup(stateCode));
+  }, []);
+
   useEffect(() => () => switchPolarization(''), []);
 
   if (!stateCode) return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Error: State not found</div>;
@@ -96,7 +101,7 @@ export default function EI({ currMap, currMinority, switchMinority, currPolariza
   function renderPanel() {
     if (currPolarization === "EI Analysis") return (<><MinoritySelector stateName={stateName} currMinority={currMinority} switchMinority={switchMinority} /><EiAnalysisPanel payload={eiSupp.data} loading={eiSupp.isLoading} failed={eiSupp.isError} minority={currMinority} /></>);
     if (currPolarization === "EI Bar Chart") return <EiBarPanel payload={eiBar.data} loading={eiBar.isLoading} failed={eiBar.isError} />;
-    if (currPolarization === "EI KDE") return <EiKdePanel payload={eiKde.data} loading={eiKde.isLoading} failed={eiKde.isError} minority={currMinority} />;
+    if (currPolarization === "Polarization KDE") return <EiKdePanel payload={eiKde.data} loading={eiKde.isLoading} failed={eiKde.isError} minority={currMinority} />;
     return null;
   }
 

@@ -13,7 +13,7 @@ export function toGroupKey(minority) {
 }
 
 export function defaultGroup(stateCode) {
-  return stateCode === 'OR' ? 'latino' : 'black';
+  return stateCode === 'OR' ? 'Latino' : 'Black';
 }
 
 export function groupOptionsForState(stateName) {

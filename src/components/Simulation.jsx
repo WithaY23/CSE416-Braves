@@ -176,6 +176,11 @@ export default function Simulation({ currMap, currMinority, switchMinority, curr
   const meBw = useMeBoxWhisker(stateCode);
   const meHist = useMeHistogram(stateCode, groupKey);
 
+  useEffect(() => {
+    if (!groupOptionsForState(stateName).includes(currMinority))
+      switchMinority(defaultGroup(stateCode));
+  }, []);
+
   useEffect(() => () => switchSimData(''), []);
 
   const mapData = topo.data ? topologyToFeatureCollection(topo.data, "districts") : null;
