@@ -18,5 +18,7 @@ export const keys = {
   boxWhisker:      (s, g, type, m) => ['boxWhisker', s, g, type, m],
   vraImpact:       (s, g, e)       => ['vraImpact', s, g, e],
   meBoxWhisker:    (s, e)          => ['meBoxWhisker', s, e],
-  meHistogram:     (s, g, e)       => ['meHistogram', s, g, e],
+  meHistogram:        (s, g, e)          => ['meHistogram', s, g, e],
+  interestingPlanList:(s)                => ['interestingPlanList', s],
+  interestingPlan:    (s, planId)        => ['interestingPlan', s, planId],
 };

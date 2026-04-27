@@ -2,6 +2,7 @@ package edu.stonybrook.cse416.braves.server.service;
 
 import edu.stonybrook.cse416.braves.server.dto.StateOptionResponse;
 import edu.stonybrook.cse416.braves.server.model.BasePayloadDocument;
+import edu.stonybrook.cse416.braves.server.model.enums.PartyKey;
 import edu.stonybrook.cse416.braves.server.repository.*;
 import edu.stonybrook.cse416.braves.server.util.GroupThresholds;
 import edu.stonybrook.cse416.braves.server.util.StateCodeUtil;
@@ -14,12 +15,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BackendDataService {
     private static final String DEFAULT_ELECTION_ID = "2024_pres";
-    private static final Set<String> PARTY_KEYS = Set.of("DEM", "REP");
 
     private final StateRepository stateRepository;
     private final StateSummaryRepository stateSummaryRepository;
@@ -211,6 +211,15 @@ public class BackendDataService {
         );
     }
 
+    @Cacheable("interestingPlanList")
+    public List<Map<String, Object>> getInterestingPlanList(String stateIdInput) {
+        String stateId = normalizeState(stateIdInput);
+        return interestingPlanRepository.findByStateId(stateId)
+                .stream()
+                .map(doc -> payloadFrom(Optional.of(doc), ""))
+                .collect(Collectors.toList());
+    }
+
     @Cacheable("interestingPlan")
     public Map<String, Object> getInterestingPlan(String stateIdInput, String planIdInput) {
         String stateId = normalizeState(stateIdInput);
@@ -276,14 +285,7 @@ public class BackendDataService {
     }
 
     private String normalizeParty(String partyInput) {
-        if (partyInput == null || partyInput.isBlank()) {
-            throw new IllegalArgumentException("party is required");
-        }
-        String normalized = partyInput.trim().toUpperCase(Locale.US);
-        if (!PARTY_KEYS.contains(normalized)) {
-            throw new IllegalArgumentException("party must be DEM or REP");
-        }
-        return normalized;
+        return PartyKey.fromString(partyInput).getKey();
     }
 
     private String normalizePlanId(String planIdInput) {

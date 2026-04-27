@@ -455,7 +455,66 @@ Invariants: `rankSummaries.length = totalDistricts`; `min ≤ q1 ≤ median ≤ 
 
 ---
 
-### 2.15 `GET /api/states/{stateId}/districts/interesting?planId=` — GUI-19
+### 2.15 `GET /api/states/{stateId}/districts/interesting/list` — GUI-19 plan selector
+
+**Component:** `Compare` (plan selector dropdown)
+
+Returns an array of all interesting plans for the state. Each element has the same shape as the single-plan response below (§2.15b), including full `topology`. Use this endpoint to populate the plan selector; then fetch a specific plan via `?planId=`.
+
+```json
+[
+  {
+    "planId": "plan-42",
+    "planName": "Oregon Opportunity Corridor",
+    "ensembleType": "vra_constrained",
+    "reasonInteresting": "Maximum effective minority districts",
+    "summary": {
+      "repWins": 2,
+      "demWins": 4,
+      "effectiveMinorityDistricts": 3
+    },
+    "topology": {
+      "type": "Topology",
+      "objects": {
+        "districts": {
+          "type": "GeometryCollection",
+          "geometries": []
+        }
+      },
+      "arcs": [],
+      "bbox": [-124.6, 41.9, -116.5, 46.3]
+    }
+  },
+  {
+    "planId": "plan-43",
+    "planName": "Oregon Race-Blind Baseline",
+    "ensembleType": "race_blind",
+    "reasonInteresting": "Race-blind baseline for comparison",
+    "summary": {
+      "repWins": 3,
+      "demWins": 3,
+      "effectiveMinorityDistricts": 1
+    },
+    "topology": {
+      "type": "Topology",
+      "objects": {
+        "districts": {
+          "type": "GeometryCollection",
+          "geometries": []
+        }
+      },
+      "arcs": [],
+      "bbox": [-124.6, 41.9, -116.5, 46.3]
+    }
+  }
+]
+```
+
+Invariants per element: `topology.type = "Topology"`; `summary.repWins + summary.demWins = totalDistricts`. Returns an empty array `[]` when no plans are seeded for the state.
+
+---
+
+### 2.15b `GET /api/states/{stateId}/districts/interesting?planId=` — GUI-19
 
 **Component:** `InterestingMap`
 

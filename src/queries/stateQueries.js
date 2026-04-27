@@ -148,3 +148,19 @@ export function useMeHistogram(stateCode, group) {
     enabled: Boolean(stateCode) && Boolean(group),
   });
 }
+
+export function useInterestingPlanList(stateCode) {
+  return useQuery({
+    queryKey: keys.interestingPlanList(stateCode),
+    queryFn: () => get(`/api/states/${stateCode}/districts/interesting/list`),
+    enabled: Boolean(stateCode),
+  });
+}
+
+export function useInterestingPlan(stateCode, planId) {
+  return useQuery({
+    queryKey: keys.interestingPlan(stateCode, planId),
+    queryFn: () => get(`/api/states/${stateCode}/districts/interesting`, { planId }),
+    enabled: Boolean(stateCode) && Boolean(planId),
+  });
+}

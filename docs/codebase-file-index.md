@@ -97,12 +97,15 @@
 | `StateDocument.java` | State metadata and baseline information — GUI-1 |
 | `StateSummaryDocument.java` | State-level summary statistics (population, voting distribution, representative counts) — GUI-3 |
 | `VraImpactThresholdTableDocument.java` | VRA impact threshold table showing effectiveness metrics across minority groups — GUI-20 |
+| `model/enums/PartyKey.java` | Enum for EI party keys; values `DEM` / `REP`; used by `SeedDataLoader` and `BackendDataService.normalizeParty()` |
+| `model/enums/EnsembleType.java` | Enum for ensemble type strings; values `RACE_BLIND` ("race_blind") / `VRA_CONSTRAINED` ("vra_constrained") |
+| `model/enums/EnsembleSize.java` | Enum for ensemble size strings; values `TEST` ("test") / `FINAL` ("final") |
 
 ### `repository/` — Data Access Layer
 
 Each repository provides Spring Data MongoDB CRUD + custom queries for its document type. One repository per model:
 
-`BoxWhiskerResultRepository`, `DistrictTableRepository`, `EiKdeRepository`, `EiPrecinctBarCiRepository`, `EiSupportResultRepository`, `EnsembleSplitRepository`, `EnsembleSummaryRepository`, `GinglesResultRepository`, `GinglesTableRepository`, `HeatmapBinRepository`, `IngestManifestRepository`, `InterestingPlanRepository`, `MinorityEffectivenessBoxWhiskerRepository`, `MinorityEffectivenessHistogramRepository`, `RunManifestRepository`, `StateRepository`, `StateSummaryRepository`, `VraImpactThresholdTableRepository`
+`BoxWhiskerResultRepository`, `DistrictTableRepository`, `EiKdeRepository`, `EiPrecinctBarCiRepository`, `EiSupportResultRepository`, `EnsembleSplitRepository`, `EnsembleSummaryRepository`, `GinglesResultRepository`, `GinglesTableRepository`, `HeatmapBinRepository`, `IngestManifestRepository`, `InterestingPlanRepository` (provides `findByStateId` for listing all plans per state), `MinorityEffectivenessBoxWhiskerRepository`, `MinorityEffectivenessHistogramRepository`, `RunManifestRepository`, `StateRepository`, `StateSummaryRepository`, `VraImpactThresholdTableRepository`
 
 ### `service/` — Business Logic Layer
 

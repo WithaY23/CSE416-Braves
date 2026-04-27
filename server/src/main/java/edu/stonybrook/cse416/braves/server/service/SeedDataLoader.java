@@ -3,6 +3,9 @@ package edu.stonybrook.cse416.braves.server.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.stonybrook.cse416.braves.server.model.*;
+import edu.stonybrook.cse416.braves.server.model.enums.EnsembleSize;
+import edu.stonybrook.cse416.braves.server.model.enums.EnsembleType;
+import edu.stonybrook.cse416.braves.server.model.enums.PartyKey;
 import edu.stonybrook.cse416.braves.server.repository.*;
 import edu.stonybrook.cse416.braves.server.util.ProjectPathResolver;
 import org.slf4j.Logger;
@@ -107,9 +110,9 @@ public class SeedDataLoader implements ApplicationRunner {
         validatePrecinctCounts(root);
         validatePopulationRealism(root);
         if (stateRepository.count() == 0) seedStates();
-        if (stateSummaryRepository.count() == 0) seedStateSummaries();
+        seedStateSummaries();
         if (ensembleSummaryRepository.count() == 0) seedEnsembleSummaries();
-        if (districtTableRepository.count() == 0) seedDistrictTables();
+        seedDistrictTables();
         seedHeatmapBins();
         seedGingles(root);
         seedGinglesTables(root);
@@ -219,6 +222,7 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedStateSummaries() {
+        stateSummaryRepository.deleteAll();
         Map<String, Object> orPayload = new LinkedHashMap<>();
         orPayload.put("schemaVersion", "v1");
         orPayload.put("state", "OR");
@@ -226,11 +230,11 @@ public class SeedDataLoader implements ApplicationRunner {
         orPayload.put("population", "4,272,371");
         orPayload.put("voterDistributionDem", "1,228,410 (55.6%)");
         orPayload.put("voterDistributionRep", "910,702 (41.3%)");
-        orPayload.put("partyControl", "Democrat");
+        orPayload.put("partyControl", "Democratic");
         orPayload.put("democratReps", "Suzanne Bonamici, Maxine Dexter, Val Hoyle, Janelle Bynum, Andrea Salinas");
         orPayload.put("republicanReps", "Cliff Bentz");
         orPayload.put("feasibleGroups", List.of("Latino", "Asian", "White"));
-        orPayload.put("ensembleSummary", Map.of("available", true, "sizes", List.of("test", "final"), "finalPlanCount", 5000));
+        orPayload.put("ensembleSummary", Map.of("available", true, "sizes", List.of(EnsembleSize.TEST.getKey(), EnsembleSize.FINAL.getKey()), "finalPlanCount", "5,000"));
 
         Map<String, Object> scPayload = new LinkedHashMap<>();
         scPayload.put("schemaVersion", "v1");
@@ -243,7 +247,7 @@ public class SeedDataLoader implements ApplicationRunner {
         scPayload.put("democratReps", "James Clyburn");
         scPayload.put("republicanReps", "Nancy Mace, Joe Wilson, Sheri Biggs, William Timmons, Ralph Norman, Russell Fry");
         scPayload.put("feasibleGroups", List.of("Black", "Latino", "White"));
-        scPayload.put("ensembleSummary", Map.of("available", true, "sizes", List.of("test", "final"), "finalPlanCount", 5000));
+        scPayload.put("ensembleSummary", Map.of("available", true, "sizes", List.of(EnsembleSize.TEST.getKey(), EnsembleSize.FINAL.getKey()), "finalPlanCount", "5,000"));
 
         stateSummaryRepository.save(buildDoc(new StateSummaryDocument(), "OR", null, null, null, null, "TOTAL", orPayload));
         stateSummaryRepository.save(buildDoc(new StateSummaryDocument(), "SC", null, null, null, null, "TOTAL", scPayload));
@@ -253,30 +257,31 @@ public class SeedDataLoader implements ApplicationRunner {
         ensembleSummaryRepository.save(buildDoc(new EnsembleSummaryDocument(), "OR", null, null, null, null, "TOTAL", Map.of(
                 "schemaVersion", "v1",
                 "state", "OR",
-                "finalPlanCount", 5000,
+                "finalPlanCount", "5,000",
                 "populationEqualityThreshold", "0.50%"
         )));
 
         ensembleSummaryRepository.save(buildDoc(new EnsembleSummaryDocument(), "SC", null, null, null, null, "TOTAL", Map.of(
                 "schemaVersion", "v1",
                 "state", "SC",
-                "finalPlanCount", 5000,
+                "finalPlanCount", "5,000",
                 "populationEqualityThreshold", "0.50%"
         )));
     }
 
     private void seedDistrictTables() {
+        districtTableRepository.deleteAll();
         districtTableRepository.save(buildDoc(new DistrictTableDocument(), "OR", "2024_pres", null, null, null, "TOTAL", Map.of(
                 "schemaVersion", "v1",
                 "state", "OR",
                 "election", "2024_pres",
                 "districts", List.of(
-                        districtRow(1, "Suzanne Bonamici", "Democrat", "White", 24.1),
+                        districtRow(1, "Suzanne Bonamici", "Democratic", "White", 24.1),
                         districtRow(2, "Cliff Bentz", "Republican", "White", -33.7),
-                        districtRow(3, "Maxine Dexter", "Democrat", "White", 46.2),
-                        districtRow(4, "Val Hoyle", "Democrat", "White", 8.9),
-                        districtRow(5, "Janelle Bynum", "Democrat", "Black", 3.2),
-                        districtRow(6, "Andrea Salinas", "Democrat", "Latino", 5.4)
+                        districtRow(3, "Maxine Dexter", "Democratic", "White", 46.2),
+                        districtRow(4, "Val Hoyle", "Democratic", "White", 8.9),
+                        districtRow(5, "Janelle Bynum", "Democratic", "Black", 3.2),
+                        districtRow(6, "Andrea Salinas", "Democratic", "Latino", 5.4)
                 )
         )));
 
@@ -290,7 +295,7 @@ public class SeedDataLoader implements ApplicationRunner {
                         districtRow(3, "Sheri Biggs", "Republican", "White", -31.5),
                         districtRow(4, "William Timmons", "Republican", "White", -28.6),
                         districtRow(5, "Ralph Norman", "Republican", "White", -26.1),
-                        districtRow(6, "James Clyburn", "Democrat", "Black", 15.3),
+                        districtRow(6, "James Clyburn", "Democratic", "Black", 15.3),
                         districtRow(7, "Russell Fry", "Republican", "White", -24.9)
                 )
         )));
@@ -380,19 +385,19 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedEiPrecinctBarCi(Path root) throws IOException {
-        saveEiPrecinctBarCi("OR", "latino", "2024_pres", "DEM", root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_demo.json"));
-        saveEiPrecinctBarCi("OR", "latino", "2024_pres", "REP", root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_demo.json"));
-        saveEiPrecinctBarCi("OR", "asian",  "2024_pres", "DEM", root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_asian_demo.json"));
-        saveEiPrecinctBarCi("OR", "asian",  "2024_pres", "REP", root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_asian_demo.json"));
-        saveEiPrecinctBarCi("SC", "black",  "2024_pres", "DEM", root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_demo.json"));
-        saveEiPrecinctBarCi("SC", "black",  "2024_pres", "REP", root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_demo.json"));
-        saveEiPrecinctBarCi("SC", "latino", "2024_pres", "DEM", root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_latino_demo.json"));
-        saveEiPrecinctBarCi("SC", "latino", "2024_pres", "REP", root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_latino_demo.json"));
+        saveEiPrecinctBarCi("OR", "latino", "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_demo.json"));
+        saveEiPrecinctBarCi("OR", "latino", "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_demo.json"));
+        saveEiPrecinctBarCi("OR", "asian",  "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_asian_demo.json"));
+        saveEiPrecinctBarCi("OR", "asian",  "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_asian_demo.json"));
+        saveEiPrecinctBarCi("SC", "black",  "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_demo.json"));
+        saveEiPrecinctBarCi("SC", "black",  "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_demo.json"));
+        saveEiPrecinctBarCi("SC", "latino", "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_latino_demo.json"));
+        saveEiPrecinctBarCi("SC", "latino", "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_latino_demo.json"));
     }
 
-    private void saveEiPrecinctBarCi(String stateId, String groupKey, String electionId, String partyKey, Path path) throws IOException {
+    private void saveEiPrecinctBarCi(String stateId, String groupKey, String electionId, PartyKey partyKey, Path path) throws IOException {
         EiPrecinctBarCiDocument doc = buildDoc(new EiPrecinctBarCiDocument(), stateId, electionId, groupKey, null, null, "CVAP", readJsonMap(path));
-        doc.setPartyKey(partyKey);
+        doc.setPartyKey(partyKey.getKey());
         eiPrecinctBarCiRepository.save(doc);
     }
 
@@ -408,28 +413,28 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedEnsembleSplits(Path root) throws IOException {
-        ensembleSplitRepository.save(buildDoc(new EnsembleSplitDocument(), "OR", "2024_pres", null, null, "final", "TOTAL",
+        ensembleSplitRepository.save(buildDoc(new EnsembleSplitDocument(), "OR", "2024_pres", null, null, EnsembleSize.FINAL.getKey(), "TOTAL",
                 readJsonMap(root.resolve("mock-data/v1/ensemble-splits/OR_compare.json"))));
-        ensembleSplitRepository.save(buildDoc(new EnsembleSplitDocument(), "SC", "2024_pres", null, null, "final", "TOTAL",
+        ensembleSplitRepository.save(buildDoc(new EnsembleSplitDocument(), "SC", "2024_pres", null, null, EnsembleSize.FINAL.getKey(), "TOTAL",
                 readJsonMap(root.resolve("mock-data/v1/ensemble-splits/SC_compare.json"))));
     }
 
     private void seedBoxWhiskers(Path root) throws IOException {
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "latino", "vra_constrained", "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "latino", EnsembleType.VRA_CONSTRAINED.getKey(), "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/OR_latino_cvap_vra.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "latino", "race_blind",      "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "latino", EnsembleType.RACE_BLIND.getKey(),      "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/OR_latino_cvap_race_blind.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "asian",  "vra_constrained", "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "asian",  EnsembleType.VRA_CONSTRAINED.getKey(), "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/OR_asian_cvap_vra.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "asian",  "race_blind",      "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "OR", "2024_pres", "asian",  EnsembleType.RACE_BLIND.getKey(),      "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/OR_asian_cvap_race_blind.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "black",  "vra_constrained", "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "black",  EnsembleType.VRA_CONSTRAINED.getKey(), "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_black_cvap_vra.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "black",  "race_blind",      "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "black",  EnsembleType.RACE_BLIND.getKey(),      "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_black_cvap_race_blind.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "latino", "vra_constrained", "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "latino", EnsembleType.VRA_CONSTRAINED.getKey(), "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_latino_cvap_vra.json"))));
-        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "latino", "race_blind",      "minority_share", "CVAP",
+        boxWhiskerResultRepository.save(buildDoc(new BoxWhiskerResultDocument(), "SC", "2024_pres", "latino", EnsembleType.RACE_BLIND.getKey(),      "minority_share", "CVAP",
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_latino_cvap_race_blind.json"))));
     }
 
@@ -439,7 +444,7 @@ public class SeedDataLoader implements ApplicationRunner {
                 "OR",
                 "plan-42",
                 "Oregon Opportunity Corridor",
-                "race_blind",
+                EnsembleType.RACE_BLIND.getKey(),
                 "High Latino opportunity with competitive statewide split",
                 geometryAssetService.getDistrictTopology("OR")
         ));
@@ -447,8 +452,24 @@ public class SeedDataLoader implements ApplicationRunner {
                 "SC",
                 "plan-42",
                 "South Carolina Coastal Rebalance",
-                "vra_constrained",
+                EnsembleType.VRA_CONSTRAINED.getKey(),
                 "Expands Black-effective district probability while keeping core coastal continuity",
+                geometryAssetService.getDistrictTopology("SC")
+        ));
+        interestingPlanRepository.save(buildInterestingPlanDoc(
+                "OR",
+                "plan-43",
+                "Oregon Race-Blind Baseline",
+                EnsembleType.RACE_BLIND.getKey(),
+                "Representative race-blind plan showing Latino representation without VRA constraints",
+                geometryAssetService.getDistrictTopology("OR")
+        ));
+        interestingPlanRepository.save(buildInterestingPlanDoc(
+                "SC",
+                "plan-43",
+                "South Carolina Race-Blind Baseline",
+                EnsembleType.RACE_BLIND.getKey(),
+                "Representative race-blind plan showing Black representation under unconstrained redistricting",
                 geometryAssetService.getDistrictTopology("SC")
         ));
     }

@@ -351,6 +351,19 @@ public class StateController {
     }
 
     @Operation(
+            summary = "GUI-22: List interesting plans for a state",
+            description = "Status: Live. Returns metadata for all seeded interesting plans for the given state."
+    )
+    @ApiResponse(responseCode = "200", description = "List of interesting plan summaries")
+    @GetMapping("/states/{stateId}/districts/interesting/list")
+    public List<Map<String, Object>> listInterestingPlans(
+            @Parameter(description = "Required state code. Current supported values: OR or SC.")
+            @PathVariable @NotBlank String stateId
+    ) {
+        return dataService.getInterestingPlanList(stateId);
+    }
+
+    @Operation(
             summary = "GUI-19: Interesting district plan",
             description = "Status: Live. Returns the stored interesting-plan metadata plus TopoJSON payload."
     )
