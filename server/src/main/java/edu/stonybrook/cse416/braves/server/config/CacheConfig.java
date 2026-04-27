@@ -28,6 +28,7 @@ public class CacheConfig {
                 "ensembleSplits",
                 "boxWhisker",
                 "interestingPlan",
+                "interestingPlanList",
                 "vraImpactThresholds",
                 "minorityEffectivenessBoxWhisker",
                 "minorityEffectivenessHistogram",
