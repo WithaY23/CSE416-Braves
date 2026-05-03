@@ -25,20 +25,26 @@ function PrecinctTable({ rows }) {
   const tableRef = useRef(null);
   const [pageSize, setPageSize] = useState(4);
   const [page, setPage] = useState(1);
-  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
-  const visibleRows = rows.slice((page - 1) * pageSize, page * pageSize);
+  const sortedRows = useMemo(
+    () => [...rows].sort((a, b) => String(a.precinctId ?? "").localeCompare(String(b.precinctId ?? ""), undefined, { numeric: true })),
+    [rows]
+  );
+  const totalPages = Math.max(1, Math.ceil(sortedRows.length / pageSize));
+  const visibleRows = sortedRows.slice((page - 1) * pageSize, page * pageSize);
 
   useEffect(() => {
     const wrapper = tableWrapperRef.current;
     const table = tableRef.current;
-    if (!wrapper || !table || rows.length === 0) return undefined;
+    if (!wrapper || !table || sortedRows.length === 0) return undefined;
 
     function updatePageSize() {
       const headerRow = table.querySelector("tr");
       const bodyRow = table.querySelector("tbody tr:nth-child(2)");
       if (!headerRow || !bodyRow) return;
       const available = Math.max(0, wrapper.clientHeight - headerRow.getBoundingClientRect().height);
-      setPageSize(Math.max(1, Math.min(rows.length, Math.floor(available / bodyRow.getBoundingClientRect().height))));
+      const rowHeight = bodyRow.getBoundingClientRect().height;
+      if (rowHeight <= 0) return;
+      setPageSize(Math.max(1, Math.min(sortedRows.length, Math.floor(available / rowHeight))));
     }
 
     updatePageSize();
@@ -46,7 +52,7 @@ function PrecinctTable({ rows }) {
     observer.observe(wrapper);
     observer.observe(table);
     return () => observer.disconnect();
-  }, [rows.length]);
+  }, [sortedRows.length]);
 
   useEffect(() => { setPage(p => Math.min(p, totalPages)); }, [totalPages]);
 
@@ -61,7 +67,7 @@ function PrecinctTable({ rows }) {
             </tr>
             {visibleRows.map(row => (
               <tr key={row.precinctId}>
-                <td className="crossStateTableCell">{row.precinctName ?? row.precinctId}</td>
+                <td className="crossStateTableCell">{row.precinctId}</td>
                 <td className="crossStateTableCell">{num(row.totalPopulation)}</td>
                 <td className="crossStateTableCell">{num(row.minorityPopulation)}</td>
                 <td className="crossStateTableCell">{num(row.republicanVotes)}</td>
