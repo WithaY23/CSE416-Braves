@@ -3,7 +3,7 @@ import "../../styles/gingles.css";
 import GinglesScatterChart from "../charts/GinglesScatterChart.jsx";
 import DistrictMap from "./DistrictMap.jsx";
 import MinorityHeatMap from "./MinorityHeatMap.jsx";
-import { num, pct } from "../utils/chartFormat.js";
+import { num } from "../utils/chartFormat.js";
 import { useGingles, useGinglesTable, useDistrictTopology } from "../queries/stateQueries.js";
 import { defaultGroup, groupOptionsForState, toStateCode } from "../utils/stateUtils.js";
 import { topologyToFeatureCollection } from "../utils/topology.js";
@@ -57,15 +57,15 @@ function PrecinctTable({ rows }) {
         <table ref={tableRef} className="crossStateTable">
           <tbody>
             <tr>
-              {["Precinct", "Total Pop.", "Minority Pop.", "Rep %", "Dem %"].map(h => <th key={h} className="crossStateTableCell">{h}</th>)}
+              {["Precinct", "Total Pop.", "Minority Pop.", "Rep Votes", "Dem Votes"].map(h => <th key={h} className="crossStateTableCell">{h}</th>)}
             </tr>
             {visibleRows.map(row => (
               <tr key={row.precinctId}>
                 <td className="crossStateTableCell">{row.precinctName ?? row.precinctId}</td>
                 <td className="crossStateTableCell">{num(row.totalPopulation)}</td>
                 <td className="crossStateTableCell">{num(row.minorityPopulation)}</td>
-                <td className="crossStateTableCell">{pct(row.repVoteShare)}</td>
-                <td className="crossStateTableCell">{pct(row.demVoteShare)}</td>
+                <td className="crossStateTableCell">{num(row.republicanVotes)}</td>
+                <td className="crossStateTableCell">{num(row.democraticVotes)}</td>
               </tr>
             ))}
           </tbody>
