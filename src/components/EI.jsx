@@ -121,7 +121,6 @@ export default function EI({ currMap, currMinority, switchMinority, currPolariza
     if (currPolarization === "EI Analysis")
       return (
         <>
-          <MinoritySelector stateName={stateName} currMinority={currMinority} switchMinority={switchMinority} />
           <EiAnalysisPanel payload={eiSupp.data} loading={eiSupp.isLoading} failed={eiSupp.isError} minority={currMinority} />
         </>
       );
@@ -130,7 +129,6 @@ export default function EI({ currMap, currMinority, switchMinority, currPolariza
     if (currPolarization === "Polarization KDE")
       return (
         <>
-          <MinoritySelector stateName={stateName} currMinority={currMinority} switchMinority={switchMinority} />
           <EiKdePanel payload={eiKde.data} loading={eiKde.isLoading} failed={eiKde.isError} minority={currMinority} />
         </>
       );
