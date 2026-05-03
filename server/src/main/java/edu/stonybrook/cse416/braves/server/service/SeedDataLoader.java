@@ -1153,67 +1153,37 @@ public class SeedDataLoader implements ApplicationRunner {
                 readJsonMap(root.resolve("mock-data/v1/box-whisker/SC_latino_cvap_race_blind.json"))));
     }
 
-    private void seedInterestingPlans(Path root) {
+    private void seedInterestingPlans(Path root) throws IOException {
         interestingPlanRepository.deleteAll();
-        interestingPlanRepository.save(buildInterestingPlanDoc(
-                "OR",
-                "plan-42",
-                "Oregon Opportunity Corridor",
-                EnsembleType.RACE_BLIND.getKey(),
-                "High Latino opportunity with competitive statewide split",
-                geometryAssetService.getDistrictTopology("OR")
-        ));
-        interestingPlanRepository.save(buildInterestingPlanDoc(
-                "SC",
-                "plan-42",
-                "South Carolina Coastal Rebalance",
-                EnsembleType.VRA_CONSTRAINED.getKey(),
-                "Expands Black-effective district probability while keeping core coastal continuity",
-                geometryAssetService.getDistrictTopology("SC")
-        ));
-        interestingPlanRepository.save(buildInterestingPlanDoc(
-                "OR",
-                "plan-43",
-                "Oregon Race-Blind Baseline",
-                EnsembleType.RACE_BLIND.getKey(),
-                "Representative race-blind plan showing Latino representation without VRA constraints",
-                geometryAssetService.getDistrictTopology("OR")
-        ));
-        interestingPlanRepository.save(buildInterestingPlanDoc(
-                "SC",
-                "plan-43",
-                "South Carolina Race-Blind Baseline",
-                EnsembleType.RACE_BLIND.getKey(),
-                "Representative race-blind plan showing Black representation under unconstrained redistricting",
-                geometryAssetService.getDistrictTopology("SC")
-        ));
+        List<String> planSeedFiles = List.of(
+                "OR_plan-42.json",
+                "OR_plan-43.json",
+                "SC_plan-42.json",
+                "SC_plan-43.json"
+        );
+        for (String fileName : planSeedFiles) {
+            interestingPlanRepository.save(readInterestingPlanDoc(root.resolve("mock-data/v1/interesting-plans").resolve(fileName)));
+        }
     }
 
-    private InterestingPlanDocument buildInterestingPlanDoc(
-            String stateId,
-            String planId,
-            String planName,
-            String ensembleType,
-            String reasonInteresting,
-            Map<String, Object> topology
-    ) {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("schemaVersion", "v1");
-        payload.put("state", stateId);
-        payload.put("planId", planId);
-        payload.put("planName", planName);
-        payload.put("ensembleType", ensembleType);
-        payload.put("reasonInteresting", reasonInteresting);
-        payload.put("summary", Map.of(
-                "repWins", "OR".equals(stateId) ? 2 : 5,
-                "demWins", "OR".equals(stateId) ? 4 : 2,
-                "effectiveMinorityDistricts", "OR".equals(stateId) ? 2 : 3
-        ));
-        payload.put("topology", topology);
+    private InterestingPlanDocument readInterestingPlanDoc(Path file) throws IOException {
+        Map<String, Object> payload = new LinkedHashMap<>(readJsonMap(file));
+        String stateId = requireString(payload, "state", file);
+        String planId = requireString(payload, "planId", file);
+        String ensembleType = requireString(payload, "ensembleType", file);
+        payload.put("topology", geometryAssetService.getDistrictTopology(stateId));
 
         InterestingPlanDocument doc = buildDoc(new InterestingPlanDocument(), stateId, "2024_pres", null, ensembleType, null, "TOTAL", payload);
         doc.setPlanId(planId);
         return doc;
+    }
+
+    private String requireString(Map<String, Object> payload, String fieldName, Path file) {
+        Object value = payload.get(fieldName);
+        if (!(value instanceof String stringValue) || stringValue.isBlank()) {
+            throw new IllegalArgumentException("Interesting plan seed file " + file + " is missing required field: " + fieldName);
+        }
+        return stringValue;
     }
 
     private void seedVraImpactThresholdTables(Path root) throws IOException {
