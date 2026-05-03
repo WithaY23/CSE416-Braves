@@ -102,7 +102,6 @@ export default function MinorityHeatMap({ currMinority, switchMinority }) {
 
   return (
     <>
-      <MinoritySelector stateName={stateName} currMinority={currMinority} switchMinority={switchMinority} />
       <div id="minoritymap">
         <MapContainer center={center} zoom={zoom} zoomSnap={0.1} minZoom={minZoom} zoomControl={false} doubleClickZoom={false} keyboard={false} maxBounds={bounds} className="minorityLeafletMap">
           <TileLayer attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />

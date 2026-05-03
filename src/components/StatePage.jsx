@@ -32,6 +32,8 @@ function VoteMarginBadge({ margin }) {
 }
 
 function StateData({ stateData, stateName, loading, loadFailed }) {
+  const SIG_THRESHOLD = (stateName === "Oregon" ? "200,000" : "400,000");
+
   return (
     <>
       {loading && <div className="statePagePanelStatus">Loading state summary...</div>}
@@ -66,7 +68,7 @@ function StateData({ stateData, stateName, loading, loadFailed }) {
         <p className="statePageDataBubbleLabel">Republican Representatives:</p>
         <p className="statePageData">{stateData.republicanReps}</p>
       </span>
-      <p id="statePageDataFooter">Omitted racial group populations do not meet the feasible group threshold of 400,000.</p>
+      <p id="statePageDataFooter">Omitted racial group populations do not meet the feasible group threshold of {SIG_THRESHOLD}.</p>
     </>
   );
 }

@@ -94,7 +94,7 @@ function BoxWhisker({ payload, loading, failed, minority, subtitle }) {
           </RechartsBar>
           <Scatter dataKey="median" shape={<MedianLine width={20} />} legendType="none" />
           <Scatter name="Enacted" dataKey="enactedValue" fill="#e11d48" shape={<ScatterDot color="#e11d48" />}/>  {/* fill is for legend, color prop actually colors dot*/}
-          <Scatter name="Proposed" dataKey="proposedValue" fill="#ffd000" shape={<ScatterDot color="#ffd000" />} />
+          {data[0].proposedValue && <Scatter name="Proposed" dataKey="proposedValue" fill="#ffd000" shape={<ScatterDot color="#ffd000" />} />}
           <Tooltip content={<TooltipContent data={data}/>} />
           <Legend align="right" verticalAlign="top" wrapperStyle={{paddingBottom: "16px", fontSize: "0.75rem"}} iconSize={8} />
         </ComposedChart>
@@ -197,18 +197,6 @@ function MinorityEffectivenessBoxWhisker({ payload, loading, failed }) {
     );
   }
 
-  // function drawBox(s, cx, fill) {
-  //   return (
-  //     <g key={`${cx}-${fill}`}>
-  //       <line x1={cx} x2={cx} y1={ys(s.min)} y2={ys(s.max)} stroke="#475569" strokeWidth={1.35} />
-  //       <line x1={cx - 5} x2={cx + 5} y1={ys(s.min)} y2={ys(s.min)} stroke="#475569" />
-  //       <line x1={cx - 5} x2={cx + 5} y1={ys(s.max)} y2={ys(s.max)} stroke="#475569" />
-  //       <rect x={cx - boxW / 2} y={ys(s.q3)} width={boxW} height={Math.max(1, ys(s.q1) - ys(s.q3))} fill={fill} stroke="#1e3a8a" strokeWidth={1.5} opacity={0.85} />
-  //       <line x1={cx - boxW / 2} x2={cx + boxW / 2} y1={ys(s.median)} y2={ys(s.median)} stroke="#1f2937" strokeWidth={2} />
-  //     </g>
-  //   );
-  // }
-
   return (
     <div className="sim-chartStack">
       <ResponsiveContainer style={{ width: "100%", height: "100%" }}>
@@ -228,28 +216,6 @@ function MinorityEffectivenessBoxWhisker({ payload, loading, failed }) {
           <Legend align="right" verticalAlign="top" wrapperStyle={{paddingBottom: "16px", fontSize: "0.75rem"}} iconSize={8} />
         </ComposedChart>
       </ResponsiveContainer>
-      {/* <svg viewBox={`0 0 ${W} ${H}`} width="100%" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Minority effectiveness box and whisker chart">
-        <rect width={W} height={H} fill="white" />
-        {ticks.map(t => (
-          <g key={t}>
-            <line x1={M.left} x2={W - M.right} y1={ys(t)} y2={ys(t)} stroke="#cbd5e1" strokeDasharray="3 3" />
-            <text x={M.left - 8} y={ys(t) + 5} fontSize={13} textAnchor="end" fill="#0f172a">{t}</text>
-          </g>))}
-        <line x1={M.left} x2={M.left} y1={M.top} y2={H - M.bottom} stroke="#475569" strokeWidth={1.2} />
-        <line x1={M.left} x2={W - M.right} y1={H - M.bottom} y2={H - M.bottom} stroke="#475569" strokeWidth={1.2} />
-        <text x={14} y={M.top + IH / 2} fontSize={13} fontWeight={700} fill="#0f172a" textAnchor="middle" transform={`rotate(-90 14 ${M.top + IH / 2})`}>Effective Districts</text>
-        {groupSummaries.map((g, i) => {
-          const cx = M.left + slotW * i + slotW / 2;
-          return (
-            <g key={g.key}>{drawBox(g.raceBlindSummary, cx - boxW * 0.8, "#93c5fd")}{drawBox(g.vraConstrainedSummary, cx + boxW * 0.8, "#fb923c")}
-              <text x={cx} y={H - M.bottom + 20} fontSize={13} textAnchor="middle" fill="#0f172a">{g.label}</text>
-            </g>);
-        })}
-        <rect x={M.left + 10} y={8} width={14} height={14} fill="#93c5fd" stroke="#1e3a8a" strokeWidth={1.5} />
-        <text x={M.left + 28} y={19} fontSize={12} fill="#0f172a">Race-Blind</text>
-        <rect x={M.left + 110} y={8} width={14} height={14} fill="#fb923c" stroke="#1e3a8a" strokeWidth={1.5} />
-        <text x={M.left + 128} y={19} fontSize={12} fill="#0f172a">VRA-Constrained</text>
-      </svg> */}
     </div>
   );
 }
@@ -348,7 +314,6 @@ export default function Simulation({ currMap, currMinority, switchMinority, curr
       return <EnsembleSplits payload={splits.data} loading={splits.isLoading} failed={splits.isError} />;
     if (currSimData === "Box Whisker")
       return (<>
-        <MinoritySelector stateName={stateName} currMinority={currMinority} switchMinority={switchMinority} />
         <div className="box-whisker-container">
           <BoxWhisker payload={bwRace.data} loading={bwRace.isLoading} failed={bwRace.isError} minority={currMinority} subtitle="Race-Blind Ensemble" />
           <BoxWhisker payload={bwVra.data} loading={bwVra.isLoading} failed={bwVra.isError} minority={currMinority} subtitle="VRA-Constrained Ensemble" />
@@ -361,7 +326,6 @@ export default function Simulation({ currMap, currMinority, switchMinority, curr
       </>);
     if (currSimData === "Minority Effectiveness Histogram")
       return (<>
-        <MinoritySelector stateName={stateName} currMinority={currMinority} switchMinority={switchMinority} />
         <div>
           <MinorityEffectivenessHistogram payload={meHist.data} loading={meHist.isLoading} failed={meHist.isError} group={currMinority} />
           <VRAImpact payload={vraImpact.data} loading={vraImpact.isLoading} failed={vraImpact.isError} />

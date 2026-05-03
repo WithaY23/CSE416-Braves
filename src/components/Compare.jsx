@@ -30,10 +30,10 @@ function InformationTable({ stateName, data, selectedDistrict, onSelectDistrict 
         </thead>
         <tbody>
           {districts.map((d) => (
-            <tr key={d.districtNumber} className={d.districtNumber === selectedDistrict ? "districts-table-row districts-table-row--selected" : "districts-table-row"}>
+            <tr key={d.districtNumber} className={d.districtNumber === selectedDistrict ? "compare-table-row compare-table-row--selected" : "compare-table-row"}>
               <td className="compare-table-data compare-table-distnum" onClick={() => { onSelectDistrict(d.districtNumber); onChangeTab("District"); }}>{d.districtNumber}</td>
+              {d.latinoPopulation && <td className="compare-table-data">{d.latinoPopulation}</td>}
               {d.blackPopulation && <td className="compare-table-data">{d.blackPopulation}</td>}
-              <td className="compare-table-data">{d.latinoPopulation}</td>
               <td className="compare-table-data">{d.isEffective}</td>
             </tr>
           ))}
@@ -87,29 +87,29 @@ export default function Compare() {
       ? topologyToFeatureCollection(planData.topology, "districts")
       : null;
 
-  const CONGRESSIONAL_DATA = {
+  const CONGRESSIONAL_DATA = {    // isEffective is fake; other fields are real
 		Oregon: {
 			districts: [
-				{ districtNumber: 1, latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 2, latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 3, latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 4, latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 5, latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 6, latinoPopulation: "100,000", isEffective: "Yes"},
+				{ districtNumber: 1, latinoPopulation: "71,720", isEffective: "Yes"},
+				{ districtNumber: 2, latinoPopulation: "66,135", isEffective: "Yes"},
+				{ districtNumber: 3, latinoPopulation: "67,576", isEffective: "Yes"},
+				{ districtNumber: 4, latinoPopulation: "42,694", isEffective: "No"},
+				{ districtNumber: 5, latinoPopulation: "46,448", isEffective: "No"},
+				{ districtNumber: 6, latinoPopulation: "94,821", isEffective: "Yes"},
 			],
       feasibleGroups: ["Latino"]
 		},
 		SouthCarolina: {
 			districts: [
-				{ districtNumber: 1, blackPopulation: "100,000", latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 2, blackPopulation: "100,000", latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 3, blackPopulation: "100,000", latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 4, blackPopulation: "100,000", latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 5, blackPopulation: "100,000", latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 6, blackPopulation: "100,000", latinoPopulation: "100,000", isEffective: "Yes"},
-				{ districtNumber: 7, blackPopulation: "100,000", latinoPopulation: "100,000", isEffective: "Yes"},
+				{ districtNumber: 1, blackPopulation: "92,299", isEffective: "No"},
+				{ districtNumber: 2, blackPopulation: "133,256", isEffective: "Yes"},
+				{ districtNumber: 3, blackPopulation: "95,968", isEffective: "No"},
+				{ districtNumber: 4, blackPopulation: "100,848", isEffective: "No"},
+				{ districtNumber: 5, blackPopulation: "133,990", isEffective: "Yes"},
+				{ districtNumber: 6, blackPopulation: "265,209", isEffective: "Yes"},
+				{ districtNumber: 7, blackPopulation: "143,097", isEffective: "Yes"},
 			],
-      feasibleGroups: ["Black", "Latino"]
+      feasibleGroups: ["Black"]
 		},
 	};
 
