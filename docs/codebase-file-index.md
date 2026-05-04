@@ -1,6 +1,6 @@
 # Codebase File Index
 
-> Reference for Claude Code sessions. Contains one-line descriptions of every source file. Read this file when you need to find the right file to edit, understand project structure, or trace a use case end-to-end.
+> Reference for Claude Code sessions and new developers. Contains one-line descriptions of every source file. Read this file when you need to find the right file to edit, understand project structure, or trace a use case end-to-end.
 
 ---
 
@@ -62,6 +62,7 @@
 | File | Purpose |
 |------|---------|
 | `ApiExceptionHandler.java` | Global exception → standardized error response translation |
+| `CacheConfig.java` | Caffeine in-process cache configuration: 19 named caches, 30-min TTL, 256 max entries each |
 | `CorsConfig.java` | CORS configuration for frontend origin |
 | `MongoIndexConfig.java` | Automatic MongoDB index creation on startup |
 | `OpenApiConfig.java` | OpenAPI/Swagger UI configuration |
@@ -164,18 +165,28 @@ Each repository provides Spring Data MongoDB CRUD + custom queries for its docum
 | `DistrictMap.jsx` | Leaflet map rendering enacted district boundaries from TopoJSON — GUI-2 |
 | `MinorityHeatMap.jsx` | Leaflet heatmap with bin-based color legend for precinct-level minority % — GUI-4 |
 | `InterestingMap.jsx` | Map rendering alternative/interesting district plans — GUI-19 |
-| `DistrictTable.jsx` | Congressional representation table by district — GUI-6 |
 | `EI.jsx` | Ecological inference container with group/metric selectors — GUI-12, 13, 15 |
-| `EiSupportChart.jsx` | Recharts area chart for EI support probability distributions — GUI-12 |
-| `GinglesScatterChart.jsx` | Recharts scatter plot: minority % vs. party vote share by precinct — GUI-9 |
-| `BoxWhiskerChart.jsx` | Custom SVG box-whisker for ensemble distribution summaries — GUI-17 |
-| `SingleEnsembleSplitsChart.jsx` | Bar chart comparing race-blind vs. VRA-constrained ensemble splits — GUI-16 |
+| `Simulation.jsx` | Main simulation/ensemble analysis view; embeds district map, ensemble splits, box-whisker, VRA thresholds, and minority effectiveness charts — GUI-16, 17, 20, 21, 22 |
+| `EnsembleSelector.jsx` | Dropdown for selecting ensemble type (race-blind vs. VRA-constrained) and ensemble ID |
+| `MinoritySelector.jsx` | Bubble-button selector for switching the active feasible racial/ethnic group |
 | `StateMinorityAnalysis.jsx` | Container for minority effectiveness views — GUI-21, GUI-22 |
 | `StateCustomAnalysis.jsx` | Container for custom analysis workflows |
 | `StateSimulationMinorityData.jsx` | Simulation and ensemble comparison view container |
-| `Gingles.jsx` | Multi-state comparative analysis container |
+| `Gingles.jsx` | Multi-state comparative Gingles analysis container — GUI-9 |
 | `VRAAnalysis.jsx` | VRA impact analysis view container — GUI-20 |
 | `Compare.jsx` | Side-by-side district plan comparison — GUI-8 |
+
+### `charts/`
+
+Chart-only components with no routing or data-fetching — receive fully-loaded payloads as props.
+
+| File | Purpose |
+|------|---------|
+| `BoxWhiskerChart.jsx` | Custom SVG box-whisker for ensemble minority-share distribution summaries — GUI-17 |
+| `EiSupportChart.jsx` | Recharts area chart for EI support probability distributions — GUI-12 |
+| `GinglesScatterChart.jsx` | Recharts scatter plot: minority % vs. party vote share by precinct — GUI-9 |
+| `GinglesScatterChart.test.jsx` | Vitest unit tests for GinglesScatterChart rendering |
+| `SingleEnsembleSplitsChart.jsx` | Bar chart comparing race-blind vs. VRA-constrained ensemble splits — GUI-16 |
 
 ### `lib/` & `queries/`
 
@@ -197,6 +208,8 @@ Each repository provides Spring Data MongoDB CRUD + custom queries for its docum
 | `data/us-states.json` | US state boundaries TopoJSON (splash page) |
 | `data/precincts_or.json` | Oregon precinct TopoJSON source used for backend precinct heatmap geometry |
 | `data/precincts_sc.json` | South Carolina precinct TopoJSON source used for backend precinct heatmap geometry |
+| `data/OR-precincts-with-results.json` | Oregon precinct-level demographic and election result data (preprocessing output) |
+| `data/SC-precincts-with-results.json` | South Carolina precinct-level demographic and election result data (preprocessing output) |
 | `utils/chartFormat.js` | Chart formatting: `pct()` percentage formatter, share-to-percentage conversion, axis label helpers |
 | `utils/topology.js` | TopoJSON → GeoJSON FeatureCollection conversion for Leaflet rendering |
 | `utils/stateUtils.js` | Shared helpers: `toStateCode`, `toGroupKey`, `defaultGroup`, `groupOptionsForState` — used across all analysis components |
@@ -241,14 +254,14 @@ JSON Schema definitions for payload validation (one per chart type):
 |----------|-----------------|-----------------|-------------------|
 | GUI-1 State list | `StateController` → `GET /api/states` | `BackendDataService` | `SplashPage.jsx` |
 | GUI-2 District topology | `StateController` → `GET .../districts/enacted/topology` | `GeometryAssetService` | `DistrictMap.jsx` |
-| GUI-3 State summary | `StateController` → `GET .../summary` | `BackendDataService` | `StatePage.jsx` |
+| GUI-3 State summary | `StateController` → `GET .../state-summary` | `BackendDataService` | `StatePage.jsx` |
 | GUI-4 Heatmap | `StateController` → `GET .../precincts/topology` + `/heatmap/precincts` | `GeometryAssetService` + `BackendDataService` | `MinorityHeatMap.jsx` |
-| GUI-6 District table | `StateController` → `GET .../districts/enacted/table` | `BackendDataService` | `DistrictTable.jsx` |
+| GUI-6 District table | `StateController` → `GET .../districts/enacted/table` | `BackendDataService` | `StatePage.jsx` (inline table) |
 | GUI-9 Gingles scatter | `StateController` → `GET .../analysis/gingles` | `BackendDataService` | `GinglesScatterChart.jsx` |
 | GUI-10 Gingles table | `StateController` → `GET .../analysis/gingles/table` | `BackendDataService` | *(table component)* |
 | GUI-12 EI support | `StateController` → `GET .../analysis/ei-support` | `BackendDataService` | `EiSupportChart.jsx` |
-| GUI-13 EI bar+CI | `StateController` → `GET .../analysis/ei-precinct-bar-ci` | `BackendDataService` | `EiPrecinctBarCIChart.jsx` |
-| GUI-15 EI KDE | `StateController` → `GET .../analysis/ei-kde` | `BackendDataService` | `EiKdeChart.jsx` |
+| GUI-13 EI bar+CI | `StateController` → `GET .../analysis/ei-precinct-bar-ci` | `BackendDataService` | `EI.jsx` (inline bar chart) |
+| GUI-15 EI KDE | `StateController` → `GET .../analysis/ei-kde` | `BackendDataService` | `EI.jsx` (inline KDE chart) |
 | GUI-16 Ensemble splits | `StateController` → `GET .../ensembles/splits` | `BackendDataService` | `SingleEnsembleSplitsChart.jsx` |
 | GUI-17 Box & whisker | `StateController` → `GET .../ensembles/box-whisker` | `BackendDataService` | `BoxWhiskerChart.jsx` |
 | GUI-19 Interesting plan | `StateController` → `GET .../districts/interesting` | `BackendDataService` | `InterestingMap.jsx` |

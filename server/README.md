@@ -16,7 +16,7 @@ Implemented end-to-end:
 - `GET /api/states` (GUI-1)
 - `GET /api/states/{stateId}/districts/enacted/topology` (GUI-2)
 - `GET /api/states/{stateId}/districts/enacted/geojson` (GUI-2 compatibility)
-- `GET /api/states/{stateId}/summary` (GUI-3)
+- `GET /api/states/{stateId}/state-summary` (GUI-3)
 - `GET /api/states/{stateId}/precincts/topology` (GUI-4 geometry)
 - `GET /api/states/{stateId}/heatmap/precincts?group=...` (GUI-4)
 - `GET /api/states/{stateId}/districts/enacted/table?election=...` (GUI-6)
@@ -105,7 +105,7 @@ export APP_SEED_ENABLED=true
 From the `server/` directory:
 
 ```bash
-cd "/Users/sahilparikh/Documents/CSE 416 Braves/server"
+cd server
 ./mvnw -q -DskipTests compile
 ```
 
@@ -139,7 +139,7 @@ Delivered geometry property sets:
 From `server/`:
 
 ```bash
-cd "/Users/sahilparikh/Documents/CSE 416 Braves/server"
+cd server
 MONGODB_URI="mongodb://127.0.0.1:27017/cse416_braves" ./mvnw spring-boot:run
 ```
 
@@ -203,7 +203,7 @@ The frontend Vite dev server proxies `/api` and `/health` to `http://localhost:8
 From the project root:
 
 ```bash
-cd "/Users/sahilparikh/Documents/CSE 416 Braves"
+cd ..
 npm install
 npm run dev
 ```
@@ -227,14 +227,14 @@ For contract verification:
 In terminal 1:
 
 ```bash
-cd "/Users/sahilparikh/Documents/CSE 416 Braves/server"
+cd server
 MONGODB_URI="mongodb://127.0.0.1:27017/cse416_braves" ./mvnw spring-boot:run
 ```
 
 In terminal 2:
 
 ```bash
-cd "/Users/sahilparikh/Documents/CSE 416 Braves"
+cd ..
 npm install
 npm run dev
 ```
