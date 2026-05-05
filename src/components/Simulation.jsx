@@ -26,7 +26,7 @@ function EnsembleSplits({ payload, loading, failed }) {
     <div className="sim-chartStack">
       <div id="sim-page-data-container">
         <div className="sim-chartSubtitle">Race-Blind</div>
-        <ResponsiveContainer width="100%" height={230}>
+        <ResponsiveContainer width="100%" height={210}>
           <BarChart data={toChartData(series.raceBlind)} margin={margin}>
             <CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="splitLabel" tick={{ fontSize: 12 }} />
             <YAxis domain={domain} tick={{ fontSize: 12 }} /><Tooltip formatter={v => [`${v} plans`, "Frequency"]} />
@@ -413,7 +413,7 @@ export default function Simulation({ currMap, currMinority, switchMinority, curr
 
   const [tab, setTab] = useState("Box and Whisker");
   const [currRbEnsemble, switchRbEnsemble] = useState("Race-Blind Ensemble 1");
-  const [currVraEnsemble, switchVraEnsemble] = useState("VRA-Constrained Ensemble 1");
+  const [currVraEnsemble, switchVraEnsemble] = useState("VRA Ensemble 1");
 
   // Each side is independently cached and re-fetched when its dropdown changes.
   const meBwRb  = useMeBoxWhiskerRb(stateCode, ensembleIdFromName(currRbEnsemble));
