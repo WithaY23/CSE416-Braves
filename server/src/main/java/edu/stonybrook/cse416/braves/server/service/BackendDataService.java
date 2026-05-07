@@ -163,13 +163,13 @@ public class BackendDataService {
         // document, so only the first normalized selector participates in the lookup.
         String group = normalizeGroupSelector(groupsInput);
         String election = normalizeElection(electionInput);
-        normalizeParty(partyInput);
+        String party = normalizeParty(partyInput);
         // Reject unsupported state/group combinations before Mongo lookup so callers get a clear contract
         // error instead of an ambiguous missing-document response.
         requireFeasibleGroup(stateId, group);
         return payloadFrom(
-                eiSupportResultRepository.findByStateIdAndElectionIdAndGroupKey(stateId, election, group),
-                "EI support payload not found for stateId=" + stateId + ", group=" + group + ", election=" + election
+                eiSupportResultRepository.findByStateIdAndElectionIdAndGroupKeyAndPartyKey(stateId, election, group, party),
+                "EI support payload not found for stateId=" + stateId + ", group=" + group + ", election=" + election + ", party=" + party
         );
     }
 
@@ -189,17 +189,18 @@ public class BackendDataService {
     }
 
     @Cacheable("eiKde")
-    public Map<String, Object> getEiKde(String stateIdInput, String groupInput, String electionInput, String metricInput) {
+    public Map<String, Object> getEiKde(String stateIdInput, String groupInput, String electionInput, String metricInput, String partyInput) {
         String stateId = normalizeState(stateIdInput);
         String group = normalizeGroup(groupInput);
         String election = normalizeElection(electionInput);
         String metric = normalizeToken(metricInput, "metric");
+        String party = normalizeParty(partyInput);
         // Reject unsupported state/group combinations before Mongo lookup so callers get a clear contract
         // error instead of an ambiguous missing-document response.
         requireFeasibleGroup(stateId, group);
         return payloadFrom(
-                eiKdeRepository.findByStateIdAndGroupKeyAndElectionIdAndMetricKey(stateId, group, election, metric),
-                "EI KDE payload not found for stateId=" + stateId + ", group=" + group + ", election=" + election + ", metric=" + metric
+                eiKdeRepository.findByStateIdAndGroupKeyAndElectionIdAndMetricKeyAndPartyKey(stateId, group, election, metric, party),
+                "EI KDE payload not found for stateId=" + stateId + ", group=" + group + ", election=" + election + ", metric=" + metric + ", party=" + party
         );
     }
 

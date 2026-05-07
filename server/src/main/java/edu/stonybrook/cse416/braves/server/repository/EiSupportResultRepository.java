@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EiSupportResultRepository extends MongoRepository<EiSupportResultDocument, String> {
-    Optional<EiSupportResultDocument> findByStateIdAndElectionIdAndGroupKey(String stateId, String electionId, String groupKey);
+    Optional<EiSupportResultDocument> findByStateIdAndElectionIdAndGroupKeyAndPartyKey(String stateId, String electionId, String groupKey, String partyKey);
 
     List<EiSupportResultDocument> findByStateIdAndElectionId(String stateId, String electionId);
 }

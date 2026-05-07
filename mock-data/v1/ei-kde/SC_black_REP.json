@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "v1",
+  "chartType": "ei-kde",
+  "state": "SC",
+  "totalDistricts": 7,
+  "selectedGroup": "Black",
+  "metricLabel": "Black − non-Black Rep support gap (2024 Presidential)",
+  "domain": [-0.4, 0.05],
+  "thresholdX": null,
+  "thresholdLabel": null,
+  "thresholdProbability": null,
+  "series": [
+    {
+      "key": "support_gap",
+      "label": "Black support gap",
+      "points": [
+        { "x": -0.400, "density": 0.0001 },
+        { "x": -0.373, "density": 0.0004 },
+        { "x": -0.347, "density": 0.0015 },
+        { "x": -0.320, "density": 0.0052 },
+        { "x": -0.293, "density": 0.0168 },
+        { "x": -0.267, "density": 0.0490 },
+        { "x": -0.240, "density": 0.1310 },
+        { "x": -0.213, "density": 0.3180 },
+        { "x": -0.187, "density": 0.7050 },
+        { "x": -0.160, "density": 1.4200 },
+        { "x": -0.133, "density": 2.6100 },
+        { "x": -0.107, "density": 4.3500 },
+        { "x": -0.080, "density": 6.6200 },
+        { "x": -0.053, "density": 9.1400 },
+        { "x": -0.027, "density": 11.4500 },
+        { "x": 0.000, "density": 12.9800 },
+        { "x": 0.020, "density": 13.2100 },
+        { "x": 0.040, "density": 12.1800 },
+        { "x": 0.050, "density": 11.0200 }
+      ]
+    }
+  ]
+}

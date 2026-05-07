@@ -6,10 +6,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface EiKdeRepository extends MongoRepository<EiKdeDocument, String> {
-    Optional<EiKdeDocument> findByStateIdAndGroupKeyAndElectionIdAndMetricKey(
+    Optional<EiKdeDocument> findByStateIdAndGroupKeyAndElectionIdAndMetricKeyAndPartyKey(
             String stateId,
             String groupKey,
             String electionId,
-            String metricKey
+            String metricKey,
+            String partyKey
     );
 }

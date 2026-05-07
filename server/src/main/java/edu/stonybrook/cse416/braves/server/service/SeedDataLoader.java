@@ -137,9 +137,9 @@ public class SeedDataLoader implements ApplicationRunner {
         seedHeatmapBins();
         seedGingles(root);
         seedGinglesTables(root);
-        if (eiSupportResultRepository.count() == 0) seedEiSupport(root);
-        if (eiPrecinctBarCiRepository.count() == 0) seedEiPrecinctBarCi(root);
-        if (eiKdeRepository.count() == 0) seedEiKde(root);
+        eiSupportResultRepository.deleteAll(); seedEiSupport(root);
+        eiPrecinctBarCiRepository.deleteAll(); seedEiPrecinctBarCi(root);
+        eiKdeRepository.deleteAll(); seedEiKde(root);
         if (ensembleSplitRepository.count() == 0) seedEnsembleSplits(root);
         if (boxWhiskerResultRepository.count() == 0) seedBoxWhiskers(root);
         seedInterestingPlans(root);
@@ -1125,25 +1125,27 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedEiSupport(Path root) throws IOException {
-        eiSupportResultRepository.save(buildDoc(new EiSupportResultDocument(), "OR", "2024_pres", "latino", null, null, "CVAP",
-                readJsonMap(root.resolve("mock-data/v1/ei-support/OR_2024_president.json"))));
-        eiSupportResultRepository.save(buildDoc(new EiSupportResultDocument(), "OR", "2024_pres", "asian", null, null, "CVAP",
-                readJsonMap(root.resolve("mock-data/v1/ei-support/OR_asian_2024_president.json"))));
-        eiSupportResultRepository.save(buildDoc(new EiSupportResultDocument(), "SC", "2024_pres", "black", null, null, "CVAP",
-                readJsonMap(root.resolve("mock-data/v1/ei-support/SC_2024_president.json"))));
-        eiSupportResultRepository.save(buildDoc(new EiSupportResultDocument(), "SC", "2024_pres", "latino", null, null, "CVAP",
-                readJsonMap(root.resolve("mock-data/v1/ei-support/SC_latino_2024_president.json"))));
+        saveEiSupport("OR", "latino", "2024_pres", "DEM", root.resolve("mock-data/v1/ei-support/OR_2024_president.json"));
+        saveEiSupport("OR", "latino", "2024_pres", "REP", root.resolve("mock-data/v1/ei-support/OR_latino_2024_president_REP.json"));
+        saveEiSupport("OR", "asian",  "2024_pres", "DEM", root.resolve("mock-data/v1/ei-support/OR_asian_2024_president.json"));
+        saveEiSupport("SC", "black",  "2024_pres", "DEM", root.resolve("mock-data/v1/ei-support/SC_2024_president.json"));
+        saveEiSupport("SC", "black",  "2024_pres", "REP", root.resolve("mock-data/v1/ei-support/SC_black_2024_president_REP.json"));
+        saveEiSupport("SC", "latino", "2024_pres", "DEM", root.resolve("mock-data/v1/ei-support/SC_latino_2024_president.json"));
+    }
+
+    private void saveEiSupport(String stateId, String groupKey, String electionId, String partyKey, Path path) throws IOException {
+        EiSupportResultDocument doc = buildDoc(new EiSupportResultDocument(), stateId, electionId, groupKey, null, null, "CVAP", readJsonMap(path));
+        doc.setPartyKey(partyKey);
+        eiSupportResultRepository.save(doc);
     }
 
     private void seedEiPrecinctBarCi(Path root) throws IOException {
         saveEiPrecinctBarCi("OR", "latino", "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_demo.json"));
-        saveEiPrecinctBarCi("OR", "latino", "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_demo.json"));
+        saveEiPrecinctBarCi("OR", "latino", "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_latino_REP.json"));
         saveEiPrecinctBarCi("OR", "asian",  "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_asian_demo.json"));
-        saveEiPrecinctBarCi("OR", "asian",  "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_asian_demo.json"));
         saveEiPrecinctBarCi("SC", "black",  "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_demo.json"));
-        saveEiPrecinctBarCi("SC", "black",  "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_demo.json"));
+        saveEiPrecinctBarCi("SC", "black",  "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_black_REP.json"));
         saveEiPrecinctBarCi("SC", "latino", "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_latino_demo.json"));
-        saveEiPrecinctBarCi("SC", "latino", "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_latino_demo.json"));
     }
 
     private void saveEiPrecinctBarCi(String stateId, String groupKey, String electionId, PartyKey partyKey, Path path) throws IOException {
@@ -1153,14 +1155,18 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedEiKde(Path root) throws IOException {
-        eiKdeRepository.save(buildDoc(new EiKdeDocument(), "OR", "2024_pres", "latino", null, "support_gap", "CVAP",
-                readJsonMap(root.resolve("mock-data/v1/ei-kde/OR_demo.json"))));
-        eiKdeRepository.save(buildDoc(new EiKdeDocument(), "OR", "2024_pres", "asian",  null, "support_gap", "CVAP",
-                readJsonMap(root.resolve("mock-data/v1/ei-kde/OR_asian_demo.json"))));
-        eiKdeRepository.save(buildDoc(new EiKdeDocument(), "SC", "2024_pres", "black",  null, "support_gap", "CVAP",
-                readJsonMap(root.resolve("mock-data/v1/ei-kde/SC_demo.json"))));
-        eiKdeRepository.save(buildDoc(new EiKdeDocument(), "SC", "2024_pres", "latino", null, "support_gap", "CVAP",
-                readJsonMap(root.resolve("mock-data/v1/ei-kde/SC_latino_demo.json"))));
+        saveEiKde("OR", "latino", "2024_pres", "support_gap", "DEM", root.resolve("mock-data/v1/ei-kde/OR_demo.json"));
+        saveEiKde("OR", "latino", "2024_pres", "support_gap", "REP", root.resolve("mock-data/v1/ei-kde/OR_latino_REP.json"));
+        saveEiKde("OR", "asian",  "2024_pres", "support_gap", "DEM", root.resolve("mock-data/v1/ei-kde/OR_asian_demo.json"));
+        saveEiKde("SC", "black",  "2024_pres", "support_gap", "DEM", root.resolve("mock-data/v1/ei-kde/SC_demo.json"));
+        saveEiKde("SC", "black",  "2024_pres", "support_gap", "REP", root.resolve("mock-data/v1/ei-kde/SC_black_REP.json"));
+        saveEiKde("SC", "latino", "2024_pres", "support_gap", "DEM", root.resolve("mock-data/v1/ei-kde/SC_latino_demo.json"));
+    }
+
+    private void saveEiKde(String stateId, String groupKey, String electionId, String metricKey, String partyKey, Path path) throws IOException {
+        EiKdeDocument doc = buildDoc(new EiKdeDocument(), stateId, electionId, groupKey, null, metricKey, "CVAP", readJsonMap(path));
+        doc.setPartyKey(partyKey);
+        eiKdeRepository.save(doc);
     }
 
     private void seedEnsembleSplits(Path root) throws IOException {

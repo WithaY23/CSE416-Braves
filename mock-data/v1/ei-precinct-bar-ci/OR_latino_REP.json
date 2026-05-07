@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "v1",
+  "chartType": "ei-precinct-bar-ci",
+  "state": "OR",
+  "totalDistricts": 6,
+  "election": "2024 Presidential",
+  "selectedCandidate": "Donald Trump",
+  "categories": [
+    { "category": "Latino", "peak": 0.27, "ciLow": 0.20, "ciHigh": 0.34 },
+    { "category": "White", "peak": 0.52, "ciLow": 0.45, "ciHigh": 0.59 },
+    { "category": "Black", "peak": 0.18, "ciLow": 0.10, "ciHigh": 0.27 },
+    { "category": "Other", "peak": 0.35, "ciLow": 0.25, "ciHigh": 0.44 }
+  ]
+}

@@ -11,6 +11,8 @@ import MinoritySelector from "./MinoritySelector.jsx";
 import arrowDropdown from "/white_arrow_drop_down.svg";
 import { ResponsiveContainer, BarChart, ComposedChart, Bar as RechartsBar, XAxis, YAxis, CartesianGrid, Tooltip, ErrorBar, Area, ReferenceLine, ReferenceArea } from "recharts";
 
+const CANDIDATE_PARTY = { "Kamala Harris": "DEM", "Donald Trump": "REP" };
+
 function EiTabBar({ tab, onSelect }) {
   function cls(name) { return `eiDataTab${tab === name ? " eiActiveTab" : ""}`; }
   return (
@@ -147,13 +149,14 @@ export default function EI({ currMap, currMinority, switchMinority, currPolariza
   const stateCode = toStateCode(stateName);
   const groupKey = toGroupKey(currMinority) ?? defaultGroup(stateCode);
 
-  const topo = useDistrictTopology(stateCode);
-  const eiSupp = useEiSupport(stateCode, groupKey);
-  const eiBar = useEiPrecinctBarCi(stateCode, groupKey);
-  const eiKde = useEiKde(stateCode, groupKey);
-
   const [tab, setTab] = useState("Analysis");
-  const [selectedCandidate, switchCandidate] = useState("Donald Trump");
+  const [selectedCandidate, switchCandidate] = useState("Kamala Harris");
+  const party = CANDIDATE_PARTY[selectedCandidate] ?? 'DEM';
+
+  const topo = useDistrictTopology(stateCode);
+  const eiSupp = useEiSupport(stateCode, groupKey, party);
+  const eiBar = useEiPrecinctBarCi(stateCode, groupKey, party);
+  const eiKde = useEiKde(stateCode, groupKey, party);
 
   useEffect(() => {
     if (!groupOptionsForState(stateName).includes(currMinority))

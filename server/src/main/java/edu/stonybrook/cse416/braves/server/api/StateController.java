@@ -250,8 +250,8 @@ public class StateController {
             @RequestParam @NotBlank String groups,
             @Parameter(description = "Election selector. Default is 2024_pres, which matches the current seeded examples.")
             @RequestParam(required = false, defaultValue = "2024_pres") String election,
-            @Parameter(description = "Required party selector. Expected values: DEM or REP.")
-            @RequestParam @NotBlank String party
+            @Parameter(description = "Party selector. Expected values: DEM or REP. Default is DEM.")
+            @RequestParam(required = false, defaultValue = "DEM") String party
     ) {
         return dataService.getEiSupport(stateId, groups, election, party);
     }
@@ -274,8 +274,8 @@ public class StateController {
             @RequestParam @NotBlank String group,
             @Parameter(description = "Election selector. Default is 2024_pres, which matches the current seeded examples.")
             @RequestParam(required = false, defaultValue = "2024_pres") String election,
-            @Parameter(description = "Required party selector. Expected values: DEM or REP.")
-            @RequestParam @NotBlank String party
+            @Parameter(description = "Party selector. Expected values: DEM or REP. Default is DEM.")
+            @RequestParam(required = false, defaultValue = "DEM") String party
     ) {
         return dataService.getEiPrecinctBarCi(stateId, group, election, party);
     }
@@ -299,9 +299,11 @@ public class StateController {
             @Parameter(description = "Election selector. Default is 2024_pres, which matches the current seeded examples.")
             @RequestParam(required = false, defaultValue = "2024_pres") String election,
             @Parameter(description = "Metric selector. Default is support_gap.")
-            @RequestParam(required = false, defaultValue = "support_gap") String metric
+            @RequestParam(required = false, defaultValue = "support_gap") String metric,
+            @Parameter(description = "Party selector. Expected values: DEM or REP. Default is DEM.")
+            @RequestParam(required = false, defaultValue = "DEM") String party
     ) {
-        return dataService.getEiKde(stateId, group, election, metric);
+        return dataService.getEiKde(stateId, group, election, metric, party);
     }
 
     @Operation(

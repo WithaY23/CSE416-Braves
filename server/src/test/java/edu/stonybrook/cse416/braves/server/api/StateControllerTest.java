@@ -346,7 +346,7 @@ class StateControllerTest {
             }
 
             @Override
-            public Map<String, Object> getEiKde(String stateIdInput, String groupInput, String electionInput, String metricInput) {
+            public Map<String, Object> getEiKde(String stateIdInput, String groupInput, String electionInput, String metricInput, String partyInput) {
                 return eiKde;
             }
 

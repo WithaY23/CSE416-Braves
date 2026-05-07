@@ -9,8 +9,7 @@ import DistrictMap from "./DistrictMap";
 import MinorityHeatMap from "./MinorityHeatMap";
 
 function VoteMarginBadge({ margin }) {
-  const isDem = margin >= 0;
-  return <span>{isDem ? `D+${Math.abs(margin).toFixed(1)}%` : `R+${Math.abs(margin).toFixed(1)}%`}</span>;
+  return <span>{Math.abs(margin).toFixed(1)}%</span>;
 }
 
 function StateData({ stateData, stateName, loading, loadFailed }) {

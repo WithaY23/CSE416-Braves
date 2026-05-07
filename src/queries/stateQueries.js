@@ -85,26 +85,26 @@ export function useGinglesTable(stateCode, group) {
   });
 }
 
-export function useEiSupport(stateCode, group) {
+export function useEiSupport(stateCode, group, party = 'DEM') {
   return useQuery({
-    queryKey: keys.eiSupport(stateCode, group, ELECTION, 'DEM'),
-    queryFn: () => get(`/api/states/${stateCode}/analysis/ei-support`, { groups: group, election: ELECTION, party: 'DEM' }),
+    queryKey: keys.eiSupport(stateCode, group, ELECTION, party),
+    queryFn: () => get(`/api/states/${stateCode}/analysis/ei-support`, { groups: group, election: ELECTION, party }),
     enabled: Boolean(stateCode) && Boolean(group),
   });
 }
 
-export function useEiPrecinctBarCi(stateCode, group) {
+export function useEiPrecinctBarCi(stateCode, group, party = 'DEM') {
   return useQuery({
-    queryKey: keys.eiPrecinctBarCi(stateCode, group, ELECTION, 'DEM'),
-    queryFn: () => get(`/api/states/${stateCode}/analysis/ei-precinct-bar-ci`, { group, election: ELECTION, party: 'DEM' }),
+    queryKey: keys.eiPrecinctBarCi(stateCode, group, ELECTION, party),
+    queryFn: () => get(`/api/states/${stateCode}/analysis/ei-precinct-bar-ci`, { group, election: ELECTION, party }),
     enabled: Boolean(stateCode) && Boolean(group),
   });
 }
 
-export function useEiKde(stateCode, group) {
+export function useEiKde(stateCode, group, party = 'DEM') {
   return useQuery({
-    queryKey: keys.eiKde(stateCode, group, ELECTION, 'support_gap'),
-    queryFn: () => get(`/api/states/${stateCode}/analysis/ei-kde`, { group, election: ELECTION, metric: 'support_gap' }),
+    queryKey: keys.eiKde(stateCode, group, ELECTION, 'support_gap', party),
+    queryFn: () => get(`/api/states/${stateCode}/analysis/ei-kde`, { group, election: ELECTION, metric: 'support_gap', party }),
     enabled: Boolean(stateCode) && Boolean(group),
   });
 }

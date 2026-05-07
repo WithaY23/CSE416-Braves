@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "v1",
+  "chartType": "ei-kde",
+  "state": "OR",
+  "totalDistricts": 6,
+  "selectedGroup": "Latino",
+  "metricLabel": "Latino − non-Latino Rep support gap (2024 Presidential)",
+  "domain": [-0.3, 0.1],
+  "thresholdX": null,
+  "thresholdLabel": null,
+  "thresholdProbability": null,
+  "series": [
+    {
+      "key": "support_gap",
+      "label": "Latino support gap",
+      "points": [
+        { "x": -0.300, "density": 0.0001 },
+        { "x": -0.279, "density": 0.0005 },
+        { "x": -0.257, "density": 0.0018 },
+        { "x": -0.236, "density": 0.0058 },
+        { "x": -0.214, "density": 0.0175 },
+        { "x": -0.193, "density": 0.0480 },
+        { "x": -0.171, "density": 0.1200 },
+        { "x": -0.150, "density": 0.2740 },
+        { "x": -0.129, "density": 0.5680 },
+        { "x": -0.107, "density": 1.0720 },
+        { "x": -0.086, "density": 1.8500 },
+        { "x": -0.064, "density": 2.9300 },
+        { "x": -0.043, "density": 4.2100 },
+        { "x": -0.021, "density": 5.5200 },
+        { "x": 0.000, "density": 6.5800 },
+        { "x": 0.021, "density": 7.0100 },
+        { "x": 0.043, "density": 6.7900 },
+        { "x": 0.064, "density": 5.9500 },
+        { "x": 0.086, "density": 4.7200 },
+        { "x": 0.100, "density": 3.8100 }
+      ]
+    }
+  ]
+}

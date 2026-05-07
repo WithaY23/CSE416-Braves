@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import "../../styles/minority-map.css";
 import { useParams } from "react-router-dom";
 import L from "leaflet";
@@ -23,6 +23,7 @@ function featurePercent(feature, currMinority) {
 
 function TopoJSON({ currMinority, data, infoRef, showPrecinctBorders }) {
   const layerRef = useRef(null);
+  const features = useMemo(() => topologyToFeatureCollection(data), [data]);
 
   const style = f => ({ fillColor: percentageColor(featurePercent(f, currMinority)), weight: showPrecinctBorders ? 2 : 0, opacity: 1, color: "white", dashArray: "3", fillOpacity: 0.7 });
 
@@ -33,9 +34,9 @@ function TopoJSON({ currMinority, data, infoRef, showPrecinctBorders }) {
     });
   }
 
-  useEffect(() => { layerRef.current?.clearLayers(); layerRef.current?.addData(topologyToFeatureCollection(data)); }, [data]);
+  useEffect(() => { layerRef.current?.clearLayers(); layerRef.current?.addData(features); }, [features]);
 
-  return <GeoJSON key={currMinority} data={topologyToFeatureCollection(data)} ref={layerRef} style={style} onEachFeature={onEachFeature} />;
+  return <GeoJSON key={currMinority} data={features} ref={layerRef} style={style} onEachFeature={onEachFeature} />;
 }
 
 function InfoControl({ infoRef }) {
@@ -88,7 +89,9 @@ export default function MinorityHeatMap({ currMinority, switchMinority, showPrec
   const group = toGroupKey(currMinority);
   const infoRef = useRef(null);
 
-  const heatmap = useHeatmap(stateCode, group);
+  const validGroups = groupOptionsForState(stateName).map(toGroupKey);
+  const safeGroup = validGroups.includes(group) ? group : toGroupKey(defaultGroup(stateCode));
+  const heatmap = useHeatmap(stateCode, safeGroup);
   const topo = usePrecinctTopology(stateCode);
 
   if (!stateName) return <div style={{ fontWeight: "bolder", margin: "1rem" }}>Error: State not found</div>;
