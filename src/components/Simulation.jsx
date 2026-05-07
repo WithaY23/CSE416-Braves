@@ -122,7 +122,7 @@ function VRAImpact({ payload, loading, failed }) {
   const cell = v => loading ? "Loading…" : (failed || v == null) ? "—" : pct(v);
   return (
     <>
-      <div className="sim-page-data-label" style={{ fontSize: "1.6rem" }}>VRA Impact Table</div>
+      {/* <div className="sim-page-data-label" style={{ fontSize: "1.6rem" }}>VRA Impact Table</div> */}
       <div id="sim-page-data-container">
         <div className="vra-impact-table-container">
           <table className="vra-impact-table">
@@ -473,7 +473,8 @@ export default function Simulation({ currMap, currMinority, switchMinority, curr
         </div>
       </>);
     if (currSimData === "Minority Effectiveness")
-      return (<>
+      return (
+      <div className="me-main-container">
         <MinorityEffectivenessTabBar tab={tab} onSelect={handleTabSelect} />
         {tab === "Box and Whisker" ?
           <>
@@ -485,7 +486,7 @@ export default function Simulation({ currMap, currMinority, switchMinority, curr
           </> :
           <MinorityEffectivenessHistogram payload={meHist.data} loading={meHist.isLoading} failed={meHist.isError} group={currMinority} />}
         <VRAImpact payload={vraImpact.data} loading={vraImpact.isLoading} failed={vraImpact.isError} />
-      </>);
+      </div>);
     if (currSimData === "Minority Representation")
       return (<>
         <MinorityEffectiveDistrictsBar payload={minorityEffectiveDistsData} loading={false} failed={false} group={currMinority} />
