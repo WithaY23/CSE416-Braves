@@ -1,6 +1,6 @@
 # Use Case Requirements
 
-Source: CSE 416 Preliminary Master Use Case List (3/12/26), S01 Spring 2026.
+Source: CSE 416 Preliminary Master Use Case List (5/6/26), S01 Spring 2026.
 
 This document contains the full requirements for every use case the team is implementing. It is the single source of truth for what each use case must do, referenced by the `/code-review` skill and all project documentation.
 
@@ -13,6 +13,8 @@ Three priority categories:
 
 Diagram tags: **(SD)** = sequence diagram, **(AD)** = activity diagram. These indicate the use case may be requested during design review.
 
+Red-text additions in the PDF (5/6/26) are captured as sub-bullets below each use case.
+
 ## Ensemble Sizes
 
 - Testing ensembles: ~250 plans
@@ -20,7 +22,7 @@ Diagram tags: **(SD)** = sequence diagram, **(AD)** = activity diagram. These in
 
 ---
 
-## General GUI (19 selected)
+## General GUI (13 required)
 
 ### GUI-1: Select state to display (required) (SD)
 
@@ -50,8 +52,12 @@ The data associated with the state will be summarized in response to the user se
 
 Population percentage may substitute for raw population.
 
-- **Backend:** `GET /api/states/{stateId}/summary`
+- The summary table will also contain the **measure of rough proportionality** for each feasible minority group, calculated as the percentage of that group's effective districts divided by that group's percentage of CVAP.
+- For any optional ensemble (e.g., compactness constrained), the table will also include additional relevant information.
+
+- **Backend:** `GET /api/states/{stateId}/state-summary`
 - **Frontend:** StatePage sidebar
+- **Gap:** Rough proportionality field not yet in payload — requires preprocessing data (Prepro-12).
 
 ### GUI-4: Display demographic heat map by precinct (required) (SD)
 
@@ -62,7 +68,13 @@ When the user selects a feasible minority group from a drop-down menu, a heat ma
 - **Frontend:** MinorityHeatMap component
 - **Controls:** Demographic group dropdown (feasible groups only)
 
-### GUI-6: Display Congressional representation table (required) (SD)
+### GUI-5: Display demographic heat map by census block (preferred)
+
+When the user selects a minority group, a heat map for the demographic group in the state will be displayed at the census block level. Same bin/legend requirements as GUI-4.
+
+- **Not implementing.**
+
+### GUI-6: Display Congressional representation table (required)
 
 When the user clicks on screen component selecting district detail (or some other appropriate trigger), a table will be displayed. Each row in the table will contain data for one Congressional district. At a minimum, the data will contain:
 - District number
@@ -71,8 +83,11 @@ When the user clicks on screen component selecting district detail (or some othe
 - Representative's racial/ethnic group
 - Vote margin as a percentage in the selected recent election
 
+- Each row will for each feasible minority group also contain the **calculated effectiveness score** and the **calibrated effectiveness score** for the district.
+
 - **Backend:** `GET /api/states/{stateId}/districts/enacted/table?election=...`
 - **Frontend:** District table component
+- **Gap:** Effectiveness score fields not yet in payload — requires preprocessing data (Prepro-13/14).
 
 ### GUI-7: Highlight district (preferred)
 
@@ -85,12 +100,17 @@ If a user clicks on some identifier of a district in the Congressional detail ta
 
 Compare two district plans by showing both plans on the map. This could be limited to comparing a selected random plan (i.e., interesting) with the enacted plan. The trigger will be some GUI component (e.g., "Compare with enacted" button).
 
-- **Backend:** Client-only (uses GUI-2 enacted plan + GUI-19 interesting plan data)
-- **Frontend:** Map overlay component with toggle/comparison UI
+- The design approach should **allow the user to understand the difference between the two plans**.
+
+- **Backend:** `GET /api/states/{stateId}/districts/interesting/list` + `GET /api/states/{stateId}/districts/interesting?planId=...`
+- **Frontend:** Compare.jsx — left map uses enacted topology; right map uses selected interesting plan topology; dropdown populated from API plan list
+- **Gap:** Enacted plan summary (rep/dem wins) not yet shown in comparison table.
 
 ### GUI-9: Display Gingles analysis results (required) (SD)
 
 In response to a user request, display a scatter plot for each of your states that shows the 2024 precinct-level Presidential election results for each party organized on an x,y axis by percentage of racial/ethnic group in the precinct (x-axis) and party vote share (y-axis). Any of the feasible racial/ethnic groups in the state should be selectable for display. For each precinct, there will be a blue dot for Democratic votes and a red dot for Republican votes.
+
+- If the state contains many precincts causing significant dot overlap, you can **reduce the number of dots** in a way that preserves the intent of the display.
 
 - **Backend:** `GET /api/states/{stateId}/analysis/gingles?group=...&election=...`
 - **Frontend:** Gingles scatter component (Recharts)
@@ -105,13 +125,23 @@ For all of the Gingles 2/3 analysis data, a table display of the precinct-by-pre
 - **Frontend:** Precinct table component
 - **Fields per row:** precinctId, precinctName, totalPopulation, minorityPopulation, republicanVotes, democraticVotes, minorityShare, repVoteShare, demVoteShare
 
+### GUI-11: Highlight a Gingles 2/3 table row (preferred)
+
+In response to a user selecting a dot in each of the Gingles scatter plots, the precinct identified by the dot will be highlighted in the corresponding table.
+
+- **Not implementing.**
+
 ### GUI-12: Display candidate results of Ecological Inference (EI) analysis (required) (SD)
 
 Display the results of the EI analysis in response to a user GUI request. The user shall have the ability to select the racial/language groups to compare. The results will be shown in a display for each candidate in which the x-axis represents the percentage of a racial/demographic group in the state that voted for a candidate and the y-axis represents the associated probability value for each x-axis value. You will use this to measure racially polarized voting, so you can use the statewide results for President in 2024.
 
+- You might also **display multiple candidates in the chart**.
+- **Display the percentage overlap** between the curves for each racial/language group in voting for a particular candidate.
+
 - **Backend:** `GET /api/states/{stateId}/analysis/ei-support?groups=...&election=...&party=...`
 - **Frontend:** EI.jsx or sub-component (Recharts density curves)
 - **Controls:** Group selector, candidate/party selector
+- **Gap:** Curve overlap percentage not yet computed or displayed.
 
 ### GUI-13: Display EI precinct results in a bar chart (preferred)
 
@@ -120,6 +150,12 @@ Display the EI results in a bar chart for the categories mentioned in a previous
 - **Backend:** `GET /api/states/{stateId}/analysis/ei-precinct-bar-ci?group=...&election=...&party=...`
 - **Frontend:** EI bar chart component
 - **Visual:** Bars at peak values with CI whiskers (ciLow to ciHigh)
+
+### GUI-14: Display EI precinct results in choropleth maps (preferred)
+
+Display the EI results in choropleth maps (one map per candidate) in which each precinct is displayed in a color consistent with the most likely level of support for the candidate in the precinct.
+
+- **Not implementing.**
 
 ### GUI-15: Display EI KDE results (preferred)
 
@@ -146,9 +182,17 @@ The user will be able to request the display of box & whisker data for each of y
 - **Controls:** Group selector, ensemble type selector
 - **Invariant:** `rankSummaries.count = totalDistricts`; values ordered `min <= q1 <= median <= q3 <= max`; all in `[0,1]`
 
+### GUI-18: Display vote share vs seat share curve (preferred)
+
+If your Gingles-2/3 test shows racially polarized voting, display the vote share vs seat share curve for the state. If the Gingles-2/3 test does not indicate racially polarized voting in one of your states, the GUI component that allows the user to select the display should be **disabled**.
+
+- **Backend:** Requires Prepro-10 data (vote share vs seat share curve)
+- **Frontend:** Conditional display based on polarized voting result from Gingles data
+- **Not implementing** (requires Prepro-10 data not yet computed).
+
 ### GUI-19: Display an "interesting" district plan (preferred)
 
-Display on the map one of the interesting plans identified in a SeaWulf use case.
+Display on the map one of the interesting plans identified in a SeaWulf use case. The user will be able to select the "interesting" plan from among all the "interesting" plans identified on the SeaWulf. The menu listing all the "interesting" plans should identify the characteristics that make each plan interesting.
 
 - **Backend:** `GET /api/states/{stateId}/districts/interesting?planId=...`
 - **Frontend:** Interesting plan map component
@@ -167,7 +211,7 @@ Each row displays the percentage for each ensemble side-by-side. The table is fi
 - **Frontend:** VRA impact table component
 - **Invariant:** Always exactly 3 metric rows
 
-### GUI-21: Display minority effectiveness box & whisker data (required)
+### GUI-21: Display minority effectiveness box & whisker data (required) (SD)
 
 Display box & whisker data comparing minority effectiveness across the Race-Blind and VRA-Constrained ensembles. For each feasible racial/ethnic group (x-axis), two side-by-side boxes will be shown representing each ensemble, with the y-axis indicating the number of effective districts (0 to N). Discrepancies between RB and VRA ensemble boxes visually allows the user to assess how rarely minority representation arises by chance in the absence of VRA constraints.
 
@@ -183,27 +227,50 @@ Display overlapping histograms comparing the distribution of minority-effective 
 - **Frontend:** Effectiveness histogram component
 - **Invariant:** Frequencies sum to `ensembleSize`
 
-### GUI-24: Reset page (preferred)
+### GUI-23: Reset page (preferred)
 
 When the user clicks a reset button, the GUI will reset to the condition before the user selected a state.
 
 - **Backend:** Client-only (clears frontend state)
 - **Frontend:** Reset button handler
 
+### GUI-24: Extend previous GUI use cases to include data from a Robust VRA-Constrained ReCom (optional)
+
+Add additional GUI components to display results from the Robust VRA-Constrained ReCom (one that includes s_dist in the computation of the minority-effectiveness score).
+
+- **Not implementing** (optional; requires SeaWulf-14).
+
+### GUI-25: Display expected change in Congressional seats (preferred)
+
+If you have a state in which one party controls the redistricting process, determine the expected number of seats for the party in control and the expected number of minority effective seats, based on the most extreme result in your race-blind ensemble. The values, along with the expected change of seats should be prominently displayed in the GUI. This most extreme random district plan should be included in the collection of "interesting" random plans.
+
+- **Backend:** New endpoint required; data derived from race-blind ensemble extremes
+- **Frontend:** New component in StatePage or Simulation view
+- **Not implementing** (requires additional preprocessing; deferred).
+
+### GUI-26: Display minority-effective and majority-minority bar charts (required)
+
+As a supplement to GUI-16, using the data calculated in SeaWulf-10, display bar charts for the range of minority effective districts and the range of majority-minority districts for each feasible minority group. Bar charts should be available for race-blind and VRA-constrained ensembles.
+
+- **Backend:** Minority effective district range derived from `GET /api/states/{stateId}/analysis/minority-effectiveness/box-whisker` (min/max of effective district counts). Majority-minority district range requires additional backend data (not yet available).
+- **Frontend:** `MinorityEffectiveDistrictsBar` and `MajorityMinorityDistrictsBar` in `Simulation.jsx`; data currently derived from minority effectiveness box-whisker API.
+
 ---
 
 ## Not Implementing (GUI)
 
 The following GUI use cases are explicitly excluded from scope:
+
 - **GUI-5** — Display demographic heat map by census block (preferred)
 - **GUI-11** — Highlight a Gingles 2/3 table row (preferred)
 - **GUI-14** — Display EI precinct results in choropleth maps (preferred)
-- **GUI-18** — Display vote share vs seat share curve (preferred)
-- **GUI-23** — Display VRA impact threshold table (duplicate of GUI-20)
+- **GUI-18** — Vote share vs seat share curve (preferred; conditional on Gingles polarization result; requires Prepro-10 data)
+- **GUI-24** — Extend for Robust VRA-Constrained ReCom (optional)
+- **GUI-25** — Display expected change in Congressional seats (preferred; deferred, requires additional preprocessing)
 
 ---
 
-## Preprocessing (10 selected)
+## Preprocessing (12 required)
 
 ### Prepro-1: Integrate multiple data sources (required) (AD)
 
@@ -241,17 +308,49 @@ For the statewide race used in the use case above, calculate the non-linear regr
 
 Use the PyEI MGGG software to calculate results for the statewide race (e.g., 2024 presidential) for each of the feasible racial/ethnic groups identified in each state.
 
-### Prepro-11: Calculate Box & Whisker Data for Enacted Plan (required)
+### Prepro-10: Calculate the vote share vs seat share curve data (preferred) (AD)
+
+Using the Shen software as a starting point, calculate the data for the vote share vs. seat share curve in any of your states that display racially polarized voting. Use the current district plan as the basis for calculation. Also use relatively fine grain increments of vote share and possibly randomization to reduce a stair-stepping effect.
+
+- **Not implementing.**
+
+### Prepro-11: Calculate Box & Whisker Data for Enacted Plan (required) (AD)
 
 Calculate the box & whisker data for the enacted district plan for any of the box & whisker displays attempted.
 
-### Not Implementing (Preprocessing)
+### Prepro-12: Prepare data for VRA-conscious analysis (required)
+
+Using the most recent plans for your states, determine the number of effective districts for each state, grouped by demographic group.
+
+- **Required for GUI-3** (rough proportionality) and **GUI-6** (effectiveness scores per district).
+
+### Prepro-13: Use the PyEI MGGG software to calculate precinct-level Ecological Inference data (preferred)
+
+Use the PyEI MGGG software to calculate precinct-specific results for the statewide race (e.g., 2024 presidential).
+
+- **Required for GUI-6** calibrated effectiveness score.
+
+### Prepro-14: Calculate compressed EI probability distribution (preferred)
+
+Calculate the compressed EI probability distribution using the approach cited in Appendix A of the Becker paper.
+
+- **Required for GUI-6** calibrated effectiveness score.
+
+### Prepro-15: Calculate the polarized voting percentage (required)
+
+In your EI calculation you will determine probability curves for a given candidate among different racial/language groups. For each such group, calculate the overlap between the white group and each of the feasible demographic groups in the state as a percentage of the white vote. The lower the number, the greater the polarized voting. If you are using multiple elections, also compute the average percentage among the elections.
+
+- **Required for GUI-12** (curve overlap percentage display) and **GUI-18** (conditional vote share chart).
+
+---
+
+## Not Implementing (Preprocessing)
 
 - **Prepro-10** — Calculate the vote share vs seat share curve data (preferred)
 
 ---
 
-## SeaWulf (12 selected)
+## SeaWulf (10 required)
 
 ### SeaWulf-1: Server dispatcher (required)
 
@@ -297,10 +396,39 @@ Calculate the summary measures for each ensemble. At a minimum, measures will in
 
 Calculate the box & whisker summary data for all the random district plans generated by the SeaWulf. These calculations will be made for each feasible racial/ethnic group in the state.
 
+### SeaWulf-12: Run on multiple SeaWulf nodes (preferred)
+
+Run the MGGG algorithm and supplemental code on multiple nodes on SeaWulf. Node coordination should be done using a suitable coordination mechanism (e.g., MPI). Note that this is optional since your algorithms should run effectively on a large-core single node processor.
+
+- **Not implementing.**
+
 ### SeaWulf-13: Python profiler (preferred)
 
 Profile your system performance on SeaWulf using a Python profiler tool. Identify the procedures that consume the most CPU time. Results can be displayed using some Python-appropriate tool and displayed as an image in your final presentation.
 
-### Not Implementing (SeaWulf)
+### SeaWulf-14: Run Robust MGGG VRA Constrained ReCom algorithm on the SeaWulf (preferred)
+
+In this version of VRA-Constrained ReCom, you will use s_dist in your determination of the minority-effectiveness score of a random district. Use your EI precinct level calculations to determine the minority-effectiveness score. Set the constants in the MGGG code to define the properties (e.g., constraints) of the run. You should generate a test ensemble and a large ensemble. The test ensemble will contain approximately 250 random district plans and the large ensemble will contain approximately 5,000 plans.
+
+- **Not implementing** (deferred; required for GUI-24).
+
+### SeaWulf-15: Generate Additional VRA Constrained ensembles with a range of thresholds (preferred)
+
+Create multiple ensembles using a range of thresholds, that at a minimum should include .5, .6, and .7.
+
+- **Not implementing** (deferred).
+
+### SeaWulf-16: Generate a compactness constrained ensemble (optional)
+
+Generate an additional ensemble, either race-blind or VRA constrained, in which random district plans are only included if they have no district with a Polsby-Popper compactness measure lower than .2.
+
+- **Not implementing** (optional).
+
+---
+
+## Not Implementing (SeaWulf)
 
 - **SeaWulf-12** — Run on multiple SeaWulf nodes (preferred). Multi-node MPI coordination is out of scope; single-node multi-core is sufficient.
+- **SeaWulf-14** — Run Robust MGGG VRA Constrained ReCom (preferred). Deferred; required for GUI-24.
+- **SeaWulf-15** — Generate additional VRA-constrained ensembles with threshold range (preferred). Deferred.
+- **SeaWulf-16** — Generate compactness constrained ensemble (optional).
