@@ -23,7 +23,7 @@
 }
 
 .ensemble-selector-selected {
-  color: var(--active);
+  color: var(--selector-active);
 }
 
 .ensemble-selector-option,

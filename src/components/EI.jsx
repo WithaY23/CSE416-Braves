@@ -82,8 +82,8 @@ function EiBarPanel({ payload, loading, failed, selectedCandidate, switchCandida
         <ResponsiveContainer>
           <BarChart data={data} margin={{ top: 12, right: 18, left: 12, bottom: 30 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#d4d4d8" />
-            <XAxis dataKey="category" tick={{ fontSize: 12 }} label={{ value: 'Racial Group', position: "bottom", fontSize : "0.75rem"}} />
-            <YAxis domain={[0, 1]} tickFormatter={v => `${Math.round(v * 100)}%`} tick={{ fontSize: 12 }} label={{ value: "Est. Support", angle: -90, position: "insideLeft", offset: -2, style: { fontSize: 12 } }} />
+            <XAxis dataKey="category" tick={{ fontSize: 14 }} label={{ value: 'Racial Group', position: "bottom", fontSize : "1rem"}} />
+            <YAxis domain={[0, 1]} tickFormatter={v => `${Math.round(v * 100)}%`} tick={{ fontSize: 14 }} label={{ value: "Est. Support", angle: -90, position: "insideLeft", offset: 4, fontSize: "1rem" }} />
             <Tooltip formatter={v => `${(v * 100).toFixed(1)}%`} />
             <RechartsBar dataKey="peak" name="Peak Support" fill="#2a9d8f">
               <ErrorBar dataKey="ciError" width={4} strokeWidth={2} stroke="#264653" direction="y" />
@@ -119,10 +119,10 @@ function EiKdePanel({ payload, loading, failed, minority, selectedCandidate, swi
       </div>
       <div style={{ width: "100%", height: "55vh" }}>
         <ResponsiveContainer>
-          <ComposedChart data={data} margin={{ top: 12, right: 24, left: 12, bottom: 40 }}>
+          <ComposedChart data={data} margin={{ top: 12, right: 24, left: 0, bottom: 40 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#d4d4d8" />
-            <XAxis dataKey="x" type="number" domain={[-1, 1]} tickFormatter={v => v.toFixed(2)} tick={{ fontSize: 12 }} label={{ value: `(${minority} − non-${minority}) support for ${selectedCandidate}`, position: "insideBottom", offset: -20, fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 12 }} label={{ value: "Density", angle: -90, position: "insideLeft", offset: -2, style: { fontSize: 12 } }} />
+            <XAxis dataKey="x" type="number" domain={[-1, 1]} tickFormatter={v => v.toFixed(2)} tick={{ fontSize: 14 }} label={{ value: `(${minority} − non-${minority}) support for ${selectedCandidate}`, position: "insideBottom", offset: -20, fontSize: "1rem" }} />
+            <YAxis tick={{ fontSize: 14 }} label={{ value: "Density", angle: -90, position: "insideLeft", offset: 16, style: { fontSize: 16 } }} />
             <Tooltip formatter={(v) => [v.toFixed(4), "Density"]} labelFormatter={v => `Gap: ${Number(v).toFixed(3)}`} />
             {payload.thresholdX != null && (
               <ReferenceArea x1={payload.thresholdX} x2={1} fill="#9ca3af" fillOpacity={0.25} label={{ value: thresholdLabel ?? "", position: "insideTopRight", fontSize: 11, fill: "#374151" }} />

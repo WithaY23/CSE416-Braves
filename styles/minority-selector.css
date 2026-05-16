@@ -18,6 +18,6 @@
 .minority-selector-active {
   background-color: #dde8ef;
   font-weight: bold;
-  color: var(--active);
-  border: solid 1px var(--active);
+  color: var(--selector-active);
+  border: solid 1px var(--selector-active);
 }

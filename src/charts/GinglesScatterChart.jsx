@@ -66,15 +66,15 @@ export default function GinglesScatterChart({ payload, compact = false }) {
             dataKey="x"
             domain={[0, 1]}
             tickFormatter={(value) => pct(value, 0)}
-            tick={{ fontSize: compact ? 10 : 11 }}
-            label={{ value: `Percent ${payload.selectedGroup}`, position: 'insideBottom', offset: -2, fontSize: '0.75rem' }}
+            tick={{ fontSize: compact ? 13 : 14 }}
+            label={{ value: `Percent ${payload.selectedGroup}`, position: 'insideBottom', offset: -2, fontSize: '0.9rem' }}
           />
           <YAxis
             type="number"
             domain={[0, 1]}
             tickFormatter={(value) => pct(value, 0)}
-            tick={{ fontSize: compact ? 10 : 11 }}
-            label={{ value: 'Vote Share', angle: -90, position: 'insideLeft', offset: 16, fontSize: '0.75rem' }}
+            tick={{ fontSize: compact ? 13 : 14 }}
+            label={{ value: 'Vote Share', angle: -90, position: 'insideLeft', offset: 16, fontSize: '0.9rem' }}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend verticalAlign={compact ? 'top' : 'middle'} align={compact ? 'center' : 'right'} layout={compact ? 'horizontal' : 'vertical'} wrapperStyle={compact ? { fontSize: '9px', paddingBottom: '2px' } : { fontSize: '11px', paddingLeft: '12px' }} />

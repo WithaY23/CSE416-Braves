@@ -116,7 +116,7 @@
 }
 
 .candidate-selector-selected {
-  color: var(--active);
+  color: var(--selector-active);
 }
 
 .candidate-selector-option,

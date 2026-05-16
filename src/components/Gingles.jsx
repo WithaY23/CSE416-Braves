@@ -23,7 +23,7 @@ function GroupSelector({ stateKey, currMinority, options, switchMinority }) {
 function PrecinctTable({ rows }) {
   const tableWrapperRef = useRef(null);
   const tableRef = useRef(null);
-  const [pageSize, setPageSize] = useState(4);
+  const [pageSize, setPageSize] = useState(6);
   const [page, setPage] = useState(1);
   const sortedRows = useMemo(
     () => [...rows].sort((a, b) => String(a.precinctId ?? "").localeCompare(String(b.precinctId ?? ""), undefined, { numeric: true })),

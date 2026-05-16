@@ -77,7 +77,7 @@
 }
 
 .compare-page-selected {
-  color: var(--active);
+  color: var(--selector-active);
 }
 
 .compare-page-plan-option,
@@ -154,11 +154,11 @@
 }
 
 .compare-table-dataNum {
-  text-align: left;
+  text-align: right;
 }
 
 .compare-table-dataText {
-  text-align: right;
+  text-align: left;
 }
 
 .compare-table-distnum:hover {

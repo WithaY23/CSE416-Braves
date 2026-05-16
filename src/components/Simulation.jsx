@@ -21,7 +21,7 @@ function EnsembleSplits({ payload, loading, failed }) {
   const yMax = Math.max(...series.raceBlind.map(d => d.frequency), ...series.vraConstrained.map(d => d.frequency));
   const domain = [0, yMax + Math.ceil(yMax * 0.1) + 1];
   const toChartData = (src) => allLabels.map(label => ({ splitLabel: label, frequency: src.find(d => d.splitLabel === label)?.frequency ?? 0 }));
-  const margin = { top: 5, right: 10, left: -20, bottom: 15 };
+  const margin = { top: 5, right: 10, left: -10, bottom: 15 };
   return (
     <div className="sim-chartStack">
       <div id="sim-page-data-container">
@@ -29,8 +29,8 @@ function EnsembleSplits({ payload, loading, failed }) {
         <ResponsiveContainer width="100%" height={230}>
           <BarChart data={toChartData(series.raceBlind)} margin={margin}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="splitLabel" tick={{ fontSize: 12 }} label={{ value:"Republican wins/Democratic wins", fontSize : "0.75rem", position: "bottom" }} />
-            <YAxis domain={domain} tick={{ fontSize: 12 }} label={{ value:"Number of Plans", fontSize : "0.75rem", angle: -90 }} />
+            <XAxis dataKey="splitLabel" tick={{ fontSize: 12 }} label={{ value:"Republican wins/Democratic wins", fontSize : "0.8rem", position: "bottom", dy: -4 }} />
+            <YAxis domain={domain} tick={{ fontSize: 12 }} label={{ value:"Number of Plans", fontSize : "0.8rem", angle: -90, position: "insideLeft", dx: 12, dy: 35 }} />
             <Tooltip formatter={v => [`${v} plans`, "Frequency"]} />
             <RechartsBar dataKey="frequency" fill="#1b9e77" name="Plans" />
           </BarChart>
@@ -42,8 +42,8 @@ function EnsembleSplits({ payload, loading, failed }) {
         <ResponsiveContainer width="100%" height={230}>
           <BarChart data={toChartData(series.vraConstrained)} margin={margin}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="splitLabel" tick={{ fontSize: 12 }} label={{ value:"Republican wins/Democratic wins", fontSize : "0.75rem", position: "bottom" }} />
-            <YAxis domain={domain} tick={{ fontSize: 12 }} label={{ value:"Number of Plans", fontSize : "0.75rem", angle: -90 }} />
+            <XAxis dataKey="splitLabel" tick={{ fontSize: 12 }} label={{ value:"Republican wins/Democratic wins", fontSize : "0.8rem", position: "bottom", dy: -4 }} />
+            <YAxis domain={domain} tick={{ fontSize: 12 }} label={{ value:"Number of Plans", fontSize : "0.8rem", angle: -90, position: "insideLeft", dx: 12, dy: 35 }} />
             <Tooltip formatter={v => [`${v} plans`, "Frequency"]} />
             <RechartsBar dataKey="frequency" fill="#d95f02" name="Plans" />
           </BarChart>
@@ -97,8 +97,8 @@ function BoxWhisker({ payload, loading, failed, minority, subtitle }) {
         <div className="sim-chartSubtitle">{subtitle}</div>
         <ResponsiveContainer style={{ width: "100%", height: "100%" }}>
           <ComposedChart data={data} width="100%" height="100%" margin={{left: -30, bottom: 20}}>
-            <XAxis dataKey="districtRank" label={{ value: 'Indexed district', position: "bottom", fontSize : "0.75rem"}} tick={{ fontSize: "0.75rem" }} allowDuplicatedCategory={false}/>
-            <YAxis width={70} label={{ value: "Population Percentage", fontSize : "0.75rem", angle: -90}} tick={{ fontSize: "0.75rem" }} ticks={[0, 0.2, 0.4, 0.6, 0.8]}/>
+            <XAxis dataKey="districtRank" label={{ value: 'Indexed district', position: "bottom", fontSize : "0.85rem"}} tick={{ fontSize: "0.75rem" }} allowDuplicatedCategory={false}/>
+            <YAxis width={70} label={{ value: "Population Percentage", fontSize : "0.8rem", angle: -90}} tick={{ fontSize: "0.75rem" }} ticks={[0, 0.2, 0.4, 0.6, 0.8]}/>
             <CartesianGrid vertical={false} />
             <RechartsBar dataKey={boxDataKey} legendType="none" barSize={20} fill="#e8eaec" stroke="black" strokeWidth={1} >
               <ErrorBar dataKey={whiskerDataKey} legendType="none" zIndex="-1"/>
@@ -224,9 +224,9 @@ function MinorityEffectivenessBoxWhisker({ payload, loading, failed }) {
     <div id="sim-page-data-container">
       <div className="sim-chartStack">
         <ResponsiveContainer style={{ width: "100%", height: "100%" }}>
-          <ComposedChart data={groupSummaries} width="100%" height="100%" margin={{left: -20, bottom: 20}}>
-            <XAxis dataKey="label" label={{ value: 'Racial Group', position: "bottom", fontSize : "0.75rem"}} tick={{ fontSize: "0.75rem" }} allowDuplicatedCategory={false}/>
-            <YAxis width={55} label={{ value: "Number of Minority Effective Districts", fontSize : "0.75rem", angle: -90}} tick={{ fontSize: "0.75rem" }} ticks={ticks}/>
+          <ComposedChart data={groupSummaries} width="100%" height="100%" margin={{left: -20, bottom: 14}}>
+            <XAxis dataKey="label" label={{ value: 'Racial Group', position: "bottom", fontSize : "0.8rem", offset: -2}} tick={{ fontSize: "0.75rem" }} allowDuplicatedCategory={false}/>
+            <YAxis width={55} label={{ value: "Number of Minority Effective Districts", fontSize : "0.85rem", angle: -90}} tick={{ fontSize: "0.75rem" }} ticks={ticks}/>
             <CartesianGrid vertical={false} />
             <RechartsBar name="Race-Blind Ensemble" dataKey={rbBoxDataKey} barSize={20} fill="#1b9e77" stroke="black" strokeWidth={1} >
               <ErrorBar dataKey={rbWhiskerDataKey} legendType="none" zIndex="-1"/>
@@ -237,7 +237,7 @@ function MinorityEffectivenessBoxWhisker({ payload, loading, failed }) {
             </RechartsBar>
             <Scatter dataKey={vraMedianKey} shape={<VraMedianLine width={20} />} legendType="none" />
             <Tooltip content={<TooltipContent data={groupSummaries}/>} />
-            <Legend align="right" verticalAlign="top" wrapperStyle={{paddingBottom: "16px", fontSize: "0.75rem"}} iconSize={8} />
+            <Legend align="right" verticalAlign="top" wrapperStyle={{paddingBottom: "16px", fontSize: "0.8rem"}} iconSize={8} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -303,8 +303,8 @@ function MinorityEffectivenessHistogram({ payload, loading, failed, group }) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 5, left: -25, bottom: 15 }} barCategoryGap={0}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="effectiveDistricts" ticks={Array.from({ length: totalDistricts + 1 }, (_, i) => i)} label={{ value: `Number of Districts with ${group} effectiveness > 60%`, position: "bottom", fontSize: "0.75rem" }} tick={{ fontSize: 12 }} />
-            <YAxis label={{ value: "Plans", angle: -90, fontSize: 13 }} tick={{ fontSize: 12 }} />
+            <XAxis dataKey="effectiveDistricts" ticks={Array.from({ length: totalDistricts + 1 }, (_, i) => i)} label={{ value: `Number of Districts with ${group} effectiveness > 60%`, position: "bottom", fontSize: "0.85rem" }} tick={{ fontSize: 12 }} />
+            <YAxis label={{ value: "Plans", angle: -90, fontSize: "0.85rem" }} tick={{ fontSize: 12 }} />
             <Tooltip content={<HistogramTooltip />} />
             <RechartsBar dataKey="maxVal" shape={OverlappingBar} isAnimationActive={false} />
           </BarChart>
@@ -355,13 +355,13 @@ function MinorityEffectiveDistrictsBar({ payload, loading, failed, group }) {
         <div className="sim-chartSubtitle">Range of Minority-Effective Districts</div>
         <ResponsiveContainer style={{ width: "100%", height: "100%" }}>
           <ComposedChart data={payload} width="100%" height="100%" margin={{left: -20, bottom: 20}}>
-            <XAxis dataKey="label" label={{ value: 'Racial Group', position: "bottom", fontSize : "0.75rem"}} tick={{ fontSize: "0.75rem" }} allowDuplicatedCategory={false}/>
-            <YAxis width={55} label={{ value: "Number of Minority-Effective Districts", fontSize : "0.75rem", angle: -90}} tick={{ fontSize: "0.75rem" }} ticks={ticks}/>
+            <XAxis dataKey="label" label={{ value: 'Racial Group', position: "bottom", fontSize : "0.8rem"}} tick={{ fontSize: "0.75rem" }} allowDuplicatedCategory={false}/>
+            <YAxis width={55} label={{ value: "Number of Minority-Effective Districts", fontSize : "0.8rem", angle: -90}} tick={{ fontSize: "0.75rem" }} ticks={ticks}/>
             <CartesianGrid vertical={false} />
             <RechartsBar name="Race-Blind Ensemble" dataKey={rbBarDataKey} fill="#1b9e77" stroke="black" strokeWidth={1} barSize={BAR_SIZE} />
             <RechartsBar name="Vra-Constrained Ensemble" dataKey={vraBarDataKey} fill="#d95f02" stroke="black" strokeWidth={1} barSize={BAR_SIZE} />
             <Tooltip content={<BarsTooltipContent data={payload}/>} />
-            <Legend align="right" verticalAlign="top" wrapperStyle={{paddingBottom: "16px", fontSize: "0.75rem"}} iconSize={8} />
+            <Legend align="right" verticalAlign="top" wrapperStyle={{paddingBottom: "16px", fontSize: "0.8rem"}} iconSize={8} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -383,13 +383,13 @@ function MajorityMinorityDistrictsBar({ payload, loading, failed, group }) {
         <div className="sim-chartSubtitle">Range of Majority-Minority Districts</div>
         <ResponsiveContainer style={{ width: "100%", height: "100%" }}>
           <ComposedChart data={payload} width="100%" height="100%" margin={{left: -20, bottom: 20}}>
-            <XAxis dataKey="label" label={{ value: 'Racial Group', position: "bottom", fontSize : "0.75rem"}} tick={{ fontSize: "0.75rem" }} allowDuplicatedCategory={false}/>
-            <YAxis width={55} label={{ value: "Number of Majority-Minority Districts", fontSize : "0.75rem", angle: -90}} tick={{ fontSize: "0.75rem" }} ticks={ticks}/>
+            <XAxis dataKey="label" label={{ value: 'Racial Group', position: "bottom", fontSize : "0.8rem"}} tick={{ fontSize: "0.75rem" }} allowDuplicatedCategory={false}/>
+            <YAxis width={55} label={{ value: "Number of Majority-Minority Districts", fontSize : "0.8rem", angle: -90}} tick={{ fontSize: "0.75rem" }} ticks={ticks}/>
             <CartesianGrid vertical={false} />
             <RechartsBar name="Race-Blind Ensemble" dataKey={rbBarDataKey} fill="#1b9e77" stroke="black" strokeWidth={1} barSize={BAR_SIZE} />
             <RechartsBar name="Vra-Constrained Ensemble" dataKey={vraBarDataKey} fill="#d95f02" stroke="black" strokeWidth={1} barSize={BAR_SIZE} />
             <Tooltip content={<BarsTooltipContent data={payload}/>} />
-            <Legend align="right" verticalAlign="top" wrapperStyle={{paddingBottom: "16px", fontSize: "0.75rem"}} iconSize={8} />
+            <Legend align="right" verticalAlign="top" wrapperStyle={{paddingBottom: "16px", fontSize: "0.8rem"}} iconSize={8} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
