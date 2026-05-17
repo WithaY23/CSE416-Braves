@@ -384,7 +384,9 @@ Invariants: `rowCount = rows.length`; rows sorted by `precinctId` asc; `minority
 
 Invariants: `xSupportShare` monotonically increasing within each series; `density ≥ 0`.
 
-**Seeded combinations:** OR: `(latino, DEM)`, `(asian, DEM)`, `(latino, REP)` · SC: `(black, DEM)`, `(latino, DEM)`, `(black, REP)`
+**Seeded focal combinations in the current app flow:** OR: `(latino, DEM|REP)` · SC: `(black, DEM|REP)`
+
+**Additional generated combinations available in seed data:** `SC/latino`, `OR/white`, `SC/white`, plus legacy mock-backed non-focal slices where noted in the catalog.
 
 ---
 

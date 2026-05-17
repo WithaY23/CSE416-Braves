@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v1",
+  "chartType": "ei-precinct-bar-ci",
+  "state": "OR",
+  "totalDistricts": 6,
+  "election": "2024 Presidential",
+  "selectedCandidate": "Kamala Harris",
+  "categories": [
+    {
+      "category": "White",
+      "peak": 0.439679,
+      "ciLow": 0,
+      "ciHigh": 0.886053
+    },
+    {
+      "category": "Black",
+      "peak": 0.939287,
+      "ciLow": 0,
+      "ciHigh": 1
+    },
+    {
+      "category": "Asian",
+      "peak": 0.938098,
+      "ciLow": 0,
+      "ciHigh": 1
+    },
+    {
+      "category": "Latino",
+      "peak": 0.773623,
+      "ciLow": 0,
+      "ciHigh": 1
+    }
+  ]
+}

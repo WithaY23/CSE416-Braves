@@ -496,6 +496,74 @@ class StateControllerTest {
                 .andExpect(jsonPath("$.bins[0].frequency").value(1200));
     }
 
+    @Test
+    void eiEndpointsAcceptWhiteGroupQueries() throws Exception {
+        BackendDataService dataService = new BackendDataService(
+                null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null
+        ) {
+            @Override
+            public Map<String, Object> getEiSupport(String stateIdInput, String groupsInput, String electionInput, String partyInput) {
+                return Map.of(
+                        "state", stateIdInput,
+                        "group", groupsInput,
+                        "party", partyInput,
+                        "selectedCandidate", "Donald Trump"
+                );
+            }
+
+            @Override
+            public Map<String, Object> getEiPrecinctBarCi(String stateIdInput, String groupInput, String electionInput, String partyInput) {
+                return Map.of(
+                        "state", stateIdInput,
+                        "group", groupInput,
+                        "party", partyInput,
+                        "categories", List.of(Map.of("category", "White", "peak", 0.5, "ciLow", 0.4, "ciHigh", 0.6))
+                );
+            }
+
+            @Override
+            public Map<String, Object> getEiKde(String stateIdInput, String groupInput, String electionInput, String metricInput, String partyInput) {
+                return Map.of(
+                        "state", stateIdInput,
+                        "group", groupInput,
+                        "metric", metricInput,
+                        "party", partyInput,
+                        "series", List.of(Map.of("points", List.of(Map.of("x", 0.0, "density", 1.0))))
+                );
+            }
+        };
+
+        MockMvc mockMvc = mockMvcFor(dataService);
+
+        mockMvc.perform(get("/api/states/OR/analysis/ei-support")
+                        .param("groups", "white")
+                        .param("election", "2024_pres")
+                        .param("party", "REP"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("OR"))
+                .andExpect(jsonPath("$.group").value("white"))
+                .andExpect(jsonPath("$.party").value("REP"));
+
+        mockMvc.perform(get("/api/states/SC/analysis/ei-precinct-bar-ci")
+                        .param("group", "white")
+                        .param("election", "2024_pres")
+                        .param("party", "DEM"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.group").value("white"))
+                .andExpect(jsonPath("$.categories[0].category").value("White"));
+
+        mockMvc.perform(get("/api/states/SC/analysis/ei-kde")
+                        .param("group", "white")
+                        .param("election", "2024_pres")
+                        .param("metric", "support_gap")
+                        .param("party", "REP"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.group").value("white"))
+                .andExpect(jsonPath("$.metric").value("support_gap"))
+                .andExpect(jsonPath("$.party").value("REP"));
+    }
+
     private MockMvc mockMvcFor(BackendDataService dataService) {
         StateController controller = new StateController(dataService, new GeometryAssetService(objectMapper));
         return MockMvcBuilders.standaloneSetup(controller)

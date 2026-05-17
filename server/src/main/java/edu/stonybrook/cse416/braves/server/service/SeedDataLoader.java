@@ -1060,12 +1060,17 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedEiSupport(Path root) throws IOException {
-        saveEiSupport("OR", "latino", "2024_pres", "DEM", root.resolve("mock-data/v1/ei-support/OR_2024_president.json"));
-        saveEiSupport("OR", "latino", "2024_pres", "REP", root.resolve("mock-data/v1/ei-support/OR_latino_2024_president_REP.json"));
+        saveEiSupport("OR", "latino", "2024_pres", "DEM", root.resolve("preprocessing/output/ei/ei-support/OR_latino_2024_president_DEM.json"));
+        saveEiSupport("OR", "latino", "2024_pres", "REP", root.resolve("preprocessing/output/ei/ei-support/OR_latino_2024_president_REP.json"));
+        saveEiSupport("OR", "white",  "2024_pres", "DEM", root.resolve("preprocessing/output/ei/ei-support/OR_white_2024_president_DEM.json"));
+        saveEiSupport("OR", "white",  "2024_pres", "REP", root.resolve("preprocessing/output/ei/ei-support/OR_white_2024_president_REP.json"));
         saveEiSupport("OR", "asian",  "2024_pres", "DEM", root.resolve("mock-data/v1/ei-support/OR_asian_2024_president.json"));
-        saveEiSupport("SC", "black",  "2024_pres", "DEM", root.resolve("mock-data/v1/ei-support/SC_2024_president.json"));
-        saveEiSupport("SC", "black",  "2024_pres", "REP", root.resolve("mock-data/v1/ei-support/SC_black_2024_president_REP.json"));
-        saveEiSupport("SC", "latino", "2024_pres", "DEM", root.resolve("mock-data/v1/ei-support/SC_latino_2024_president.json"));
+        saveEiSupport("SC", "black",  "2024_pres", "DEM", root.resolve("preprocessing/output/ei/ei-support/SC_black_2024_president_DEM.json"));
+        saveEiSupport("SC", "black",  "2024_pres", "REP", root.resolve("preprocessing/output/ei/ei-support/SC_black_2024_president_REP.json"));
+        saveEiSupport("SC", "white",  "2024_pres", "DEM", root.resolve("preprocessing/output/ei/ei-support/SC_white_2024_president_DEM.json"));
+        saveEiSupport("SC", "white",  "2024_pres", "REP", root.resolve("preprocessing/output/ei/ei-support/SC_white_2024_president_REP.json"));
+        saveEiSupport("SC", "latino", "2024_pres", "DEM", root.resolve("preprocessing/output/ei/ei-support/SC_latino_2024_president_DEM.json"));
+        saveEiSupport("SC", "latino", "2024_pres", "REP", root.resolve("preprocessing/output/ei/ei-support/SC_latino_2024_president_REP.json"));
     }
 
     private void saveEiSupport(String stateId, String groupKey, String electionId, String partyKey, Path path) throws IOException {
@@ -1075,12 +1080,17 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedEiPrecinctBarCi(Path root) throws IOException {
-        saveEiPrecinctBarCi("OR", "latino", "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_demo.json"));
-        saveEiPrecinctBarCi("OR", "latino", "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_latino_REP.json"));
+        saveEiPrecinctBarCi("OR", "latino", "2024_pres", PartyKey.DEM, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/OR_latino_2024_pres_DEM.json"));
+        saveEiPrecinctBarCi("OR", "latino", "2024_pres", PartyKey.REP, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/OR_latino_2024_pres_REP.json"));
+        saveEiPrecinctBarCi("OR", "white",  "2024_pres", PartyKey.DEM, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/OR_white_2024_pres_DEM.json"));
+        saveEiPrecinctBarCi("OR", "white",  "2024_pres", PartyKey.REP, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/OR_white_2024_pres_REP.json"));
         saveEiPrecinctBarCi("OR", "asian",  "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/OR_asian_demo.json"));
-        saveEiPrecinctBarCi("SC", "black",  "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_demo.json"));
-        saveEiPrecinctBarCi("SC", "black",  "2024_pres", PartyKey.REP, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_black_REP.json"));
-        saveEiPrecinctBarCi("SC", "latino", "2024_pres", PartyKey.DEM, root.resolve("mock-data/v1/ei-precinct-bar-ci/SC_latino_demo.json"));
+        saveEiPrecinctBarCi("SC", "black",  "2024_pres", PartyKey.DEM, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/SC_black_2024_pres_DEM.json"));
+        saveEiPrecinctBarCi("SC", "black",  "2024_pres", PartyKey.REP, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/SC_black_2024_pres_REP.json"));
+        saveEiPrecinctBarCi("SC", "white",  "2024_pres", PartyKey.DEM, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/SC_white_2024_pres_DEM.json"));
+        saveEiPrecinctBarCi("SC", "white",  "2024_pres", PartyKey.REP, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/SC_white_2024_pres_REP.json"));
+        saveEiPrecinctBarCi("SC", "latino", "2024_pres", PartyKey.DEM, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/SC_latino_2024_pres_DEM.json"));
+        saveEiPrecinctBarCi("SC", "latino", "2024_pres", PartyKey.REP, root.resolve("preprocessing/output/ei/ei-precinct-bar-ci/SC_latino_2024_pres_REP.json"));
     }
 
     private void saveEiPrecinctBarCi(String stateId, String groupKey, String electionId, PartyKey partyKey, Path path) throws IOException {
@@ -1090,12 +1100,17 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedEiKde(Path root) throws IOException {
-        saveEiKde("OR", "latino", "2024_pres", "support_gap", "DEM", root.resolve("mock-data/v1/ei-kde/OR_demo.json"));
-        saveEiKde("OR", "latino", "2024_pres", "support_gap", "REP", root.resolve("mock-data/v1/ei-kde/OR_latino_REP.json"));
+        saveEiKde("OR", "latino", "2024_pres", "support_gap", "DEM", root.resolve("preprocessing/output/ei/ei-kde/OR_latino_2024_pres_support_gap_DEM.json"));
+        saveEiKde("OR", "latino", "2024_pres", "support_gap", "REP", root.resolve("preprocessing/output/ei/ei-kde/OR_latino_2024_pres_support_gap_REP.json"));
+        saveEiKde("OR", "white",  "2024_pres", "support_gap", "DEM", root.resolve("preprocessing/output/ei/ei-kde/OR_white_2024_pres_support_gap_DEM.json"));
+        saveEiKde("OR", "white",  "2024_pres", "support_gap", "REP", root.resolve("preprocessing/output/ei/ei-kde/OR_white_2024_pres_support_gap_REP.json"));
         saveEiKde("OR", "asian",  "2024_pres", "support_gap", "DEM", root.resolve("mock-data/v1/ei-kde/OR_asian_demo.json"));
-        saveEiKde("SC", "black",  "2024_pres", "support_gap", "DEM", root.resolve("mock-data/v1/ei-kde/SC_demo.json"));
-        saveEiKde("SC", "black",  "2024_pres", "support_gap", "REP", root.resolve("mock-data/v1/ei-kde/SC_black_REP.json"));
-        saveEiKde("SC", "latino", "2024_pres", "support_gap", "DEM", root.resolve("mock-data/v1/ei-kde/SC_latino_demo.json"));
+        saveEiKde("SC", "black",  "2024_pres", "support_gap", "DEM", root.resolve("preprocessing/output/ei/ei-kde/SC_black_2024_pres_support_gap_DEM.json"));
+        saveEiKde("SC", "black",  "2024_pres", "support_gap", "REP", root.resolve("preprocessing/output/ei/ei-kde/SC_black_2024_pres_support_gap_REP.json"));
+        saveEiKde("SC", "white",  "2024_pres", "support_gap", "DEM", root.resolve("preprocessing/output/ei/ei-kde/SC_white_2024_pres_support_gap_DEM.json"));
+        saveEiKde("SC", "white",  "2024_pres", "support_gap", "REP", root.resolve("preprocessing/output/ei/ei-kde/SC_white_2024_pres_support_gap_REP.json"));
+        saveEiKde("SC", "latino", "2024_pres", "support_gap", "DEM", root.resolve("preprocessing/output/ei/ei-kde/SC_latino_2024_pres_support_gap_DEM.json"));
+        saveEiKde("SC", "latino", "2024_pres", "support_gap", "REP", root.resolve("preprocessing/output/ei/ei-kde/SC_latino_2024_pres_support_gap_REP.json"));
     }
 
     private void saveEiKde(String stateId, String groupKey, String electionId, String metricKey, String partyKey, Path path) throws IOException {

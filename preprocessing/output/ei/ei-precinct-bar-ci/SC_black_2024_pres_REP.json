@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v1",
+  "chartType": "ei-precinct-bar-ci",
+  "state": "SC",
+  "totalDistricts": 7,
+  "election": "2024 Presidential",
+  "selectedCandidate": "Donald Trump",
+  "categories": [
+    {
+      "category": "White",
+      "peak": 0.833176,
+      "ciLow": 0.500034,
+      "ciHigh": 1
+    },
+    {
+      "category": "Black",
+      "peak": 0.250118,
+      "ciLow": 0,
+      "ciHigh": 1
+    },
+    {
+      "category": "Asian",
+      "peak": 0.262683,
+      "ciLow": 0,
+      "ciHigh": 1
+    },
+    {
+      "category": "Latino",
+      "peak": 0.134438,
+      "ciLow": 0,
+      "ciHigh": 1
+    }
+  ]
+}

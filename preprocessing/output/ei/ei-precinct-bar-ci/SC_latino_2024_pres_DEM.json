@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v1",
+  "chartType": "ei-precinct-bar-ci",
+  "state": "SC",
+  "totalDistricts": 7,
+  "election": "2024 Presidential",
+  "selectedCandidate": "Kamala Harris",
+  "categories": [
+    {
+      "category": "White",
+      "peak": 0.166824,
+      "ciLow": 0,
+      "ciHigh": 0.499966
+    },
+    {
+      "category": "Black",
+      "peak": 0.749882,
+      "ciLow": 0,
+      "ciHigh": 1
+    },
+    {
+      "category": "Asian",
+      "peak": 0.737317,
+      "ciLow": 0,
+      "ciHigh": 1
+    },
+    {
+      "category": "Latino",
+      "peak": 0.865562,
+      "ciLow": 0,
+      "ciHigh": 1
+    }
+  ]
+}

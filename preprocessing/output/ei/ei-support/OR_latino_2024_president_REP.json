@@ -1,0 +1,676 @@
+{
+  "schemaVersion": "v1",
+  "chartType": "ei-support",
+  "state": "OR",
+  "totalDistricts": 6,
+  "election": "2024 Presidential",
+  "selectedCandidate": "Donald Trump",
+  "selectedGroup": "Latino",
+  "units": {
+    "share": "decimal_0_to_1"
+  },
+  "series": [
+    {
+      "key": "latino",
+      "label": "Latino",
+      "confidenceScore": 0.9997,
+      "points": [
+        {
+          "xSupportShare": 0,
+          "density": 1.213216
+        },
+        {
+          "xSupportShare": 0.0125,
+          "density": 1.222197
+        },
+        {
+          "xSupportShare": 0.025,
+          "density": 1.222336
+        },
+        {
+          "xSupportShare": 0.0375,
+          "density": 1.213934
+        },
+        {
+          "xSupportShare": 0.05,
+          "density": 1.197522
+        },
+        {
+          "xSupportShare": 0.0625,
+          "density": 1.173831
+        },
+        {
+          "xSupportShare": 0.075,
+          "density": 1.14377
+        },
+        {
+          "xSupportShare": 0.0875,
+          "density": 1.108381
+        },
+        {
+          "xSupportShare": 0.1,
+          "density": 1.068799
+        },
+        {
+          "xSupportShare": 0.1125,
+          "density": 1.026207
+        },
+        {
+          "xSupportShare": 0.125,
+          "density": 0.981793
+        },
+        {
+          "xSupportShare": 0.1375,
+          "density": 0.936705
+        },
+        {
+          "xSupportShare": 0.15,
+          "density": 0.892018
+        },
+        {
+          "xSupportShare": 0.1625,
+          "density": 0.848698
+        },
+        {
+          "xSupportShare": 0.175,
+          "density": 0.807581
+        },
+        {
+          "xSupportShare": 0.1875,
+          "density": 0.769353
+        },
+        {
+          "xSupportShare": 0.2,
+          "density": 0.734541
+        },
+        {
+          "xSupportShare": 0.2125,
+          "density": 0.703514
+        },
+        {
+          "xSupportShare": 0.225,
+          "density": 0.676482
+        },
+        {
+          "xSupportShare": 0.2375,
+          "density": 0.65351
+        },
+        {
+          "xSupportShare": 0.25,
+          "density": 0.634531
+        },
+        {
+          "xSupportShare": 0.2625,
+          "density": 0.619362
+        },
+        {
+          "xSupportShare": 0.275,
+          "density": 0.607725
+        },
+        {
+          "xSupportShare": 0.2875,
+          "density": 0.599267
+        },
+        {
+          "xSupportShare": 0.3,
+          "density": 0.593581
+        },
+        {
+          "xSupportShare": 0.3125,
+          "density": 0.590224
+        },
+        {
+          "xSupportShare": 0.325,
+          "density": 0.588733
+        },
+        {
+          "xSupportShare": 0.3375,
+          "density": 0.588646
+        },
+        {
+          "xSupportShare": 0.35,
+          "density": 0.589512
+        },
+        {
+          "xSupportShare": 0.3625,
+          "density": 0.5909
+        },
+        {
+          "xSupportShare": 0.375,
+          "density": 0.592415
+        },
+        {
+          "xSupportShare": 0.3875,
+          "density": 0.593699
+        },
+        {
+          "xSupportShare": 0.4,
+          "density": 0.59444
+        },
+        {
+          "xSupportShare": 0.4125,
+          "density": 0.594373
+        },
+        {
+          "xSupportShare": 0.425,
+          "density": 0.593286
+        },
+        {
+          "xSupportShare": 0.4375,
+          "density": 0.591015
+        },
+        {
+          "xSupportShare": 0.45,
+          "density": 0.587452
+        },
+        {
+          "xSupportShare": 0.4625,
+          "density": 0.582536
+        },
+        {
+          "xSupportShare": 0.475,
+          "density": 0.576256
+        },
+        {
+          "xSupportShare": 0.4875,
+          "density": 0.568646
+        },
+        {
+          "xSupportShare": 0.5,
+          "density": 0.559786
+        },
+        {
+          "xSupportShare": 0.5125,
+          "density": 0.549794
+        },
+        {
+          "xSupportShare": 0.525,
+          "density": 0.538821
+        },
+        {
+          "xSupportShare": 0.5375,
+          "density": 0.527053
+        },
+        {
+          "xSupportShare": 0.55,
+          "density": 0.514701
+        },
+        {
+          "xSupportShare": 0.5625,
+          "density": 0.501999
+        },
+        {
+          "xSupportShare": 0.575,
+          "density": 0.489199
+        },
+        {
+          "xSupportShare": 0.5875,
+          "density": 0.476564
+        },
+        {
+          "xSupportShare": 0.6,
+          "density": 0.46437
+        },
+        {
+          "xSupportShare": 0.6125,
+          "density": 0.452895
+        },
+        {
+          "xSupportShare": 0.625,
+          "density": 0.442419
+        },
+        {
+          "xSupportShare": 0.6375,
+          "density": 0.433221
+        },
+        {
+          "xSupportShare": 0.65,
+          "density": 0.425574
+        },
+        {
+          "xSupportShare": 0.6625,
+          "density": 0.419742
+        },
+        {
+          "xSupportShare": 0.675,
+          "density": 0.415973
+        },
+        {
+          "xSupportShare": 0.6875,
+          "density": 0.414503
+        },
+        {
+          "xSupportShare": 0.7,
+          "density": 0.415541
+        },
+        {
+          "xSupportShare": 0.7125,
+          "density": 0.419272
+        },
+        {
+          "xSupportShare": 0.725,
+          "density": 0.425848
+        },
+        {
+          "xSupportShare": 0.7375,
+          "density": 0.43538
+        },
+        {
+          "xSupportShare": 0.75,
+          "density": 0.447932
+        },
+        {
+          "xSupportShare": 0.7625,
+          "density": 0.463511
+        },
+        {
+          "xSupportShare": 0.775,
+          "density": 0.482063
+        },
+        {
+          "xSupportShare": 0.7875,
+          "density": 0.503463
+        },
+        {
+          "xSupportShare": 0.8,
+          "density": 0.527506
+        },
+        {
+          "xSupportShare": 0.8125,
+          "density": 0.553905
+        },
+        {
+          "xSupportShare": 0.825,
+          "density": 0.582289
+        },
+        {
+          "xSupportShare": 0.8375,
+          "density": 0.612199
+        },
+        {
+          "xSupportShare": 0.85,
+          "density": 0.643093
+        },
+        {
+          "xSupportShare": 0.8625,
+          "density": 0.674355
+        },
+        {
+          "xSupportShare": 0.875,
+          "density": 0.705305
+        },
+        {
+          "xSupportShare": 0.8875,
+          "density": 0.735214
+        },
+        {
+          "xSupportShare": 0.9,
+          "density": 0.763323
+        },
+        {
+          "xSupportShare": 0.9125,
+          "density": 0.788869
+        },
+        {
+          "xSupportShare": 0.925,
+          "density": 0.811107
+        },
+        {
+          "xSupportShare": 0.9375,
+          "density": 0.829335
+        },
+        {
+          "xSupportShare": 0.95,
+          "density": 0.842925
+        },
+        {
+          "xSupportShare": 0.9625,
+          "density": 0.851343
+        },
+        {
+          "xSupportShare": 0.975,
+          "density": 0.854175
+        },
+        {
+          "xSupportShare": 0.9875,
+          "density": 0.851144
+        },
+        {
+          "xSupportShare": 1,
+          "density": 0.84212
+        }
+      ]
+    },
+    {
+      "key": "non_latino",
+      "label": "Non-Latino",
+      "confidenceScore": 0.9997,
+      "points": [
+        {
+          "xSupportShare": 0,
+          "density": 0.160514
+        },
+        {
+          "xSupportShare": 0.0125,
+          "density": 0.210007
+        },
+        {
+          "xSupportShare": 0.025,
+          "density": 0.267653
+        },
+        {
+          "xSupportShare": 0.0375,
+          "density": 0.332421
+        },
+        {
+          "xSupportShare": 0.05,
+          "density": 0.402506
+        },
+        {
+          "xSupportShare": 0.0625,
+          "density": 0.475389
+        },
+        {
+          "xSupportShare": 0.075,
+          "density": 0.548017
+        },
+        {
+          "xSupportShare": 0.0875,
+          "density": 0.617088
+        },
+        {
+          "xSupportShare": 0.1,
+          "density": 0.679412
+        },
+        {
+          "xSupportShare": 0.1125,
+          "density": 0.732295
+        },
+        {
+          "xSupportShare": 0.125,
+          "density": 0.77389
+        },
+        {
+          "xSupportShare": 0.1375,
+          "density": 0.803451
+        },
+        {
+          "xSupportShare": 0.15,
+          "density": 0.821437
+        },
+        {
+          "xSupportShare": 0.1625,
+          "density": 0.829465
+        },
+        {
+          "xSupportShare": 0.175,
+          "density": 0.83009
+        },
+        {
+          "xSupportShare": 0.1875,
+          "density": 0.826468
+        },
+        {
+          "xSupportShare": 0.2,
+          "density": 0.821948
+        },
+        {
+          "xSupportShare": 0.2125,
+          "density": 0.819653
+        },
+        {
+          "xSupportShare": 0.225,
+          "density": 0.822119
+        },
+        {
+          "xSupportShare": 0.2375,
+          "density": 0.831031
+        },
+        {
+          "xSupportShare": 0.25,
+          "density": 0.847097
+        },
+        {
+          "xSupportShare": 0.2625,
+          "density": 0.870048
+        },
+        {
+          "xSupportShare": 0.275,
+          "density": 0.898771
+        },
+        {
+          "xSupportShare": 0.2875,
+          "density": 0.931527
+        },
+        {
+          "xSupportShare": 0.3,
+          "density": 0.966231
+        },
+        {
+          "xSupportShare": 0.3125,
+          "density": 1.000739
+        },
+        {
+          "xSupportShare": 0.325,
+          "density": 1.033124
+        },
+        {
+          "xSupportShare": 0.3375,
+          "density": 1.061885
+        },
+        {
+          "xSupportShare": 0.35,
+          "density": 1.086094
+        },
+        {
+          "xSupportShare": 0.3625,
+          "density": 1.105445
+        },
+        {
+          "xSupportShare": 0.375,
+          "density": 1.120227
+        },
+        {
+          "xSupportShare": 0.3875,
+          "density": 1.131213
+        },
+        {
+          "xSupportShare": 0.4,
+          "density": 1.139503
+        },
+        {
+          "xSupportShare": 0.4125,
+          "density": 1.146327
+        },
+        {
+          "xSupportShare": 0.425,
+          "density": 1.152868
+        },
+        {
+          "xSupportShare": 0.4375,
+          "density": 1.1601
+        },
+        {
+          "xSupportShare": 0.45,
+          "density": 1.168701
+        },
+        {
+          "xSupportShare": 0.4625,
+          "density": 1.17901
+        },
+        {
+          "xSupportShare": 0.475,
+          "density": 1.191066
+        },
+        {
+          "xSupportShare": 0.4875,
+          "density": 1.204683
+        },
+        {
+          "xSupportShare": 0.5,
+          "density": 1.21956
+        },
+        {
+          "xSupportShare": 0.5125,
+          "density": 1.235375
+        },
+        {
+          "xSupportShare": 0.525,
+          "density": 1.251873
+        },
+        {
+          "xSupportShare": 0.5375,
+          "density": 1.268896
+        },
+        {
+          "xSupportShare": 0.55,
+          "density": 1.286378
+        },
+        {
+          "xSupportShare": 0.5625,
+          "density": 1.304305
+        },
+        {
+          "xSupportShare": 0.575,
+          "density": 1.322639
+        },
+        {
+          "xSupportShare": 0.5875,
+          "density": 1.341252
+        },
+        {
+          "xSupportShare": 0.6,
+          "density": 1.359857
+        },
+        {
+          "xSupportShare": 0.6125,
+          "density": 1.377982
+        },
+        {
+          "xSupportShare": 0.625,
+          "density": 1.394967
+        },
+        {
+          "xSupportShare": 0.6375,
+          "density": 1.410008
+        },
+        {
+          "xSupportShare": 0.65,
+          "density": 1.422221
+        },
+        {
+          "xSupportShare": 0.6625,
+          "density": 1.430728
+        },
+        {
+          "xSupportShare": 0.675,
+          "density": 1.43474
+        },
+        {
+          "xSupportShare": 0.6875,
+          "density": 1.433619
+        },
+        {
+          "xSupportShare": 0.7,
+          "density": 1.42692
+        },
+        {
+          "xSupportShare": 0.7125,
+          "density": 1.414391
+        },
+        {
+          "xSupportShare": 0.725,
+          "density": 1.395947
+        },
+        {
+          "xSupportShare": 0.7375,
+          "density": 1.371632
+        },
+        {
+          "xSupportShare": 0.75,
+          "density": 1.341568
+        },
+        {
+          "xSupportShare": 0.7625,
+          "density": 1.305929
+        },
+        {
+          "xSupportShare": 0.775,
+          "density": 1.264932
+        },
+        {
+          "xSupportShare": 0.7875,
+          "density": 1.21885
+        },
+        {
+          "xSupportShare": 0.8,
+          "density": 1.168053
+        },
+        {
+          "xSupportShare": 0.8125,
+          "density": 1.113053
+        },
+        {
+          "xSupportShare": 0.825,
+          "density": 1.054539
+        },
+        {
+          "xSupportShare": 0.8375,
+          "density": 0.99339
+        },
+        {
+          "xSupportShare": 0.85,
+          "density": 0.930645
+        },
+        {
+          "xSupportShare": 0.8625,
+          "density": 0.867444
+        },
+        {
+          "xSupportShare": 0.875,
+          "density": 0.804921
+        },
+        {
+          "xSupportShare": 0.8875,
+          "density": 0.744095
+        },
+        {
+          "xSupportShare": 0.9,
+          "density": 0.685749
+        },
+        {
+          "xSupportShare": 0.9125,
+          "density": 0.630353
+        },
+        {
+          "xSupportShare": 0.925,
+          "density": 0.578027
+        },
+        {
+          "xSupportShare": 0.9375,
+          "density": 0.528569
+        },
+        {
+          "xSupportShare": 0.95,
+          "density": 0.481538
+        },
+        {
+          "xSupportShare": 0.9625,
+          "density": 0.436382
+        },
+        {
+          "xSupportShare": 0.975,
+          "density": 0.392584
+        },
+        {
+          "xSupportShare": 0.9875,
+          "density": 0.349787
+        },
+        {
+          "xSupportShare": 1,
+          "density": 0.307888
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "generate:ei": "node scripts/generate-ei-from-csv.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.6",
