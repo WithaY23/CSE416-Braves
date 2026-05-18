@@ -1,0 +1,65 @@
+[
+  {
+    "districtRank": 1,
+    "min": 0.0,
+    "q1": 0.0,
+    "median": 0.0,
+    "q3": 0.0,
+    "max": 0.096,
+    "enactedValue": 0.163
+  },
+  {
+    "districtRank": 2,
+    "min": 0.0,
+    "q1": 0.0,
+    "median": 0.001,
+    "q3": 0.001,
+    "max": 0.115,
+    "enactedValue": 0.166
+  },
+  {
+    "districtRank": 3,
+    "min": 0.0,
+    "q1": 0.001,
+    "median": 0.003,
+    "q3": 0.015,
+    "max": 0.176,
+    "enactedValue": 0.178
+  },
+  {
+    "districtRank": 4,
+    "min": 0.06,
+    "q1": 0.146,
+    "median": 0.169,
+    "q3": 0.185,
+    "max": 0.208,
+    "enactedValue": 0.239
+  },
+  {
+    "districtRank": 5,
+    "min": 0.126,
+    "q1": 0.191,
+    "median": 0.207,
+    "q3": 0.23,
+    "max": 0.297,
+    "enactedValue": 0.237
+  },
+  {
+    "districtRank": 6,
+    "min": 0.148,
+    "q1": 0.252,
+    "median": 0.271,
+    "q3": 0.29,
+    "max": 0.335,
+    "enactedValue": 0.243
+  },
+  {
+    "districtRank": 7,
+    "min": 0.215,
+    "q1": 0.311,
+    "median": 0.333,
+    "q3": 0.366,
+    "max": 0.421,
+    "enactedValue": 0.45
+  }
+]
