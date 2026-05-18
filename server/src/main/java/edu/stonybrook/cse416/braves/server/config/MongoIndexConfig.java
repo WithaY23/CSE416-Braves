@@ -81,7 +81,8 @@ public class MongoIndexConfig {
                         .on("stateId", Sort.Direction.ASC)
                         .on("ensembleType", Sort.Direction.ASC)
                         .on("groupKey", Sort.Direction.ASC)
-                        .on("metricKey", Sort.Direction.ASC));
+                        .on("metricKey", Sort.Direction.ASC)
+                        .on("ensembleIndex", Sort.Direction.ASC));
 
         mongoTemplate.indexOps(InterestingPlanDocument.class)
                 .ensureIndex(new Index()

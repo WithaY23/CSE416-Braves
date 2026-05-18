@@ -347,9 +347,11 @@ public class StateController {
             @Parameter(description = "Required ensemble selector. Seeded values are vra_constrained or race_blind.")
             @RequestParam @NotBlank String ensembleType,
             @Parameter(description = "Metric selector. Default is minority_share.")
-            @RequestParam(required = false, defaultValue = "minority_share") String metric
+            @RequestParam(required = false, defaultValue = "minority_share") String metric,
+            @Parameter(description = "Ensemble run index (1-based). Default: 1.")
+            @RequestParam(required = false, defaultValue = "1") Integer ensembleIndex
     ) {
-        return dataService.getBoxWhisker(stateId, group, ensembleType, metric);
+        return dataService.getBoxWhisker(stateId, group, ensembleType, metric, ensembleIndex);
     }
 
     @Operation(

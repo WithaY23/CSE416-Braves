@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -356,7 +357,12 @@ class StateControllerTest {
             }
 
             @Override
-            public Map<String, Object> getBoxWhisker(String stateIdInput, String groupInput, String ensembleTypeInput, String metricInput) {
+            public Map<String, Object> getBoxWhisker(
+                    String stateIdInput,
+                    String groupInput,
+                    String ensembleTypeInput,
+                    String metricInput,
+                    Integer ensembleIndexInput) {
                 return boxWhisker;
             }
 
@@ -562,6 +568,59 @@ class StateControllerTest {
                 .andExpect(jsonPath("$.group").value("white"))
                 .andExpect(jsonPath("$.metric").value("support_gap"))
                 .andExpect(jsonPath("$.party").value("REP"));
+    }
+
+    @Test
+    void gui17BoxWhiskerUsesDefaultEnsembleIndexWhenMissing() throws Exception {
+        AtomicInteger seenEnsembleIndex = new AtomicInteger(-1);
+        BackendDataService dataService = new BackendDataService(
+                null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null
+        ) {
+            @Override
+            public Map<String, Object> getBoxWhisker(
+                    String stateIdInput,
+                    String groupInput,
+                    String ensembleTypeInput,
+                    String metricInput,
+                    Integer ensembleIndexInput) {
+                seenEnsembleIndex.set(ensembleIndexInput);
+                return Map.of("schemaVersion", "v1", "rankSummaries", List.of());
+            }
+        };
+        MockMvc mockMvc = mockMvcFor(dataService);
+        mockMvc.perform(get("/api/states/OR/ensembles/box-whisker")
+                        .param("group", "latino")
+                        .param("ensembleType", "race_blind"))
+                .andExpect(status().isOk());
+        org.junit.jupiter.api.Assertions.assertEquals(1, seenEnsembleIndex.get());
+    }
+
+    @Test
+    void gui17BoxWhiskerPassesExplicitEnsembleIndex() throws Exception {
+        AtomicInteger seenEnsembleIndex = new AtomicInteger(-1);
+        BackendDataService dataService = new BackendDataService(
+                null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null
+        ) {
+            @Override
+            public Map<String, Object> getBoxWhisker(
+                    String stateIdInput,
+                    String groupInput,
+                    String ensembleTypeInput,
+                    String metricInput,
+                    Integer ensembleIndexInput) {
+                seenEnsembleIndex.set(ensembleIndexInput);
+                return Map.of("schemaVersion", "v1", "rankSummaries", List.of());
+            }
+        };
+        MockMvc mockMvc = mockMvcFor(dataService);
+        mockMvc.perform(get("/api/states/OR/ensembles/box-whisker")
+                        .param("group", "latino")
+                        .param("ensembleType", "race_blind")
+                        .param("ensembleIndex", "4"))
+                .andExpect(status().isOk());
+        org.junit.jupiter.api.Assertions.assertEquals(4, seenEnsembleIndex.get());
     }
 
     private MockMvc mockMvcFor(BackendDataService dataService) {

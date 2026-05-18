@@ -95,7 +95,7 @@ function BoxWhisker({ payload, loading, failed, minority, subtitle, ensembleType
     <div id="sim-page-data-container">
       <div className="sim-chartStack">
         <div className="box-whisker-selector-container">
-          <EnsembleSelector ensembleType={ensembleType} currEnsemble={currEnsemble} switchEnsemble={switchEnsemble} />
+          <EnsembleSelector ensembleType={ensembleType} currEnsemble={currEnsemble} switchEnsemble={switchEnsemble} maxOptions={4} />
         </div>
         <ResponsiveContainer style={{ width: "100%", height: "100%" }}>
           <ComposedChart data={data} width="100%" height="100%" margin={{left: -30, bottom: 20}}>
@@ -397,12 +397,6 @@ function MajorityMinorityDistrictsBar({ payload, loading, failed, totalDistricts
   );
 }
 
-// EnsembleSelector stores the display name (e.g. "Race-Blind Ensemble 2").
-// Parse the trailing digit to get the 1-based index for the API call.
-function ensembleIdFromName(name) {
-  return parseInt(name.match(/\d+$/)?.[0] ?? '1', 10);
-}
-
 export default function Simulation({ currMap, currMinority, switchMinority, currSimData }) {
   const { stateName } = useParams();
   const stateCode = toStateCode(stateName);
@@ -410,17 +404,28 @@ export default function Simulation({ currMap, currMinority, switchMinority, curr
 
   const topo = useDistrictTopology(stateCode);
   const splits = useEnsembleSplits(stateCode);
-  const bwRace = useBoxWhisker(stateCode, groupKey, 'race_blind');
-  const bwVra = useBoxWhisker(stateCode, groupKey, 'vra_constrained');
+  const [currRbEnsemble, switchRbEnsemble] = useState(1);
+  const [currVraEnsemble, switchVraEnsemble] = useState(1);
+
+  const isOregon = stateCode === "OR";
+  const gui21RbMaxOptions = isOregon ? 3 : 4;
+  const gui21VraMaxOptions = 4;
+
+  useEffect(() => {
+    if (currRbEnsemble > gui21RbMaxOptions) {
+      switchRbEnsemble(gui21RbMaxOptions);
+    }
+  }, [currRbEnsemble, gui21RbMaxOptions]);
+
+  const bwRace = useBoxWhisker(stateCode, groupKey, 'race_blind', currRbEnsemble);
+  const bwVra = useBoxWhisker(stateCode, groupKey, 'vra_constrained', currVraEnsemble);
   const vraImpact = useVraImpact(stateCode, groupKey);
 
   const [tab, setTab] = useState("Box and Whisker");
-  const [currRbEnsemble, switchRbEnsemble] = useState("Race-Blind Ensemble 1");
-  const [currVraEnsemble, switchVraEnsemble] = useState("VRA Ensemble 1");
 
   // Each side is independently cached and re-fetched when its dropdown changes.
-  const meBwRb  = useMeBoxWhiskerRb(stateCode, ensembleIdFromName(currRbEnsemble));
-  const meBwVra = useMeBoxWhiskerVra(stateCode, ensembleIdFromName(currVraEnsemble));
+  const meBwRb  = useMeBoxWhiskerRb(stateCode, currRbEnsemble);
+  const meBwVra = useMeBoxWhiskerVra(stateCode, currVraEnsemble);
 
   // Merge: take raceBlindSummary from the rb response and vraConstrainedSummary from vra.
   // Result has the same shape the chart component already expects.
@@ -487,8 +492,8 @@ export default function Simulation({ currMap, currMinority, switchMinority, curr
           <>
             <MinorityEffectivenessBoxWhisker payload={meBwData} loading={meBwRb.isLoading || meBwVra.isLoading} failed={meBwRb.isError || meBwVra.isError} />
             <span className="ensemble-selectors-container">
-              <EnsembleSelector ensembleType={"rb"} currEnsemble={currRbEnsemble} switchEnsemble={switchRbEnsemble} />
-              <EnsembleSelector ensembleType={"vra"} currEnsemble={currVraEnsemble} switchEnsemble={switchVraEnsemble} />
+              <EnsembleSelector ensembleType={"rb"} currEnsemble={currRbEnsemble} switchEnsemble={switchRbEnsemble} maxOptions={gui21RbMaxOptions} />
+              <EnsembleSelector ensembleType={"vra"} currEnsemble={currVraEnsemble} switchEnsemble={switchVraEnsemble} maxOptions={gui21VraMaxOptions} />
             </span>
           </> :
           <MinorityEffectivenessHistogram payload={meHist.data} loading={meHist.isLoading} failed={meHist.isError} group={currMinority} />}

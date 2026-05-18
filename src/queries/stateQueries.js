@@ -117,11 +117,14 @@ export function useEnsembleSplits(stateCode, size = 'final') {
   });
 }
 
-export function useBoxWhisker(stateCode, group, ensembleType) {
+export function useBoxWhisker(stateCode, group, ensembleType, ensembleIndex = 1) {
   return useQuery({
-    queryKey: keys.boxWhisker(stateCode, group, ensembleType, 'minority_share'),
-    queryFn: () => get(`/api/states/${stateCode}/ensembles/box-whisker`, { group, ensembleType, metric: 'minority_share' }),
-    enabled: Boolean(stateCode) && Boolean(group),
+    queryKey: keys.boxWhisker(stateCode, group, ensembleType, 'minority_share', ensembleIndex),
+    queryFn: () => get(
+      `/api/states/${stateCode}/ensembles/box-whisker`,
+      { group, ensembleType, metric: 'minority_share', ensembleIndex }
+    ),
+    enabled: Boolean(stateCode) && Boolean(group) && Boolean(ensembleIndex),
   });
 }
 

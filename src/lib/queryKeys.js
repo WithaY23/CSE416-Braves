@@ -15,7 +15,7 @@ export const keys = {
   eiPrecinctBarCi: (s, g, e, p)    => ['eiPrecinctBarCi', s, g, e, p],
   eiKde:           (s, g, e, m, p) => ['eiKde', s, g, e, m, p],
   ensembleSplits:  (s, size, e)    => ['ensembleSplits', s, size, e],
-  boxWhisker:      (s, g, type, m) => ['boxWhisker', s, g, type, m],
+  boxWhisker:      (s, g, type, m, ensembleIndex) => ['boxWhisker', s, g, type, m, ensembleIndex],
   vraImpact:       (s, g, e)       => ['vraImpact', s, g, e],
   // Add ensembleType and ensembleIndex so each dropdown combination has its own cache slot
   meBoxWhisker:    (s, e, ensembleType, ensembleIndex) => ['meBoxWhisker', s, e, ensembleType, ensembleIndex],

@@ -152,13 +152,24 @@ export default function Compare({ currMap, currMinority, switchMinority }) {
             .filter((districtId) => Number.isFinite(districtId))
         : []
     );
-    const districts = rightMapData.features
-      .map((feature) => {
-        const properties = feature.properties ?? {};
-        const districtNumber = Number(properties.district_id);
-        const minorityPopulation = Number(properties[minorityKey] ?? 0);
-        const isEffective = effectiveDistrictIds.has(districtNumber) ? "Yes" : "No";
+    const districtPopulationTotals = new Map();
+    rightMapData.features.forEach((feature) => {
+      const properties = feature.properties ?? {};
+      const districtNumber = Number(properties.district_id);
+      if (!Number.isFinite(districtNumber)) {
+        return;
+      }
+      const minorityPopulation = Number(properties[minorityKey] ?? 0);
+      const safeMinorityPopulation = Number.isFinite(minorityPopulation) ? minorityPopulation : 0;
+      districtPopulationTotals.set(
+        districtNumber,
+        (districtPopulationTotals.get(districtNumber) ?? 0) + safeMinorityPopulation
+      );
+    });
 
+    const districts = Array.from(districtPopulationTotals.entries())
+      .map(([districtNumber, minorityPopulation]) => {
+        const isEffective = effectiveDistrictIds.has(districtNumber) ? "Yes" : "No";
         return {
           districtNumber,
           ...(minorityKey === "hispanic"

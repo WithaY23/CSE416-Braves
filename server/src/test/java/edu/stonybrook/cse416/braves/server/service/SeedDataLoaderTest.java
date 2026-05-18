@@ -2,6 +2,8 @@ package edu.stonybrook.cse416.braves.server.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.stonybrook.cse416.braves.server.model.InterestingPlanDocument;
+import edu.stonybrook.cse416.braves.server.model.MinorityEffectivenessBoxWhiskerDocument;
+import edu.stonybrook.cse416.braves.server.model.BoxWhiskerResultDocument;
 import edu.stonybrook.cse416.braves.server.model.StateSummaryDocument;
 import edu.stonybrook.cse416.braves.server.repository.*;
 import org.junit.jupiter.api.io.TempDir;
@@ -16,6 +18,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -200,5 +204,111 @@ class SeedDataLoaderTest {
         assertEquals(List.of(), orUnmapped.getPayload().get("effectiveDistrictIds"));
         assertEquals("Cracking districts min hispanic", orMapped.getPayload().get("planName"));
         assertTrue(String.valueOf(orMapped.getPayload().get("ensembleType")).contains("vra"));
+    }
+
+    @Test
+    void seedBoxWhiskersCreatesAllSelectorMappedGui17Documents(@TempDir Path tempDir) throws IOException {
+        BoxWhiskerResultRepository boxWhiskerRepository = mock(BoxWhiskerResultRepository.class);
+        SeedDataLoader loader = new SeedDataLoader(
+                new ObjectMapper(),
+                mock(GeometryAssetService.class),
+                mock(StateRepository.class),
+                mock(StateSummaryRepository.class),
+                mock(EnsembleSummaryRepository.class),
+                mock(DistrictTableRepository.class),
+                mock(HeatmapBinRepository.class),
+                mock(GinglesResultRepository.class),
+                mock(GinglesTableRepository.class),
+                mock(EiSupportResultRepository.class),
+                mock(EiPrecinctBarCiRepository.class),
+                mock(EiKdeRepository.class),
+                mock(EnsembleSplitRepository.class),
+                boxWhiskerRepository,
+                mock(InterestingPlanRepository.class),
+                mock(VraImpactThresholdTableRepository.class),
+                mock(MinorityEffectivenessBoxWhiskerRepository.class),
+                mock(MinorityEffectivenessHistogramRepository.class),
+                mock(RunManifestRepository.class),
+                mock(IngestManifestRepository.class),
+                mock(CacheManager.class)
+        );
+        Path gui17 = tempDir.resolve("preprocessing/output/kobe/GUI17");
+        Files.createDirectories(gui17);
+        for (String state : List.of("or", "sc")) {
+            for (String type : List.of("rb", "vra")) {
+                for (int i = 0; i < 4; i++) {
+                    Files.writeString(gui17.resolve(String.format("GUI17_%s_%s%d_5000plans.json", state, type, i)), "[]");
+                }
+            }
+        }
+
+        ReflectionTestUtils.invokeMethod(loader, "seedBoxWhiskers", tempDir);
+
+        ArgumentCaptor<BoxWhiskerResultDocument> captor = ArgumentCaptor.forClass(BoxWhiskerResultDocument.class);
+        verify(boxWhiskerRepository, times(16)).save(captor.capture());
+        Set<Integer> indices = captor.getAllValues().stream().map(BoxWhiskerResultDocument::getEnsembleIndex).collect(Collectors.toSet());
+        assertEquals(Set.of(1, 2, 3, 4), indices);
+    }
+
+    @Test
+    void seedMinorityEffectivenessBoxWhiskerUsesExpectedGui21Mappings(@TempDir Path tempDir) throws IOException {
+        MinorityEffectivenessBoxWhiskerRepository repository = mock(MinorityEffectivenessBoxWhiskerRepository.class);
+        SeedDataLoader loader = new SeedDataLoader(
+                new ObjectMapper(),
+                mock(GeometryAssetService.class),
+                mock(StateRepository.class),
+                mock(StateSummaryRepository.class),
+                mock(EnsembleSummaryRepository.class),
+                mock(DistrictTableRepository.class),
+                mock(HeatmapBinRepository.class),
+                mock(GinglesResultRepository.class),
+                mock(GinglesTableRepository.class),
+                mock(EiSupportResultRepository.class),
+                mock(EiPrecinctBarCiRepository.class),
+                mock(EiKdeRepository.class),
+                mock(EnsembleSplitRepository.class),
+                mock(BoxWhiskerResultRepository.class),
+                mock(InterestingPlanRepository.class),
+                mock(VraImpactThresholdTableRepository.class),
+                repository,
+                mock(MinorityEffectivenessHistogramRepository.class),
+                mock(RunManifestRepository.class),
+                mock(IngestManifestRepository.class),
+                mock(CacheManager.class)
+        );
+        Path gui21 = tempDir.resolve("preprocessing/output/kobe/GUI21");
+        Files.createDirectories(gui21);
+        createGui21Files(gui21, "or", "rb", new int[]{0, 1, 2}, new String[]{"hispanic", "white"}, "250plans", "5000plans");
+        createGui21Files(gui21, "or", "vra", new int[]{0, 1, 2, 3}, new String[]{"hispanic", "white"}, "5000plans", "5000plans");
+        createGui21Files(gui21, "sc", "rb", new int[]{0, 1, 2, 3}, new String[]{"black", "white"}, "5000plans", "250plans");
+        createGui21Files(gui21, "sc", "vra", new int[]{0, 1, 2, 3}, new String[]{"black", "white"}, "5000plans", "250plans");
+
+        ReflectionTestUtils.invokeMethod(loader, "seedMinorityEffectivenessBoxWhisker", tempDir);
+
+        verify(repository).deleteAll();
+        ArgumentCaptor<MinorityEffectivenessBoxWhiskerDocument> captor = ArgumentCaptor.forClass(MinorityEffectivenessBoxWhiskerDocument.class);
+        verify(repository, times(15)).save(captor.capture());
+        boolean hasScRbIndex5 = captor.getAllValues().stream()
+                .anyMatch(doc -> "SC".equals(doc.getStateId()) && "rb".equals(doc.getEnsembleType()) && Integer.valueOf(5).equals(doc.getEnsembleIndex()));
+        assertTrue(!hasScRbIndex5);
+    }
+
+    private void createGui21Files(
+            Path root,
+            String state,
+            String type,
+            int[] srcIndices,
+            String[] races,
+            String defaultPlanSuffix,
+            String highIndexPlanSuffix) throws IOException {
+        for (int srcIdx : srcIndices) {
+            String suffix = srcIdx >= 2 ? highIndexPlanSuffix : defaultPlanSuffix;
+            for (String race : races) {
+                Files.writeString(
+                        root.resolve(String.format("GUI21_%s_%s%d_%s_%s.json", state, type, srcIdx, race, suffix)),
+                        "{\"label\":\"" + race + "\"}"
+                );
+            }
+        }
     }
 }

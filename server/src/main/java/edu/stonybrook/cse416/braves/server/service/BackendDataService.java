@@ -217,17 +217,28 @@ public class BackendDataService {
     }
 
     @Cacheable("boxWhisker")
-    public Map<String, Object> getBoxWhisker(String stateIdInput, String groupInput, String ensembleTypeInput, String metricInput) {
+    public Map<String, Object> getBoxWhisker(
+            String stateIdInput,
+            String groupInput,
+            String ensembleTypeInput,
+            String metricInput,
+            Integer ensembleIndexInput) {
         String stateId = normalizeState(stateIdInput);
         String group = normalizeGroup(groupInput);
         String ensembleType = normalizeToken(ensembleTypeInput, "ensembleType");
         String metric = normalizeToken(metricInput, "metric");
+        Integer ensembleIndex = normalizeEnsembleIndex(ensembleIndexInput);
         // Reject unsupported state/group combinations before Mongo lookup so callers get a clear contract
         // error instead of an ambiguous missing-document response.
         requireFeasibleGroup(stateId, group);
         return payloadFrom(
-                boxWhiskerResultRepository.findByStateIdAndGroupKeyAndEnsembleTypeAndMetricKey(stateId, group, ensembleType, metric),
-                "Box-and-whisker payload not found for stateId=" + stateId + ", group=" + group + ", ensembleType=" + ensembleType + ", metric=" + metric
+                boxWhiskerResultRepository.findByStateIdAndGroupKeyAndEnsembleTypeAndMetricKeyAndEnsembleIndex(
+                        stateId, group, ensembleType, metric, ensembleIndex),
+                "Box-and-whisker payload not found for stateId=" + stateId
+                        + ", group=" + group
+                        + ", ensembleType=" + ensembleType
+                        + ", metric=" + metric
+                        + ", ensembleIndex=" + ensembleIndex
         );
     }
 
@@ -406,6 +417,13 @@ public class BackendDataService {
             throw new IllegalArgumentException(label + " is required");
         }
         return input.trim().toLowerCase(Locale.US);
+    }
+
+    private Integer normalizeEnsembleIndex(Integer ensembleIndexInput) {
+        if (ensembleIndexInput == null || ensembleIndexInput < 1) {
+            throw new IllegalArgumentException("ensembleIndex must be >= 1");
+        }
+        return ensembleIndexInput;
     }
 
     private void requireFeasibleGroup(String stateId, String group) {

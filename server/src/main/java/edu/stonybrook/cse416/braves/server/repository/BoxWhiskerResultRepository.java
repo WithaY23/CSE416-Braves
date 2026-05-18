@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoxWhiskerResultRepository extends MongoRepository<BoxWhiskerResultDocument, String> {
-    Optional<BoxWhiskerResultDocument> findByStateIdAndGroupKeyAndEnsembleTypeAndMetricKey(String stateId, String groupKey, String ensembleType, String metricKey);
+    Optional<BoxWhiskerResultDocument> findByStateIdAndGroupKeyAndEnsembleTypeAndMetricKeyAndEnsembleIndex(
+            String stateId, String groupKey, String ensembleType, String metricKey, Integer ensembleIndex);
 
     List<BoxWhiskerResultDocument> findByStateIdAndEnsembleTypeAndMetricKey(String stateId, String ensembleType, String metricKey);
 }

@@ -112,4 +112,36 @@ describe("Compare effective district table", () => {
     expect(within(rightTable).getByText("6")).toBeInTheDocument();
     expect(within(rightTable).getAllByText("No")).toHaveLength(2);
   });
+
+  it("aggregates minority population by district id before rendering", () => {
+    queryState.planList = {
+      data: [{ planId: "vra_demo", planName: "Demo" }],
+      isLoading: false,
+      isError: false,
+    };
+    queryState.plan = {
+      data: {
+        planId: "vra_demo",
+        effectiveDistrictIds: [2],
+        topology: {
+          type: "FeatureCollection",
+          features: [
+            { type: "Feature", properties: { district_id: 2, black: 100 } },
+            { type: "Feature", properties: { district_id: 2, black: 530 } },
+            { type: "Feature", properties: { district_id: 1, black: 50 } },
+          ],
+        },
+      },
+      isLoading: false,
+      isError: false,
+    };
+
+    renderCompare("/state/SouthCarolina/Compare");
+
+    const rightTable = rightComparisonTable();
+    expect(within(rightTable).getByText("630")).toBeInTheDocument();
+    expect(within(rightTable).getByText("50")).toBeInTheDocument();
+    expect(within(rightTable).getByText("Yes")).toBeInTheDocument();
+    expect(within(rightTable).getByText("No")).toBeInTheDocument();
+  });
 });
