@@ -296,7 +296,7 @@ class StateControllerTest {
 
         BackendDataService dataService = new BackendDataService(
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, objectMapper
         ) {
             @Override
             public List<StateOptionResponse> getStates() {
@@ -506,7 +506,7 @@ class StateControllerTest {
     void eiEndpointsAcceptWhiteGroupQueries() throws Exception {
         BackendDataService dataService = new BackendDataService(
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, objectMapper
         ) {
             @Override
             public Map<String, Object> getEiSupport(String stateIdInput, String groupsInput, String electionInput, String partyInput) {
@@ -575,7 +575,7 @@ class StateControllerTest {
         AtomicInteger seenEnsembleIndex = new AtomicInteger(-1);
         BackendDataService dataService = new BackendDataService(
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, objectMapper
         ) {
             @Override
             public Map<String, Object> getBoxWhisker(
@@ -601,7 +601,7 @@ class StateControllerTest {
         AtomicInteger seenEnsembleIndex = new AtomicInteger(-1);
         BackendDataService dataService = new BackendDataService(
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, objectMapper
         ) {
             @Override
             public Map<String, Object> getBoxWhisker(
@@ -633,7 +633,7 @@ class StateControllerTest {
     private BackendDataService dataServiceForResponse(Map<String, Object> response) {
         return new BackendDataService(
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, objectMapper
         ) {
             @Override
             public Map<String, Object> getStateSummary(String stateIdInput) {
@@ -650,7 +650,7 @@ class StateControllerTest {
     private BackendDataService dataServiceForException(RuntimeException exception) {
         return new BackendDataService(
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, objectMapper
         ) {
             @Override
             public Map<String, Object> getEnsembleSummary(String stateIdInput) {
