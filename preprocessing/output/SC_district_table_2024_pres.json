@@ -1,70 +1,70 @@
 {
-  "schemaVersion": "v1",
-  "state": "SC",
-  "election": "2024_pres",
-  "districts": [
-    {
-      "districtNumber": 1,
-      "representative": "Nancy Mace",
-      "party": "Republican",
-      "racialEthnicGroup": "White",
-      "voteMargin2024": -13.0,
-      "effectivenessScore": 0.31,
-      "calibratedEffectivenessScore": 0.29
-    },
-    {
-      "districtNumber": 2,
-      "representative": "Joe Wilson",
-      "party": "Republican",
-      "racialEthnicGroup": "White",
-      "voteMargin2024": -13.9,
-      "effectivenessScore": 0.28,
-      "calibratedEffectivenessScore": 0.26
-    },
-    {
-      "districtNumber": 3,
-      "representative": "Sheri Biggs",
-      "party": "Republican",
-      "racialEthnicGroup": "White",
-      "voteMargin2024": -43.1,
-      "effectivenessScore": 0.24,
-      "calibratedEffectivenessScore": 0.22
-    },
-    {
-      "districtNumber": 4,
-      "representative": "William Timmons",
-      "party": "Republican",
-      "racialEthnicGroup": "White",
-      "voteMargin2024": -23.6,
-      "effectivenessScore": 0.26,
-      "calibratedEffectivenessScore": 0.24
-    },
-    {
-      "districtNumber": 5,
-      "representative": "Ralph Norman",
-      "party": "Republican",
-      "racialEthnicGroup": "White",
-      "voteMargin2024": -22.8,
-      "effectivenessScore": 0.27,
-      "calibratedEffectivenessScore": 0.25
-    },
-    {
-      "districtNumber": 6,
-      "representative": "James Clyburn",
-      "party": "Democratic",
-      "racialEthnicGroup": "Black",
-      "voteMargin2024": 22.6,
-      "effectivenessScore": 0.71,
-      "calibratedEffectivenessScore": 0.69
-    },
-    {
-      "districtNumber": 7,
-      "representative": "Russell Fry",
-      "party": "Republican",
-      "racialEthnicGroup": "White",
-      "voteMargin2024": -26.3,
-      "effectivenessScore": 0.25,
-      "calibratedEffectivenessScore": 0.23
-    }
-  ]
+    "schemaVersion": "v1",
+    "state": "SC",
+    "election": "2024_pres",
+    "districts": [
+        {
+            "districtNumber": 1,
+            "representative": "Nancy Mace",
+            "party": "Republican",
+            "racialEthnicGroup": "White",
+            "voteMargin2024": -13.0,
+            "effectivenessScore": 0.17173884667813002,
+            "calibratedEffectivenessScore": 0.32518294249908375
+        },
+        {
+            "districtNumber": 2,
+            "representative": "Joe Wilson",
+            "party": "Republican",
+            "racialEthnicGroup": "White",
+            "voteMargin2024": -13.9,
+            "effectivenessScore": 0.4484278182435083,
+            "calibratedEffectivenessScore": 0.47699722393794053
+        },
+        {
+            "districtNumber": 3,
+            "representative": "Sheri Biggs",
+            "party": "Republican",
+            "racialEthnicGroup": "White",
+            "voteMargin2024": -43.1,
+            "effectivenessScore": 0.18092763760705585,
+            "calibratedEffectivenessScore": 0.33221385828680255
+        },
+        {
+            "districtNumber": 4,
+            "representative": "William Timmons",
+            "party": "Republican",
+            "racialEthnicGroup": "White",
+            "voteMargin2024": -23.6,
+            "effectivenessScore": 0.21564071933224202,
+            "calibratedEffectivenessScore": 0.35652738942700435
+        },
+        {
+            "districtNumber": 5,
+            "representative": "Ralph Norman",
+            "party": "Republican",
+            "racialEthnicGroup": "White",
+            "voteMargin2024": -22.8,
+            "effectivenessScore": 0.4396081849541272,
+            "calibratedEffectivenessScore": 0.47302751473909294
+        },
+        {
+            "districtNumber": 6,
+            "representative": "James Clyburn",
+            "party": "Democratic",
+            "racialEthnicGroup": "Black",
+            "voteMargin2024": 22.6,
+            "effectivenessScore": 0.973128471356273,
+            "calibratedEffectivenessScore": 0.8988276442719237
+        },
+        {
+            "districtNumber": 7,
+            "representative": "Russell Fry",
+            "party": "Republican",
+            "racialEthnicGroup": "White",
+            "voteMargin2024": -26.3,
+            "effectivenessScore": 0.4680421126562885,
+            "calibratedEffectivenessScore": 0.48577710545528635
+        }
+    ]
 }
