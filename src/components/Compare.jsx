@@ -145,13 +145,19 @@ export default function Compare({ currMap, currMinority, switchMinority }) {
     }
 
     const minorityKey = stateName === "Oregon" ? "hispanic" : "black";
+    const effectiveDistrictIds = new Set(
+      Array.isArray(planData?.effectiveDistrictIds)
+        ? planData.effectiveDistrictIds
+            .map((districtId) => Number(districtId))
+            .filter((districtId) => Number.isFinite(districtId))
+        : []
+    );
     const districts = rightMapData.features
       .map((feature) => {
         const properties = feature.properties ?? {};
         const districtNumber = Number(properties.district_id);
         const minorityPopulation = Number(properties[minorityKey] ?? 0);
-        const totalPopulation = Number(properties.total ?? 0);
-        const isEffective = totalPopulation > 0 && (minorityPopulation / totalPopulation) >= 0.6 ? "Yes" : "No";
+        const isEffective = effectiveDistrictIds.has(districtNumber) ? "Yes" : "No";
 
         return {
           districtNumber,
@@ -164,7 +170,7 @@ export default function Compare({ currMap, currMinority, switchMinority }) {
       .sort((a, b) => a.districtNumber - b.districtNumber);
 
     return { districts };
-  }, [rightMapData, stateName]);
+  }, [rightMapData, stateName, planData]);
 
   const currentPlanName = useMemo(() => {
     const currentPlan = sortedPlanList.find((plan) => plan.planId === selectedPlanId);

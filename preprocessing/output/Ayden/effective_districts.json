@@ -1,0 +1,18 @@
+{
+  "OR": {
+    "vra_cracking_districts_min_hispanic": [4],
+    "vra_packing_districts_max_hispanic": [4],
+    "vra_electoral_cracking_min": [],
+    "vra_electoral_packing_max": [],
+    "vra_majority_minority_district_count_max_hispanic": [5],
+    "vra_majority_minority_district_count_min_hispanic": [5]
+  },
+  "SC": {
+    "vra_packing_districts_max_black": [],
+    "vra_cracking_districts_min_black": [3, 4],
+    "vra_electoral_packing_max": [],
+    "vra_electoral_cracking_min": [],
+    "vra_majority_minority_district_count_max_black": [6],
+    "vra_majority_minority_district_count_min_black": []
+  }
+}

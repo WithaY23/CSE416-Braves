@@ -1181,18 +1181,53 @@ public class SeedDataLoader implements ApplicationRunner {
         // instead of preserving potentially stale Mongo copies.
         interestingPlanRepository.deleteAll();
         Path aydenRoot = root.resolve("preprocessing/output/Ayden");
-        seedStateInterestingPlans(aydenRoot.resolve("SC_Interesting_Plans"), "SC");
-        seedStateInterestingPlans(aydenRoot.resolve("OR_Interesting_Plans"), "OR");
+        Map<String, Map<String, List<Integer>>> effectiveDistrictsByState =
+                readEffectiveDistrictMappings(aydenRoot.resolve("effective_districts.json"));
+        seedStateInterestingPlans(aydenRoot.resolve("SC_Interesting_Plans"), "SC", effectiveDistrictsByState.getOrDefault("SC", Map.of()));
+        seedStateInterestingPlans(aydenRoot.resolve("OR_Interesting_Plans"), "OR", effectiveDistrictsByState.getOrDefault("OR", Map.of()));
         clearInterestingPlanCaches();
     }
 
-    private void seedStateInterestingPlans(Path dir, String stateId) throws IOException {
+    private Map<String, Map<String, List<Integer>>> readEffectiveDistrictMappings(Path source) throws IOException {
+        Map<String, Object> root = readJsonMap(source);
+        Map<String, Map<String, List<Integer>>> byState = new LinkedHashMap<>();
+        for (Map.Entry<String, Object> stateEntry : root.entrySet()) {
+            String stateId = stateEntry.getKey();
+            if (!(stateEntry.getValue() instanceof Map<?, ?> plansRaw)) {
+                byState.put(stateId, Map.of());
+                continue;
+            }
+            Map<String, List<Integer>> byPlan = new LinkedHashMap<>();
+            for (Map.Entry<?, ?> planEntry : plansRaw.entrySet()) {
+                String planId = String.valueOf(planEntry.getKey());
+                byPlan.put(planId, toIntegerList(planEntry.getValue()));
+            }
+            byState.put(stateId, byPlan);
+        }
+        return byState;
+    }
+
+    private List<Integer> toIntegerList(Object value) {
+        if (!(value instanceof List<?> list)) {
+            return List.of();
+        }
+        List<Integer> result = new ArrayList<>();
+        for (Object element : list) {
+            if (element instanceof Number number) {
+                result.add(number.intValue());
+            }
+        }
+        return List.copyOf(result);
+    }
+
+    private void seedStateInterestingPlans(Path dir, String stateId, Map<String, List<Integer>> effectiveDistrictsByPlanId) throws IOException {
         try (var stream = Files.list(dir)) {
             stream.filter(file -> file.toString().endsWith(".topojson"))
+                    .filter(file -> file.getFileName().toString().startsWith("vra_"))
                     .sorted()
                     .forEach(file -> {
                         try {
-                            InterestingPlanDocument doc = buildInterestingPlanDoc(file, stateId);
+                            InterestingPlanDocument doc = buildInterestingPlanDoc(file, stateId, effectiveDistrictsByPlanId);
                             if (hasRenderableInterestingPlanTopology(doc.getPayload())) {
                                 interestingPlanRepository.save(doc);
                             }
@@ -1205,7 +1240,7 @@ public class SeedDataLoader implements ApplicationRunner {
         }
     }
 
-    private InterestingPlanDocument buildInterestingPlanDoc(Path file, String stateId) throws IOException {
+    private InterestingPlanDocument buildInterestingPlanDoc(Path file, String stateId, Map<String, List<Integer>> effectiveDistrictsByPlanId) throws IOException {
         String fileName = file.getFileName().toString();
         String planId = fileName.endsWith(".topojson")
                 ? fileName.substring(0, fileName.length() - ".topojson".length())
@@ -1217,6 +1252,7 @@ public class SeedDataLoader implements ApplicationRunner {
         payload.put("planId", planId);
         payload.put("planName", toHumanPlanName(planId));
         payload.put("ensembleType", ensembleType);
+        payload.put("effectiveDistrictIds", effectiveDistrictsByPlanId.getOrDefault(planId, List.of()));
         payload.put("reasonInteresting", "Imported from Ayden preprocessing output");
         payload.put("summary", new LinkedHashMap<>());
         payload.put("topology", readJsonMap(file));
@@ -1249,12 +1285,9 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private String toHumanPlanName(String planId) {
-        String prefix = planId.startsWith("vra_") ? "VRA" : "Race-Blind";
         String body = planId.replaceFirst("^(race_blind|vra)_", "").replace('_', ' ');
-        if (body.isEmpty()) {
-            return prefix;
-        }
-        return prefix + ": " + Character.toUpperCase(body.charAt(0)) + body.substring(1);
+        if (body.isEmpty()) return planId;
+        return Character.toUpperCase(body.charAt(0)) + body.substring(1);
     }
 
     private void clearInterestingPlanCaches() {
