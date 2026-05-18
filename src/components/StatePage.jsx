@@ -94,9 +94,23 @@ function DistrictData({ districts, selectedDistrict, onSelectDistrict, onChangeT
   );
 }
 
-function EnsembleData({ ensembleSummary, loading, loadFailed, stateCode }) {
+function EnsembleData({ ensembleSummary, stateSummary, loading, loadFailed, stateCode }) {
   if (loading) return <div id="statePageDataContainer"><div className="congTable_unavailable">Loading ensemble summary...</div></div>;
   if (loadFailed) return <div id="statePageDataContainer"><div className="congTable_unavailable">Ensemble summary is not available for this state.</div></div>;
+  const roughRows = Array.isArray(stateSummary?.groupRoughProportionality)
+    ? stateSummary.groupRoughProportionality
+    : [];
+  const roughProportionalityText = roughRows.length > 0
+    ? roughRows
+      .map((row) => {
+        const label = row?.label ?? row?.groupKey ?? "group";
+        const ratio = Number(row?.roughProportionalityRatio);
+        const ratioText = Number.isFinite(ratio) ? ratio.toFixed(2) : "—";
+        return `${label}: ${ratioText}`;
+      })
+      .join(" | ")
+    : "Unavailable";
+
   return (
     <>
       <span className="statePageDataBubble">
@@ -109,7 +123,7 @@ function EnsembleData({ ensembleSummary, loading, loadFailed, stateCode }) {
       </span>
       <span className="statePageDataBubble">
         <p className="statePageDataBubbleLabel">{stateCode === "OR" ? "Latino" : "Black"} Rough Proportionality:</p>
-        <p className="statePageData statePageDataNum"></p>
+        <p className="statePageData statePageDataNum">{roughProportionalityText}</p>
       </span>
     </>
   );
@@ -154,7 +168,7 @@ export default function StatePage({ currMap, currMinority, switchMinority }) {
   function renderPanel() {
     if (tab === "State") return <StateData stateData={summary.data} stateName={stateName} loading={summary.isLoading} loadFailed={summary.isError} />;
     if (tab === "District") return <DistrictData districts={districtRows} selectedDistrict={selectedDistrict} onSelectDistrict={setSelectedDistrict} onChangeTab={handleTabSelect} loading={districts.isLoading} loadFailed={districts.isError} currMap={currMap} />;
-    return <EnsembleData ensembleSummary={ensemble.data} loading={ensemble.isLoading && ensemblesTabVisited} loadFailed={ensemble.isError} stateCode={stateCode} />;
+    return <EnsembleData ensembleSummary={ensemble.data} stateSummary={summary.data} loading={ensemble.isLoading && ensemblesTabVisited} loadFailed={ensemble.isError} stateCode={stateCode} />;
   }
 
   return (

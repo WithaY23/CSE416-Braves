@@ -13,6 +13,15 @@
   "democratReps": "James Clyburn",
   "republicanReps": "Nancy Mace, Joe Wilson, Sheri Biggs, William Timmons, Ralph Norman, Russell Fry",
   "feasibleGroups": ["Black", "Latino", "White"],
+  "groupRoughProportionality": [
+    {
+      "groupKey": "BLACK",
+      "label": "black",
+      "enactedEffectiveDistricts": 1,
+      "cvapShare": 0.24,
+      "roughProportionalityRatio": 4.17
+    }
+  ],
   "ensembleSummary": {
     "available": true,
     "sizes": ["test", "final"],

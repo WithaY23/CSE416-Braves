@@ -13,6 +13,15 @@
   "democratReps": "Suzanne Bonamici, Maxine Dexter, Val Hoyle, Janelle Bynum, Andrea Salinas",
   "republicanReps": "Cliff Bentz",
   "feasibleGroups": ["Latino", "Asian", "White"],
+  "groupRoughProportionality": [
+    {
+      "groupKey": "HISPANIC",
+      "label": "hispanic",
+      "enactedEffectiveDistricts": 0,
+      "cvapShare": 0.12,
+      "roughProportionalityRatio": 0.0
+    }
+  ],
   "ensembleSummary": {
     "available": true,
     "sizes": ["test", "final"],
