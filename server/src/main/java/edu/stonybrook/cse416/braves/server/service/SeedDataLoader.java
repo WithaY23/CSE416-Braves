@@ -1401,10 +1401,104 @@ public class SeedDataLoader implements ApplicationRunner {
     }
 
     private void seedMinorityEffectivenessHistogram(Path root) throws IOException {
+        Path gui22 = root.resolve("preprocessing/output/GUI_22_updated.json");
+        Map<String, Object> gui22Payload = readJsonMap(gui22);
+
         minorityEffectivenessHistogramRepository.save(buildDoc(new MinorityEffectivenessHistogramDocument(), "OR", "2024_pres", "latino", null, null, "CVAP",
-                normalizeHistogramPayload(readJsonMap(root.resolve("preprocessing/output/or_FINAL_hispanic_histogram.json")))));
+                buildGui22HistogramPayload(gui22Payload, "oregon", "hispanic", "OR", "Latino", 6, 3)));
         minorityEffectivenessHistogramRepository.save(buildDoc(new MinorityEffectivenessHistogramDocument(), "SC", "2024_pres", "black",  null, null, "CVAP",
-                normalizeHistogramPayload(readJsonMap(root.resolve("preprocessing/output/SC_FINAL_black_histogram.json")))));
+                buildGui22HistogramPayload(gui22Payload, "south_carolina", "black", "SC", "Black", 7, 3)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> buildGui22HistogramPayload(
+            Map<String, Object> gui22Payload,
+            String stateKey,
+            String groupKey,
+            String stateId,
+            String selectedGroup,
+            int totalDistricts,
+            int runIndex) {
+        Object stateRaw = gui22Payload.get(stateKey);
+        if (!(stateRaw instanceof Map<?, ?> stateMapAny)) {
+            throw new IllegalStateException("GUI_22_updated missing state section: " + stateKey);
+        }
+        Map<String, Object> stateMap = (Map<String, Object>) stateMapAny;
+
+        List<Map<String, Object>> rbRuns = castRunList(stateMap.get("raceblind"), stateKey + ".raceblind");
+        List<Map<String, Object>> vraRuns = castRunList(stateMap.get("vra"), stateKey + ".vra");
+        if (runIndex < 0 || runIndex >= rbRuns.size() || runIndex >= vraRuns.size()) {
+            throw new IllegalStateException("Invalid GUI_22_updated run index " + runIndex + " for state " + stateKey);
+        }
+
+        Map<String, Integer> rbBins = castBinMap(rbRuns.get(runIndex).get(groupKey), stateKey + ".raceblind[" + runIndex + "]." + groupKey);
+        Map<String, Integer> vraBins = castBinMap(vraRuns.get(runIndex).get(groupKey), stateKey + ".vra[" + runIndex + "]." + groupKey);
+        int ensembleSize = Math.max(sumBins(rbBins), sumBins(vraBins));
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("schemaVersion", "v1");
+        payload.put("chartType", "minority-effectiveness-histogram");
+        payload.put("state", stateId);
+        payload.put("election", "2024 Presidential");
+        payload.put("totalDistricts", totalDistricts);
+        payload.put("selectedGroup", selectedGroup);
+        payload.put("ensembleSize", ensembleSize);
+        payload.put("units", Map.of("count", "plans"));
+        payload.put("series", Map.of(
+                "vraConstrained", binsToSeries(vraBins, ensembleSize),
+                "raceBlind", binsToSeries(rbBins, ensembleSize)));
+        return payload;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> castRunList(Object value, String fieldName) {
+        if (!(value instanceof List<?> list) || list.isEmpty()) {
+            throw new IllegalStateException("GUI_22_updated field must be a non-empty array: " + fieldName);
+        }
+        List<Map<String, Object>> runs = new ArrayList<>();
+        for (Object item : list) {
+            if (!(item instanceof Map<?, ?> mapAny)) {
+                throw new IllegalStateException("GUI_22_updated run entry must be an object: " + fieldName);
+            }
+            runs.add((Map<String, Object>) mapAny);
+        }
+        return runs;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Integer> castBinMap(Object value, String fieldName) {
+        if (!(value instanceof Map<?, ?> mapAny) || mapAny.isEmpty()) {
+            throw new IllegalStateException("GUI_22_updated histogram bins missing for " + fieldName);
+        }
+        Map<String, Integer> bins = new LinkedHashMap<>();
+        for (Map.Entry<?, ?> entry : mapAny.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            Object raw = entry.getValue();
+            if (!(raw instanceof Number number)) {
+                throw new IllegalStateException("GUI_22_updated bin frequency must be numeric at " + fieldName + "." + key);
+            }
+            bins.put(key, number.intValue());
+        }
+        return bins;
+    }
+
+    private int sumBins(Map<String, Integer> bins) {
+        return bins.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+    private List<Map<String, Object>> binsToSeries(Map<String, Integer> bins, int ensembleSize) {
+        return bins.entrySet().stream()
+                .sorted(Comparator.comparingInt(entry -> Integer.parseInt(entry.getKey())))
+                .map(entry -> {
+                    int frequency = entry.getValue();
+                    double share = ensembleSize <= 0 ? 0.0 : (double) frequency / ensembleSize;
+                    Map<String, Object> row = new LinkedHashMap<>();
+                    row.put("effectiveDistricts", Integer.parseInt(entry.getKey()));
+                    row.put("frequency", frequency);
+                    row.put("shareOfEnsemble", roundTo(share, 4));
+                    return row;
+                })
+                .toList();
     }
 
     private void seedManifests() {
