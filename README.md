@@ -2,6 +2,8 @@
 
 Full-stack web app comparing minority representation probability distributions under VRA vs. race-blind districting. States covered: **Oregon** (6 districts) and **South Carolina** (7 districts).
 
+This was a team project of 4, thank you to my Stony Brook partners.
+
 **Tech stack:** React 18 + Vite (frontend) · Spring Boot 3.3.4 (backend) · MongoDB (database)
 
 ---
